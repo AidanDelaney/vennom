@@ -6,8 +6,8 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 
-import pjr.graph.*;
-import pjr.graph.drawers.*;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.drawers.*;
 
 /**
  * A version of Eades spring embedder for laying out graphs

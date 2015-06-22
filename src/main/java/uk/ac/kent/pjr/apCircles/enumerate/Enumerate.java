@@ -2,8 +2,8 @@ package uk.ac.kent.pjr.apCircles.enumerate;
 
 import java.util.*;
 
-import pjr.apCircles.*;
-import pjr.apCircles.comparators.*;
+import uk.ac.kent.pjr.apCircles.*;
+import uk.ac.kent.pjr.apCircles.comparators.*;
 
 public class Enumerate {
 	

@@ -1,7 +1,7 @@
 package uk.ac.kent.pjr.graph.drawers;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.*;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.*;
 
 
 /**

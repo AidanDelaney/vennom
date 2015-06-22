@@ -2,7 +2,7 @@ package uk.ac.kent.pjr.graph.comparators;
 
 import java.util.*;
 
-import pjr.graph.Node;
+import uk.ac.kent.pjr.graph.Node;
 
 /**
  * Orders nodes by their score.

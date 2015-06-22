@@ -5,8 +5,8 @@ import java.io.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import pjr.graph.*;
-import pjr.graph.experiments.GraphExperimentEdgeLengthData;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.experiments.GraphExperimentEdgeLengthData;
 
 /**
  * Make large edge weights smaller and smaller edge weights larger for all graphs

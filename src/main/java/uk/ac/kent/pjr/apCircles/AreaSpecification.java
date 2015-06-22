@@ -5,8 +5,8 @@ import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.util.*;
 
-import pjr.apCircles.display.APCircleDisplay;
-import pjr.graph.*;
+import uk.ac.kent.pjr.apCircles.display.APCircleDisplay;
+import uk.ac.kent.pjr.graph.*;
 
 public class AreaSpecification {
 

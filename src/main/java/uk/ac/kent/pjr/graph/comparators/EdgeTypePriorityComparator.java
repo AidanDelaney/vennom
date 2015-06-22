@@ -2,7 +2,7 @@ package uk.ac.kent.pjr.graph.comparators;
 
 import java.util.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * Orders edge types by their priority.

@@ -4,9 +4,9 @@ import java.util.*;
 import java.io.*;
 import java.awt.*;
 
-import pjr.apCircles.*;
+import uk.ac.kent.pjr.apCircles.*;
 
-import pjr.graph.comparators.*;
+import uk.ac.kent.pjr.graph.comparators.*;
 
 /**
  * This is a graph containing nodes and edges.

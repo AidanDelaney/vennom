@@ -5,7 +5,7 @@ import java.io.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * Iterative barycenter drawing method.

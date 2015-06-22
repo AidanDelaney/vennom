@@ -3,9 +3,9 @@ package uk.ac.kent.pjr.graph.dialogs;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.ItemType;
-import pjr.graph.NodeType;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.ItemType;
+import uk.ac.kent.pjr.graph.NodeType;
 
 import java.util.*;
 import java.awt.*;

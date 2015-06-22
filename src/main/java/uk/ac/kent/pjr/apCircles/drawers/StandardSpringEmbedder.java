@@ -6,9 +6,9 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 
-import pjr.apCircles.Util;
-import pjr.graph.*;
-import pjr.graph.drawers.GraphDrawer;
+import uk.ac.kent.pjr.apCircles.Util;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.drawers.GraphDrawer;
 
 /**
  * A version of Eades spring embedder for laying out graphs

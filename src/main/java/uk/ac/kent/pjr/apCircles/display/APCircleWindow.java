@@ -8,16 +8,16 @@ import java.io.*;
 import java.awt.event.*;
 import java.awt.image.*;
 
-import pjr.graph.*;
-import pjr.graph.drawers.GraphDrawer;
-import pjr.graph.experiments.GraphExperiment;
-import pjr.graph.utilities.GraphUtility;
-import pjr.graph.views.GraphView;
-import pjr.graph.views.GraphViewShowNodeLabel;
-import pjr.apCircles.APCirclePanel;
-import pjr.apCircles.drawers.*;
-import pjr.apCircles.utilities.*;
-import pjr.apCircles.views.*;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.drawers.GraphDrawer;
+import uk.ac.kent.pjr.graph.experiments.GraphExperiment;
+import uk.ac.kent.pjr.graph.utilities.GraphUtility;
+import uk.ac.kent.pjr.graph.views.GraphView;
+import uk.ac.kent.pjr.graph.views.GraphViewShowNodeLabel;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.apCircles.drawers.*;
+import uk.ac.kent.pjr.apCircles.utilities.*;
+import uk.ac.kent.pjr.apCircles.views.*;
 
 
 /** Graph layout window using GraphPanel */

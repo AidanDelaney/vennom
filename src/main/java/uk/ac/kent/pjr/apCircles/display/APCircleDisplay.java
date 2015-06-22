@@ -1,7 +1,7 @@
 package uk.ac.kent.pjr.apCircles.display;
 
 import java.awt.*;
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 
 /** Example of using Graph Panel */

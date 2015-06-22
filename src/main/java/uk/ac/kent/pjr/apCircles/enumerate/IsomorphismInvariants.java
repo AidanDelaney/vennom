@@ -2,7 +2,7 @@ package uk.ac.kent.pjr.apCircles.enumerate;
 
 import java.util.*;
 
-import pjr.apCircles.*;
+import uk.ac.kent.pjr.apCircles.*;
 
 
 public class IsomorphismInvariants {

@@ -3,9 +3,9 @@ package uk.ac.kent.pjr.apCircles.display;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.*;
-import pjr.graph.drawers.*;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.drawers.*;
 
 import java.applet.*;
 import java.awt.*;

@@ -8,8 +8,8 @@ import java.awt.geom.*;
 
 import javax.swing.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.*;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * Randomize the location of the nodes in a graph in a given rectangle

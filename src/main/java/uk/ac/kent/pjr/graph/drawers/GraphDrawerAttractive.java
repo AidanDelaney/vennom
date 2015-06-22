@@ -5,7 +5,7 @@ import java.io.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * Attractive forces only version of Eades spring embedder.

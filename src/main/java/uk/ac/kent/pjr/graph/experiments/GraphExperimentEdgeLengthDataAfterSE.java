@@ -8,9 +8,9 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
-import pjr.graph.*;
-import pjr.graph.drawers.*;
-import pjr.graph.utilities.*;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.drawers.*;
+import uk.ac.kent.pjr.graph.utilities.*;
 
 /**
  * Attempts to find the best values for k and r when metric spring embedding the current graph.

@@ -2,13 +2,13 @@ package uk.ac.kent.pjr.apCircles;
 
 import javax.swing.*;
 
-import pjr.apCircles.display.APCircleDisplay;
-import pjr.graph.*;
-import pjr.graph.dialogs.*;
-import pjr.graph.drawers.*;
-import pjr.graph.experiments.*;
-import pjr.graph.utilities.*;
-import pjr.graph.views.*;
+import uk.ac.kent.pjr.apCircles.display.APCircleDisplay;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.dialogs.*;
+import uk.ac.kent.pjr.graph.drawers.*;
+import uk.ac.kent.pjr.graph.experiments.*;
+import uk.ac.kent.pjr.graph.utilities.*;
+import uk.ac.kent.pjr.graph.views.*;
 
 import java.util.*;
 import java.applet.*;

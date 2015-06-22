@@ -3,10 +3,10 @@ package uk.ac.kent.pjr.graph.dialogs;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.Edge;
-import pjr.graph.Graph;
-import pjr.graph.Node;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.Edge;
+import uk.ac.kent.pjr.graph.Graph;
+import uk.ac.kent.pjr.graph.Node;
 
 import java.util.*;
 import java.awt.*;

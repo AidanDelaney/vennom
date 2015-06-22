@@ -6,10 +6,10 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.apCircles.AbstractDiagram;
-import pjr.apCircles.AreaSpecification;
-import pjr.graph.Graph;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.apCircles.AbstractDiagram;
+import uk.ac.kent.pjr.apCircles.AreaSpecification;
+import uk.ac.kent.pjr.graph.Graph;
 
 public class APEntry extends Frame implements ActionListener {
 

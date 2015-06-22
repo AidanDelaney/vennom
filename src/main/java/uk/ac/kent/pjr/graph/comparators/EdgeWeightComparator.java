@@ -2,7 +2,7 @@ package uk.ac.kent.pjr.graph.comparators;
 
 import java.util.*;
 
-import pjr.graph.Edge;
+import uk.ac.kent.pjr.graph.Edge;
 
 /**
  * Orders edges by their weight.

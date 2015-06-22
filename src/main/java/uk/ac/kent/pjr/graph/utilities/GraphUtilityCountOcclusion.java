@@ -8,7 +8,7 @@ import java.awt.geom.*;
 
 import javax.swing.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * Randomize the location of the nodes in a graph in a given rectangle

@@ -1,8 +1,8 @@
 package uk.ac.kent.pjr.apCircles.views;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.*;
-import pjr.graph.views.GraphView;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.views.GraphView;
 
 public class CircleViewAPToggleShow extends GraphView {
 	

@@ -2,8 +2,8 @@ package uk.ac.kent.pjr.graph.comparators;
 
 import java.util.*;
 
-import pjr.graph.Edge;
-import pjr.graph.EdgeType;
+import uk.ac.kent.pjr.graph.Edge;
+import uk.ac.kent.pjr.graph.EdgeType;
 
 /**
  * Orders edges by their types, then by their labels.

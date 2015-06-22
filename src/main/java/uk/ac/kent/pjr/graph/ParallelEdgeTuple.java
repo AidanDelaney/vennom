@@ -2,7 +2,7 @@ package uk.ac.kent.pjr.graph;
 
 import java.util.*;
 
-import pjr.graph.comparators.EdgeParallelComparator;
+import uk.ac.kent.pjr.graph.comparators.EdgeParallelComparator;
 
 
 /**

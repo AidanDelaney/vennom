@@ -3,8 +3,8 @@ package uk.ac.kent.pjr.graph.utilities;
 import java.util.*;
 import java.awt.event.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.*;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.*;
 
 
 /**

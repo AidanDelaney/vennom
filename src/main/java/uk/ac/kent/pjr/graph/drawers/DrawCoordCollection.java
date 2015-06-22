@@ -5,7 +5,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.geom.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * A collection of centre buffered nodes.

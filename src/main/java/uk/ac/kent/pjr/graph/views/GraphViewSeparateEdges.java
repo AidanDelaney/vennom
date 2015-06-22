@@ -3,7 +3,7 @@ package uk.ac.kent.pjr.graph.views;
 import java.io.*;
 import java.awt.event.*;
 
-import pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
 
 /**
  * Toggle the display of node labels.

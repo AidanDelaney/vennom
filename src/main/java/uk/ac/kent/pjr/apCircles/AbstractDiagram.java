@@ -2,10 +2,10 @@ package uk.ac.kent.pjr.apCircles;
 
 import java.util.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
-import pjr.apCircles.comparators.*;
-import pjr.apCircles.enumerate.*;
+import uk.ac.kent.pjr.apCircles.comparators.*;
+import uk.ac.kent.pjr.apCircles.enumerate.*;
 
 /**
  * 

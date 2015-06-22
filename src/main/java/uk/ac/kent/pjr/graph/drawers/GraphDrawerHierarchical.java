@@ -4,10 +4,10 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.*;
-import pjr.graph.comparators.NodeScoreComparator;
-import pjr.graph.utilities.GraphUtilityRemoveDummyNodes;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.comparators.NodeScoreComparator;
+import uk.ac.kent.pjr.graph.utilities.GraphUtilityRemoveDummyNodes;
 
 /**
  * A varient of Sugiyamas Algorithm with dummy nodes.

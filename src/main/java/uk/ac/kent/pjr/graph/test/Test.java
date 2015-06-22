@@ -1,6 +1,6 @@
 package uk.ac.kent.pjr.graph.test;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 import java.util.*;
 import java.awt.*;

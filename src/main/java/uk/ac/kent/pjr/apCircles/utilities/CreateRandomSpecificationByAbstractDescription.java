@@ -6,12 +6,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import pjr.apCircles.AbstractDiagram;
-import pjr.apCircles.AreaSpecification;
-import pjr.apCircles.Util;
-import pjr.apCircles.display.APCircleDisplay;
-import pjr.graph.*;
-import pjr.graph.utilities.GraphUtility;
+import uk.ac.kent.pjr.apCircles.AbstractDiagram;
+import uk.ac.kent.pjr.apCircles.AreaSpecification;
+import uk.ac.kent.pjr.apCircles.Util;
+import uk.ac.kent.pjr.apCircles.display.APCircleDisplay;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.utilities.GraphUtility;
 
 /**
  * Randomize the location of the nodes in a graph in a given rectangle

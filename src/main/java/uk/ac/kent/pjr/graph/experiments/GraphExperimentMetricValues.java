@@ -4,11 +4,11 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.Graph;
-import pjr.graph.drawers.DrawCoordCollection;
-import pjr.graph.drawers.GraphDrawerEdgeLength;
-import pjr.graph.utilities.GraphUtilityDistanceStats;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.Graph;
+import uk.ac.kent.pjr.graph.drawers.DrawCoordCollection;
+import uk.ac.kent.pjr.graph.drawers.GraphDrawerEdgeLength;
+import uk.ac.kent.pjr.graph.utilities.GraphUtilityDistanceStats;
 
 /**
  *

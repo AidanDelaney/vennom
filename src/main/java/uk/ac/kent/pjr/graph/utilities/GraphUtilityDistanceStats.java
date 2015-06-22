@@ -5,8 +5,8 @@ import java.io.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import pjr.graph.*;
-import pjr.graph.drawers.*;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.drawers.*;
 
 /**
  * Outputs statistics on node and edge distances

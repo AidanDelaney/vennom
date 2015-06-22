@@ -2,7 +2,7 @@ package uk.ac.kent.pjr.apCircles.enumerate;
 
 
 
-import pjr.apCircles.AbstractDiagram;
+import uk.ac.kent.pjr.apCircles.AbstractDiagram;
 
 
 public class IsomorphismTest {

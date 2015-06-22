@@ -5,7 +5,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.geom.*;
 
-import pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
 
 /**
  * This is a simple edge, connecting two nodes together in a graph.

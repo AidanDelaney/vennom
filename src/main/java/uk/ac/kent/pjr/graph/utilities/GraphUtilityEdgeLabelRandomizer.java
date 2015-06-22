@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 import java.awt.event.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * Randomize the location of the nodes in a graph in a given rectangle

@@ -2,9 +2,9 @@ package uk.ac.kent.pjr.graph.dialogs;
 
 import javax.swing.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.graph.Edge;
-import pjr.graph.EdgeType;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.graph.Edge;
+import uk.ac.kent.pjr.graph.EdgeType;
 
 import java.util.*;
 import java.awt.*;

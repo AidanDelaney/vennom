@@ -6,12 +6,12 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 
-import pjr.apCircles.APCirclePanel;
-import pjr.apCircles.Util;
-import pjr.apCircles.display.APCircleDisplay;
-import pjr.apCircles.utilities.CreateRandomSpecificationByGraph;
-import pjr.graph.*;
-import pjr.graph.drawers.GraphDrawer;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.apCircles.Util;
+import uk.ac.kent.pjr.apCircles.display.APCircleDisplay;
+import uk.ac.kent.pjr.apCircles.utilities.CreateRandomSpecificationByGraph;
+import uk.ac.kent.pjr.graph.*;
+import uk.ac.kent.pjr.graph.drawers.GraphDrawer;
 
 /**
  * A version of Eades spring embedder for laying out graphs

@@ -3,7 +3,7 @@ package uk.ac.kent.pjr.graph.views;
 import java.awt.event.*;
 import java.io.*;
 
-import pjr.apCircles.APCirclePanel;
+import uk.ac.kent.pjr.apCircles.APCirclePanel;
 
 
 

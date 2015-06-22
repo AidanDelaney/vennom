@@ -2,7 +2,7 @@ package uk.ac.kent.pjr.apCircles.comparators;
 
 import java.util.*;
 
-import pjr.graph.*;
+import uk.ac.kent.pjr.graph.*;
 
 /**
  * Orders nodes that are labelled with zones by their label length (longer is greater) then lexographically.
