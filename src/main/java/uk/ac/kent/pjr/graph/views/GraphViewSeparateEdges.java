@@ -1,4 +1,4 @@
-package pjr.graph.views;
+package uk.ac.kent.pjr.graph.views;
 
 import java.io.*;
 import java.awt.event.*;

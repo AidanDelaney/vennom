@@ -1,4 +1,4 @@
-package pjr.graph.utilities;
+package uk.ac.kent.pjr.graph.utilities;
 
 import java.io.*;
 import java.awt.*;

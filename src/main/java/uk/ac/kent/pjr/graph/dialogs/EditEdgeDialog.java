@@ -1,4 +1,4 @@
-package pjr.graph.dialogs;
+package uk.ac.kent.pjr.graph.dialogs;
 
 import javax.swing.*;
 

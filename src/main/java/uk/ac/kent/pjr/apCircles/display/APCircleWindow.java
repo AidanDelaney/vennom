@@ -1,4 +1,4 @@
-package pjr.apCircles.display;
+package uk.ac.kent.pjr.apCircles.display;
 
 import javax.imageio.*;
 import javax.swing.*;

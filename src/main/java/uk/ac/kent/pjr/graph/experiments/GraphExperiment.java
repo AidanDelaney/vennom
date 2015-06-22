@@ -1,4 +1,4 @@
-package pjr.graph.experiments;
+package uk.ac.kent.pjr.graph.experiments;
 
 import pjr.apCircles.APCirclePanel;
 import pjr.graph.Graph;

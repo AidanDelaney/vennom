@@ -1,4 +1,4 @@
-package pjr.apCircles;
+package uk.ac.kent.pjr.apCircles;
 
 import java.awt.*;
 import java.awt.geom.*;

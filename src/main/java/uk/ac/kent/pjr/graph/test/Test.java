@@ -1,4 +1,4 @@
-package pjr.graph.test;
+package uk.ac.kent.pjr.graph.test;
 
 import pjr.graph.*;
 

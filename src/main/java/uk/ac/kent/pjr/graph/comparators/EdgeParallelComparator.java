@@ -1,4 +1,4 @@
-package pjr.graph.comparators;
+package uk.ac.kent.pjr.graph.comparators;
 
 import java.util.*;
 

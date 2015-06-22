@@ -1,4 +1,4 @@
-package pjr.graph.experiments;
+package uk.ac.kent.pjr.graph.experiments;
 
 import java.io.*;
 import java.awt.*;

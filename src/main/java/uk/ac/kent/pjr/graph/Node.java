@@ -1,4 +1,4 @@
-package pjr.graph;
+package uk.ac.kent.pjr.graph;
 import java.util.*;import java.io.*;import javax.swing.*;import java.awt.*;import java.awt.geom.*;
 
 /** * A node in a graph. This implements a simple labeled node for a graph. * <p> * It contains some additional fields for helping when writing algorithms, the * boolean {@link #visited}, a flag for indicating that a node has been traversed * and the list {@link #path} for indicating some sort of route to the * node, which also allows a test (null) to see if the node has been visited. * <p> * A redundant structure is used to speed up the access of neighbouring * nodes. This is in the form of the two Hash Sets, {@link #edgesFrom} and * {@link #edgesTo}, which are modified when edges are created, deleted or modified. * * @see Graph * @see Edge * @author Peter Rodgers */public class Node implements Serializable {

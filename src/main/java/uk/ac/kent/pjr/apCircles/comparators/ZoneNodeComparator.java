@@ -1,4 +1,4 @@
-package pjr.apCircles.comparators;
+package uk.ac.kent.pjr.apCircles.comparators;
 
 import java.util.*;
 

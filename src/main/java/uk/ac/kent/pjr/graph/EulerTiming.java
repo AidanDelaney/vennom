@@ -1,4 +1,4 @@
-package pjr.graph;
+package uk.ac.kent.pjr.graph;
 
 import java.util.ArrayList;
 
