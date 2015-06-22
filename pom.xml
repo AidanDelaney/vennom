@@ -25,8 +25,7 @@
           <archive>
             <index>true</index>
             <manifest>
-              <mainClass>APCircleDisplay</mainClass>
-              <packageName>uk.ac.kent.pjr.apCircles.display</packageName>
+              <mainClass>uk.ac.kent.pjr.apCircles.display.APCircleDisplay</mainClass>
             </manifest>
             <manifestEntries>
               <mode>development</mode>
