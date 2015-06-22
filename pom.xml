@@ -13,4 +13,28 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <build>
+    <plugins>
+      <!-- Create a Jar with a Manifest -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>
+            <index>true</index>
+            <manifest>
+              <mainClass>APCircleDisplay</mainClass>
+              <packageName>uk.ac.kent.pjr.apCircles.display</packageName>
+            </manifest>
+            <manifestEntries>
+              <mode>development</mode>
+              <url>https://github.com/AidanDelaney/euleR</url>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
