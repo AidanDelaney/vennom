@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>uk.ac.kent.pjr</groupId>
-  <artifactId>euleR</artifactId>
+  <groupId>org.eulerdiagrams</groupId>
+  <artifactId>vennom</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>euleR</name>
-  <description>EuleR is an implementation of area proportional Euler diagrams through the R statistical package.</description>
+  <name>vennom</name>
+  <description>VenNom eats data and returns a Venn diagram for area proportional visualisation.</description>
 
   <licenses>
     <license>
@@ -25,11 +25,11 @@
           <archive>
             <index>true</index>
             <manifest>
-              <mainClass>uk.ac.kent.pjr.apCircles.display.APCircleDisplay</mainClass>
+              <mainClass>org.eulerdiagrams.vennom.apCircles.display.APCircleDisplay</mainClass>
             </manifest>
             <manifestEntries>
               <mode>development</mode>
-              <url>https://github.com/AidanDelaney/euleR</url>
+              <url>https://github.com/AidanDelaney/vennom</url>
             </manifestEntries>
           </archive>
         </configuration>
