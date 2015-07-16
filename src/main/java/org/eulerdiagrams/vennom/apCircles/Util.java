@@ -746,6 +746,25 @@ public class Util {
 		return area;
 	}
 
+	
+	
+	public static float computePolygonAreaFloat (Polygon p) {
+
+		float area = 0.0f;
+		for (int i = 0; i < p.npoints - 1; i++) {
+			area += (p.xpoints[i] * p.ypoints[i+1]) - (p.xpoints[i+1] * p.ypoints[i]);
+		}
+		area += (p.xpoints[p.npoints-1] * p.ypoints[0]) - (p.xpoints[0] * p.ypoints[p.npoints-1]);  
+
+		area *= 0.5f;
+		
+		if(area<0) {
+			area =-area;
+		}
+
+		return area;
+	}
+
 	public static double computePolygonArea(Point2D.Double[] ps) {
 		double area = 0.0;
 		for (int i = 0; i < ps.length - 1; i++) {
@@ -1064,6 +1083,7 @@ public class Util {
 		return width;
 		
 	}
+
 
 
 

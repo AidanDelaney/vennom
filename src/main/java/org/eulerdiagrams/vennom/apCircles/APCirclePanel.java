@@ -95,6 +95,8 @@ public class APCirclePanel extends JPanel implements MouseListener, MouseMotionL
 
 	/** debugging code */
 	public static ArrayList<Ellipse2D.Double> ellipses = new ArrayList<Ellipse2D.Double>();
+	/** debugging code */
+	public static ArrayList<Polygon> polygons = new ArrayList<Polygon>();
 
 
 	public APCirclePanel(Applet inApplet) {
@@ -260,6 +262,13 @@ g2.setColor(Color.RED);
 for(Ellipse2D.Double e : ellipses) {
 g2.draw(e);	
 }
+//debugging code
+g2.setColor(Color.BLUE);
+for(Polygon p : polygons) {
+g2.draw(p);	
+}
+
+
 	}
 
 

@@ -1758,13 +1758,27 @@ public class Graph implements Serializable {
 	}
 
 
+	/**
+	 * Randomizes the graph node locations to be within the rectangle defined
+	 * by the parameters.
+	 */
+		public void randomizeNodePoints(Point topleft, int width, int height) {
+			
+			Random r = new Random();
+			for(Node n : getNodes()) {
+				int x = r.nextInt(width);
+				int y = r.nextInt(height);
+				n.setCentre(new Point(topleft.x+x,topleft.y+y));
+			}
+			return;
+		}
+
 /**
  * Randomizes the graph node locations to be within the rectangle defined
  * by the parameters.
  */
-	public void randomizeNodePoints(Point topleft, int width, int height) {
-		
-		Random r = new Random();
+	public void randomizeNodePoints(Point topleft, int width, int height, int randomSeed) {
+		Random r = new Random(randomSeed);
 		for(Node n : getNodes()) {
 			int x = r.nextInt(width);
 			int y = r.nextInt(height);

@@ -45,7 +45,7 @@ public class APEntry extends Frame implements ActionListener {
 		add(panel, BorderLayout.CENTER);
 		
 		if(circlePanel.getGraph().getNodes().size() == 0 && first) {
-			textArea.setText("a 4000\nb 6000\nab 2000\nc 3000\nbc 3600");
+			textArea.setText("a 4000\nb 6000\nab 2000\nc 3000\nbc 36000\nac 1000\nabc 1000\nad 500\nd 1000");
 			first = false;
 		}
 
@@ -76,7 +76,6 @@ public class APEntry extends Frame implements ActionListener {
 		panel.add(textArea);
 		
 		textArea.selectAll();
-		textArea.requestFocus();
 		
 		c.gridx = 0;
 		c.gridy = 1;
@@ -95,6 +94,7 @@ public class APEntry extends Frame implements ActionListener {
 		});
 		gridbag.setConstraints(okButton,c);
 		panel.add(okButton);
+		okButton.requestFocus();
 		
 		c.gridx = 1;
 		c.gridy = 1;

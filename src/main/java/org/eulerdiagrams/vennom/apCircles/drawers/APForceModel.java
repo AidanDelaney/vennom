@@ -22,6 +22,9 @@ import org.eulerdiagrams.vennom.graph.drawers.GraphDrawer;
  */
 public class APForceModel extends GraphDrawer implements Serializable {
 
+	/** The strength of the repulsive force */
+	private static final int randomSeed = 1;
+
 	private static final long serialVersionUID = 1L;
 	/** The strength of the attraction when applied to fixed edges*/
 	protected double fixedMultipiler = 10;
@@ -97,7 +100,7 @@ public class APForceModel extends GraphDrawer implements Serializable {
 	public void layout() {
 		
 		if(randomize) {
-			getGraph().randomizeNodePoints(new Point(50,50),400,400);
+			getGraph().randomizeNodePoints(new Point(50,50),400,400,randomSeed);
 		}
 	
 		maxMovement = Double.MAX_VALUE;
