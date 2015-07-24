@@ -89,163 +89,6 @@ public class AreaSpecification {
 	}
 	
 
-	/**
-	 * Returns the complete intersection graph, or null if the description is not
-	 * a single piercing.
-	 */
-	public Graph generatePeircedAugmentedIntersectionGraph() {
-
-		if(abstractDiagram.getZoneList().size() <= 1) {
-			return new Graph();
-		}
-		
-		HashMap<String,Node> circleNodeMap = new HashMap<String,Node>();
-		
-		Graph graph = new Graph();
-		// add the nodes
-		for(String circle : abstractDiagram.getContours()) {
-			double circleArea = 0.0;
-			for(String zone : abstractDiagram.getZoneList()) {
-				ArrayList<String> zoneList = AbstractDiagram.findContourList(zone);
-				if(zoneList.contains(circle)) {
-					double zoneArea = getSpecification().get(zone);
-					circleArea += zoneArea;
-				}
-			}
-			
-			double circleRadius = Math.sqrt(circleArea/Math.PI);
-			double labelDouble = Util.round(circleRadius,2);
-			
-			Node n = new Node(Double.toString(labelDouble));
-			n.setContour(circle);
-			graph.addNode(n);
-			circleNodeMap.put(circle,n);
-		}
-		graph.randomizeNodePoints(new Point(50,50),400,400);
-
-		ArrayList<String> remainingZones = new ArrayList<String>(abstractDiagram.getZoneList());
-		ArrayList<String> circles = abstractDiagram.getContours();
-		
-		remainingZones.remove("");
-		remainingZones.remove("0");
-		remainingZones.remove("O");
-		
-		while(remainingZones.size() != 1) {
-			String piercingCircle = null;
-
-			for(String circle : circles) {
-	
-				ArrayList<String> containingZones = new ArrayList<String>();
-				for(String z : remainingZones) {
-					ArrayList<String> zList = AbstractDiagram.findContourList(z);
-					if(zList.contains(circle)) {
-						containingZones.add(z);
-					}
-				}
-				if(containingZones.size() != 2) {
-					continue;
-				}
-				String z1 = containingZones.get(0);
-				String z2 = containingZones.get(1);
-				
-				String z1Minusz2 = AbstractDiagram.zoneMinus(z1, z2);
-				String z2Minusz1 = AbstractDiagram.zoneMinus(z2, z1);
-				
-				String splitCircle = null;
-				String containment = null;
-				if(z1Minusz2.length() == 1 && z2Minusz1.length() == 0) {
-					splitCircle = z1Minusz2;
-					containment = AbstractDiagram.zoneIntersection(z1,z2);
-					containment = AbstractDiagram.zoneMinus(containment,circle);
-				}
-				if(z1Minusz2.length() == 0 && z2Minusz1.length() == 1) {
-					splitCircle = z2Minusz1;
-					containment = AbstractDiagram.zoneIntersection(z1,z2);
-					containment = AbstractDiagram.zoneMinus(containment,circle);
-				}
-
-				if(splitCircle == null) {
-					continue;
-				}
-				
-				piercingCircle = circle;
-
-				remainingZones.remove(z1);
-				remainingZones.remove(z2);
-				String z1Reduced = AbstractDiagram.zoneMinus(z1,piercingCircle);
-				String z2Reduced = AbstractDiagram.zoneMinus(z2,piercingCircle);
-				if(z1Reduced.length() != 0 && !remainingZones.contains(z1Reduced)) {
-					remainingZones.add(z1Reduced);
-				}
-				if(z2Reduced.length() != 0 && !remainingZones.contains(z2Reduced)) {
-					remainingZones.add(z2Reduced);
-				}
-
-				// add fixed edges
-				Node currentCircleNode = graph.firstNodeWithContour(piercingCircle);
-				Edge fixed = new Edge(currentCircleNode,graph.firstNodeWithContour(splitCircle));
-				fixed.setType(APCircleDisplay.FIXED);
-				graph.addEdge(fixed);
-/*				
-System.out.println("NEXT PIERCING CURVE");
-System.out.println("new circle "+piercingCircle);
-System.out.println("split circle "+splitCircle);
-System.out.println("contained "+containment);
-*/			
-				// add attractor edges
-				ArrayList<String> containmentList = AbstractDiagram.findContourList(containment);
-				for(String containedCircle : containmentList) {
-					Edge attractor = new Edge(currentCircleNode,graph.firstNodeWithContour(containedCircle));
-					attractor.setType(APCircleDisplay.ATTRACTOR);
-					graph.addEdge(attractor);
-				}
-				
-				// rest are repulsor edges
-				for(Node n : graph.getNodes()) {
-					if(n == currentCircleNode) {
-						continue;
-					}
-
-					Edge existingEdge = graph.findEdgeBetween(n, currentCircleNode);
-					
-					if(existingEdge == null) {
-						Edge repulsor = new Edge(n, currentCircleNode);
-						repulsor.setType(APCircleDisplay.REPULSOR);
-						graph.addEdge(repulsor);
-					}
-				}
-			} // end circle iteration
-			
-			if(piercingCircle == null) {
-				// if no piercing found, not a pierced diagram so return null
-				return null;
-			}
-		
-		} // end outside loop
-
-		// remainingZones has to be size one, no need to do anything with the last circle, its already fully connected
-		String lastZone = remainingZones.get(0);
-		if(lastZone.length() != 1) {
-			return null;
-		}
-		
-		
-		// find the edge labels. Do this last to save time if the description is not pierced
-		for(Edge e : graph.getEdges()) {
-			if(e.getType().equals(APCircleDisplay.REPULSOR)) {
-				e.setLabel(findRepulsorLabel(e));
-			}
-			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
-				e.setLabel(findAttractorLabel(e));
-			}
-			if(e.getType().equals(APCircleDisplay.FIXED)) {
-				e.setLabel(Double.toString(findIdealNodeSeparation(graph,e)));
-			}
-
-		}
-		
-		return graph;
-	}
 
 	/**
 	 * Returns the complete intersection graph, or null if the description is not
@@ -273,10 +116,12 @@ System.out.println("contained "+containment);
 			}
 			
 			double circleRadius = Math.sqrt(circleArea/Math.PI);
-			double labelDouble = Util.round(circleRadius,2);
+			double labelDouble = circleRadius;
+//			labelDouble = Util.round(labelDouble,2);
 			
 			Node n = new Node(Double.toString(labelDouble));
 			n.setContour(circle);
+			n.setScore(labelDouble);
 			graph.addNode(n);
 			circleNodeMap.put(circle,n);
 		}
@@ -392,13 +237,22 @@ System.out.println("contained "+containment);
 		// find the edge labels. Do this last to save time if the description is not pierced
 		for(Edge e : graph.getEdges()) {
 			if(e.getType().equals(APCircleDisplay.REPULSOR)) {
-				e.setLabel(findRepulsorLabel(e));
+				double repulsion = findMinimumSeparation(e);
+				e.setLabel(Double.toString(repulsion));
+				e.setScore(repulsion);
+System.out.println("REPULSOR "+repulsion);
 			}
 			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
-				e.setLabel(findAttractorLabel(e));
+				double attraction = findAttractionValue(e);
+				e.setLabel(Double.toString(attraction));
+				e.setScore(attraction);
+System.out.println("ATTRACTOR "+attraction);
 			}
 			if(e.getType().equals(APCircleDisplay.FIXED)) {
-				e.setLabel(findFixedLabel(graph,e));
+				double fixed = findFixedValue(graph,e);
+				e.setLabel(Double.toString(fixed));
+				e.setScore(fixed);
+System.out.println("FIXED "+fixed);
 			}
 
 		}
@@ -407,37 +261,39 @@ System.out.println("contained "+containment);
 	}
 
 
-	public static String findAttractorLabel(Edge e) {
+	public static double findAttractionValue(Edge e) {
 		Node n1 = e.getFrom();
 		Node n2 = e.getTo();
-		double label1 = Double.parseDouble(n1.getLabel());
-		double label2 = Double.parseDouble(n2.getLabel());
+		double label1 = n1.getScore();
+		double label2 = n2.getScore();
 		double maxDistance = label1-label2;
 		if(maxDistance < 0) {
 			maxDistance = label2-label1;
 		}
-		double ret = Util.round(maxDistance,2);
-		return Double.toString(ret);
-	}
-	
-	
-	
-	public static String findRepulsorLabel(Edge e) {
-		Node n1 = e.getFrom();
-		Node n2 = e.getTo();
-		double label1 = Double.parseDouble(n1.getLabel());
-		double label2 = Double.parseDouble(n2.getLabel());
-		double minDistance = label1+label2;
-		double ret = Util.round(minDistance,2);
-		return Double.toString(ret);
+		double ret = maxDistance;
+//		ret = Util.round(ret,2);
+		return ret;
 	}
 	
 
-	protected String findFixedLabel(Graph graph, Edge e) {
+	
+	public static Double findMinimumSeparation(Edge e) {
+		Node n1 = e.getFrom();
+		Node n2 = e.getTo();
+		double label1 = n1.getScore();
+		double label2 = n2.getScore();
+		double minDistance = label1+label2;
+		double ret = minDistance;
+//		ret = Util.round(ret,2);
+		return ret;
+	}
+	
+
+	protected double findFixedValue(Graph graph, Edge e) {
 		
 		if(!e.getType().equals(APCircleDisplay.FIXED)) {
 			System.out.println("Non fixed node passed to labelFixed "+e);
-			return null;
+			return -1;
 		}
 
 
@@ -447,8 +303,8 @@ System.out.println("contained "+containment);
 		double label1 = 20;
 		double label2 = 20;
 		try {
-			label1 = Double.parseDouble(n1.getLabel());
-			label2 = Double.parseDouble(n2.getLabel());
+			label1 = n1.getScore();
+			label2 = n2.getScore();
 		} catch (Exception exception) {
 			System.out.println(exception.getStackTrace());
 		}
@@ -465,8 +321,9 @@ System.out.println("contained "+containment);
 			
 		double intersectionDistance = findCircleCircleSeparation(label1,label2,intersectionArea);
 
-		double ret = Util.round(intersectionDistance,2);
-		return Double.toString(ret);
+		double ret = intersectionDistance;
+//		ret = Util.round(ret,2);
+		return ret;
 	}
 	
 
@@ -496,6 +353,7 @@ System.out.println("contained "+containment);
 			double circleRadius = Math.sqrt(circleArea/Math.PI);
 			
 			Node n = new Node(Double.toString(circleRadius));
+			n.setScore(circleRadius);
 			n.setContour(circle);
 			graph.addNode(n);
 			circleNodeMap.put(circle,n);
@@ -528,18 +386,21 @@ System.out.println("contained "+containment);
 				Node n1 = circleNodeMap.get(c1);
 				Node n2 = circleNodeMap.get(c2);
 				if(intersect) {
-					Edge attractor = new Edge(n1,n2);
-					attractor.setLabel(Double.toString(findIdealNodeSeparation(graph,attractor)));
-
-					attractor.setType(APCircleDisplay.ATTRACTOR);
-					graph.addEdge(attractor);
-System.out.println("Attractor "+c1+" "+c2+" "+attractor.getLabel());
+					Edge ideal = new Edge(n1,n2);
+					double idealLength = findIdealNodeSeparation(graph,ideal);
+					ideal.setType(APCircleDisplay.IDEAL);
+					ideal.setLabel(Double.toString(idealLength));
+					ideal.setScore(idealLength);
+					graph.addEdge(ideal);
+System.out.println("ideal "+c1+" "+c2+" "+idealLength);
 				} else {
-					Edge repulsor = new Edge(n1,n2);
-					repulsor.setType(APCircleDisplay.REPULSOR);
-					repulsor.setLabel(findRepulsorLabel(repulsor));
-					graph.addEdge(repulsor);
-System.out.println("Repulsor "+c1+" "+c2+" "+repulsor.getLabel());					
+					Edge separator = new Edge(n1,n2);
+					double minSeparation = findMinimumSeparation(separator);
+					separator.setType(APCircleDisplay.SEPARATOR);
+					separator.setLabel(Double.toString(minSeparation));
+					separator.setScore(minSeparation);
+					graph.addEdge(separator);
+System.out.println("Separator "+c1+" "+c2+" "+minSeparation);					
 				}
 				
 			}
@@ -670,8 +531,8 @@ System.out.println(circle+" "+containingZones);
 		double label1 = 20;
 		double label2 = 20;
 		try {
-			label1 = Double.parseDouble(n1.getLabel());
-			label2 = Double.parseDouble(n2.getLabel());
+			label1 = n1.getScore();
+			label2 = n2.getScore();
 		} catch (Exception exception) {
 			System.out.println(exception.getStackTrace());
 		}
@@ -687,7 +548,7 @@ System.out.println(circle+" "+containingZones);
 		}
 			
 		double intersectionDistance = findCircleCircleSeparation(label1,label2,intersectionArea);
-
+System.out.println(intersectionDistance+" "+label1+" "+label2+" "+intersectionArea+" ");
 		double ret = Util.round(intersectionDistance,2);
 		return ret;
 	}

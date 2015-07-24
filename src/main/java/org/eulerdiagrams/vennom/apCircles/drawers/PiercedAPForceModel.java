@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 import org.eulerdiagrams.vennom.apCircles.Util;
 import org.eulerdiagrams.vennom.apCircles.display.APCircleDisplay;
-import org.eulerdiagrams.vennom.apCircles.utilities.CreateRandomSpecificationByGraph;
+import org.eulerdiagrams.vennom.apCircles.utilities.CreateRandomPiercedSpecificationByGraph;
 import org.eulerdiagrams.vennom.graph.*;
 import org.eulerdiagrams.vennom.graph.drawers.GraphDrawer;
 
@@ -79,15 +79,9 @@ public class PiercedAPForceModel extends GraphDrawer implements Serializable {
 
 
 	public long getTime() {return time;}
-	public double getK() {return fixedMultipiler;}
-	public double getR() {return repulsorMultiplier;}
-	public double getF() {return f;}
 	public int getIterations() {return iterations;}
 	public boolean getAnimateFlag() {return animateFlag;}
 
-	public void setK(double inK) {fixedMultipiler = inK;}
-	public void setR(double inR) {repulsorMultiplier = inR;}
-	public void setF(double inF) {f = inF;}
 	public void setIterations(int inIterations) {iterations = inIterations;}
 	public void setAnimateFlag(boolean inAnimateFlag) {animateFlag = inAnimateFlag;}
 	public void setRandomize(boolean flag) {randomize = flag;}
@@ -131,7 +125,7 @@ public class PiercedAPForceModel extends GraphDrawer implements Serializable {
 
 				rectifyLengths();
 				//rectifying the lengths seems to move the graph, so recentre after each iteration
-				centreGraph(CreateRandomSpecificationByGraph.CENTREX, CreateRandomSpecificationByGraph.CENTREY);
+				centreGraph(CreateRandomPiercedSpecificationByGraph.CENTREX, CreateRandomPiercedSpecificationByGraph.CENTREY);
 				
 				if(animateFlag && getGraphPanel() != null) {
 					for(Node n : getGraph().getNodes()) {
@@ -159,7 +153,7 @@ System.out.println("Iterations: "+i+", max movement: "+maxMovement+", seconds: "
 
 
 		rectifyLengths();
-		centreGraph(CreateRandomSpecificationByGraph.CENTREX, CreateRandomSpecificationByGraph.CENTREY);
+		centreGraph(CreateRandomPiercedSpecificationByGraph.CENTREX, CreateRandomPiercedSpecificationByGraph.CENTREY);
 		
 		for(Node n : getGraph().getNodes()) {
 			Point2D.Double newCentre = currentNodeCentres.get(n);
@@ -220,8 +214,8 @@ System.out.println("NODE "+n);
 			if(e != null) {
 				
 				double centreDistance = Util.distance(p,nextP);
-				double radiusFrom = Double.parseDouble(e.getFrom().getLabel());
-				double radiusTo = Double.parseDouble(e.getTo().getLabel());
+				double radiusFrom = e.getFrom().getScore();
+				double radiusTo = e.getTo().getScore();
 				double largeRadius = radiusFrom;
 				double smallRadius = radiusTo;
 				if(radiusTo > radiusFrom) {
@@ -246,7 +240,7 @@ System.out.println("NODE "+n);
 					
 					double repulsiveForce = repulsorMultiplier/(outsideBorderDistance*outsideBorderDistance);
 					
-System.out.print(e.getLabel()+ " red Force before thresholding "+repulsiveForce);
+System.out.print(e.getScore()+ " red Force before thresholding "+repulsiveForce);
 					if(repulsiveForce > forceThreshold) {
 						repulsiveForce = forceThreshold;
 
@@ -259,21 +253,21 @@ System.out.println(" after "+repulsiveForce);
 					// repulse the nodes
 					double xForce = repulsiveForce*xForceShare;
 					if(xDistance < 0) {
-						xForce = -repulsiveForce*xForceShare;
+						xForce = -xForce;
 					}
 					xRepulsive += xForce;
 
 
 					double yForce = repulsiveForce*yForceShare;
 					if(yDistance < 0) {
-						yForce = -repulsiveForce*yForceShare;
+						yForce = -yForce;
 					}
 					yRepulsive += yForce;
 				}
 
 				if(et.equals(APCircleDisplay.FIXED)) {
 
-					double desiredLength = Double.parseDouble(e.getLabel());
+					double desiredLength = e.getScore();
 					double error = centreDistance-desiredLength;
 					
 					double attractiveForce = fixedMultipiler*error;
@@ -284,14 +278,14 @@ System.out.println(" after "+repulsiveForce);
 					// repulse the nodes
 					double xForce = attractiveForce*xForceShare;
 					if(xDistance > 0) {
-						xForce = -attractiveForce*xForceShare;
+						xForce = -xForce;
 					}
 					xAttractive += xForce;
 
 
 					double yForce = attractiveForce*yForceShare;
 					if(yDistance > 0) {
-						yForce = -attractiveForce*yForceShare;
+						yForce = -yForce;
 					}
 					yAttractive += yForce;
 				}
@@ -306,7 +300,7 @@ double actualLength = Util.distance(e.getFrom().getCentre(), e.getTo().getCentre
 System.out.println("actualLength "+actualLength);
 					
 System.out.println("largeRadius "+largeRadius+" smallRadius "+smallRadius+" centreDistance "+centreDistance+" borderGap "+insideBorderDifference);
-System.out.print(e.getLabel()+ " green Force before thresholding "+repulsiveForce);
+System.out.print(e.getScore()+ " green Force before thresholding "+repulsiveForce);
 					if(repulsiveForce > forceThreshold) {
 						repulsiveForce = forceThreshold;
 					}
@@ -319,13 +313,13 @@ System.out.println(" after "+repulsiveForce);
 					// repulse the nodes
 					double xForce = repulsiveForce*xForceShare;
 					if(xDistance > 0) {
-						xForce = -repulsiveForce*xForceShare;
+						xForce = -xForce;
 					}
 					xAttractive += xForce;
 
 					double yForce = repulsiveForce*yForceShare;
 					if(yDistance > 0) {
-						yForce = -repulsiveForce*yForceShare;
+						yForce = -yForce;
 					}
 					yAttractive += yForce;
 /*
@@ -407,7 +401,7 @@ for(Edge e : g.getEdges()) {
 
 	private void moveNodeForCorrectLength(Edge e, Node n1) {
 
-		double desiredLength = Double.parseDouble(e.getLabel());
+		double desiredLength = e.getScore();
 		
 		Node n2 = e.getOppositeEnd(n1);
 

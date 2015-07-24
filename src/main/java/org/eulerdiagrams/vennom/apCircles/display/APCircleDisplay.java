@@ -10,6 +10,8 @@ public class APCircleDisplay {
 	public static EdgeType REPULSOR;
 	public static EdgeType ATTRACTOR;
 	public static EdgeType FIXED;
+	public static EdgeType SEPARATOR;
+	public static EdgeType IDEAL;
 	
 	
 	public static void main(String[] args) {
@@ -45,6 +47,18 @@ public class APCircleDisplay {
 		REPULSOR.setTextColor(Color.red);
 		REPULSOR.setSelectedLineColor(Color.gray);
 		REPULSOR.setPriority(1018);
+
+		SEPARATOR = new EdgeType("separator");
+		SEPARATOR.setLineColor(Color.cyan);
+		SEPARATOR.setTextColor(Color.cyan);
+		SEPARATOR.setSelectedLineColor(Color.gray);
+		SEPARATOR.setPriority(1017);
+
+		IDEAL = new EdgeType("ideal");
+		IDEAL.setLineColor(Color.blue);
+		IDEAL.setTextColor(Color.blue);
+		IDEAL.setSelectedLineColor(Color.gray);
+		IDEAL.setPriority(1016);
 
 		Graph.DEFAULT_NODE_TYPE.setHeight(20);
 		Graph.DEFAULT_NODE_TYPE.setWidth(20);

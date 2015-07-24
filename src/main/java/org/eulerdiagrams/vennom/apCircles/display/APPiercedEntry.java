@@ -29,7 +29,7 @@ public class APPiercedEntry extends Frame implements ActionListener {
 	/** Node list must have at least one element */
 	public APPiercedEntry(APCirclePanel circlePanel) {
 
-		super("Enter Pierced Specification");
+		super("Enter Pierced AP Specification");
 		
 		Dimension frameDim = Toolkit.getDefaultToolkit().getScreenSize();
 		int posX = (frameDim.width - getSize().width)/3;
@@ -45,7 +45,7 @@ public class APPiercedEntry extends Frame implements ActionListener {
 		add(panel, BorderLayout.CENTER);
 		
 		if(circlePanel.getGraph().getNodes().size() == 0 && first) {
-			textArea.setText("a 4000\nb 6000\nab 2000\nc 3000\nbc 36000\nac 1000\nabc 1000\nad 500\nd 1000");
+			textArea.setText("a 4000\nb 6000\nab 2000\nabc 500\nac 1000\nd 2000\nad 500\ne 800\nae 700");
 			first = false;
 		}
 

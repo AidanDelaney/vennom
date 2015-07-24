@@ -60,6 +60,7 @@ public class APCirclePanel extends JPanel implements MouseListener, MouseMotionL
 	public static final int OFFSETINCREMENT = 5;
 
 	protected boolean showNodeLabel = true;
+	protected boolean showEdgeLabel = true;
 /** Indicates if parallel edges should be separated when displayed. */
 	protected boolean separateParallel = true;
 	protected boolean showCirclesFlag = true;
@@ -131,6 +132,7 @@ public class APCirclePanel extends JPanel implements MouseListener, MouseMotionL
 	}
 
 	public boolean getShowNodeLabel() {return showNodeLabel;}
+	public boolean getShowEdgeLabel() {return showEdgeLabel;}
 	public boolean getSeparateParallel() {return separateParallel;}
 	public Graph getGraph() {return graph;}
 	public GraphSelection getSelection() {return selection;}
@@ -147,6 +149,7 @@ public class APCirclePanel extends JPanel implements MouseListener, MouseMotionL
 
 	public void setGraph(Graph g) {graph = g;}
 	public void setShowNodeLabel(boolean flag) {showNodeLabel = flag;}
+	public void setShowEdgeLabel(boolean flag) {showEdgeLabel = flag;}
 	public void setSeparateParallel(boolean flag) {separateParallel = flag;}
 	public void setShowCirclesFlag(boolean flag) {showCirclesFlag = flag;}
 	public void setShowNodesFlag(boolean flag) {showNodesFlag = flag;}
@@ -419,7 +422,7 @@ g2.draw(p);
 		Shape edgeShape = e.generateShape(offset);
 		g2.draw(edgeShape);
 
-		if(!e.getLabel().equals("")) {
+		if(!e.getLabel().equals("") && showEdgeLabel) {
 
 //TBD if there are edge bends, put the label at the middle edge bend
 
