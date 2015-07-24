@@ -9,27 +9,27 @@ import org.eulerdiagrams.vennom.graph.*;
 
 public class AreaSpecification {
 
-	protected HashMap<String,Double> specification;
+	private HashMap<String,Double> specification;
 	protected AbstractDiagram abstractDiagram;
 	/** Dividing all specifications by this makes the total area 1.0 */
 	protected double normalizationFactor = 0.0;
 	
 	public AreaSpecification(AbstractDiagram abstractDiagram) {
 		this.abstractDiagram = abstractDiagram;
-		specification = new HashMap<String, Double>();
+		setSpecification(new HashMap<String, Double>());
 		setAllZoneAreas(0.0);
 		findNormalizationFactor();
 	}
 
 	public AreaSpecification(AbstractDiagram abstractDiagram, HashMap<String,Double> specification) {
 		this.abstractDiagram = abstractDiagram;
-		this.specification = specification;
+		this.setSpecification(specification);
 		findNormalizationFactor();
 	}
 
 	public AreaSpecification(String s) {
 		this.abstractDiagram = new AbstractDiagram("");
-		specification = new HashMap<String, Double>();
+		setSpecification(new HashMap<String, Double>());
 		fromString(s);
 		findNormalizationFactor();
 	}
@@ -37,8 +37,8 @@ public class AreaSpecification {
 
 	protected double findNormalizationFactor() {
 		double totalArea = 0.0;
-		for(String s : specification.keySet()) {
-			totalArea += specification.get(s);
+		for(String s : getSpecification().keySet()) {
+			totalArea += getSpecification().get(s);
 		}
 		return totalArea;
 	}
@@ -48,7 +48,7 @@ public class AreaSpecification {
 		if(normalizationFactor == 0.0) {
 			normalizationFactor = findNormalizationFactor();
 		}
-		double area = specification.get(zone);
+		double area = getSpecification().get(zone);
 		return area/normalizationFactor;
 	}
 	
@@ -69,7 +69,7 @@ public class AreaSpecification {
 		if(!abstractDiagram.getZoneList().contains(zone)) {
 			return false;
 		}
-		specification.put(zone, area);
+		getSpecification().put(zone, area);
 		return true;
 	}
 
@@ -81,7 +81,7 @@ public class AreaSpecification {
 		if(!abstractDiagram.getZoneList().contains(zone)) {
 			return -1.0;
 		}
-		return specification.get(zone);
+		return getSpecification().get(zone);
 	}
 
 	public AbstractDiagram getAbstractDiagram() {
@@ -94,6 +94,165 @@ public class AreaSpecification {
 	 * a single piercing.
 	 */
 	public Graph generatePeircedAugmentedIntersectionGraph() {
+
+		if(abstractDiagram.getZoneList().size() <= 1) {
+			return new Graph();
+		}
+		
+		HashMap<String,Node> circleNodeMap = new HashMap<String,Node>();
+		
+		Graph graph = new Graph();
+		// add the nodes
+		for(String circle : abstractDiagram.getContours()) {
+			double circleArea = 0.0;
+			for(String zone : abstractDiagram.getZoneList()) {
+				ArrayList<String> zoneList = AbstractDiagram.findContourList(zone);
+				if(zoneList.contains(circle)) {
+					double zoneArea = getSpecification().get(zone);
+					circleArea += zoneArea;
+				}
+			}
+			
+			double circleRadius = Math.sqrt(circleArea/Math.PI);
+			double labelDouble = Util.round(circleRadius,2);
+			
+			Node n = new Node(Double.toString(labelDouble));
+			n.setContour(circle);
+			graph.addNode(n);
+			circleNodeMap.put(circle,n);
+		}
+		graph.randomizeNodePoints(new Point(50,50),400,400);
+
+		ArrayList<String> remainingZones = new ArrayList<String>(abstractDiagram.getZoneList());
+		ArrayList<String> circles = abstractDiagram.getContours();
+		
+		remainingZones.remove("");
+		remainingZones.remove("0");
+		remainingZones.remove("O");
+		
+		while(remainingZones.size() != 1) {
+			String piercingCircle = null;
+
+			for(String circle : circles) {
+	
+				ArrayList<String> containingZones = new ArrayList<String>();
+				for(String z : remainingZones) {
+					ArrayList<String> zList = AbstractDiagram.findContourList(z);
+					if(zList.contains(circle)) {
+						containingZones.add(z);
+					}
+				}
+				if(containingZones.size() != 2) {
+					continue;
+				}
+				String z1 = containingZones.get(0);
+				String z2 = containingZones.get(1);
+				
+				String z1Minusz2 = AbstractDiagram.zoneMinus(z1, z2);
+				String z2Minusz1 = AbstractDiagram.zoneMinus(z2, z1);
+				
+				String splitCircle = null;
+				String containment = null;
+				if(z1Minusz2.length() == 1 && z2Minusz1.length() == 0) {
+					splitCircle = z1Minusz2;
+					containment = AbstractDiagram.zoneIntersection(z1,z2);
+					containment = AbstractDiagram.zoneMinus(containment,circle);
+				}
+				if(z1Minusz2.length() == 0 && z2Minusz1.length() == 1) {
+					splitCircle = z2Minusz1;
+					containment = AbstractDiagram.zoneIntersection(z1,z2);
+					containment = AbstractDiagram.zoneMinus(containment,circle);
+				}
+
+				if(splitCircle == null) {
+					continue;
+				}
+				
+				piercingCircle = circle;
+
+				remainingZones.remove(z1);
+				remainingZones.remove(z2);
+				String z1Reduced = AbstractDiagram.zoneMinus(z1,piercingCircle);
+				String z2Reduced = AbstractDiagram.zoneMinus(z2,piercingCircle);
+				if(z1Reduced.length() != 0 && !remainingZones.contains(z1Reduced)) {
+					remainingZones.add(z1Reduced);
+				}
+				if(z2Reduced.length() != 0 && !remainingZones.contains(z2Reduced)) {
+					remainingZones.add(z2Reduced);
+				}
+
+				// add fixed edges
+				Node currentCircleNode = graph.firstNodeWithContour(piercingCircle);
+				Edge fixed = new Edge(currentCircleNode,graph.firstNodeWithContour(splitCircle));
+				fixed.setType(APCircleDisplay.FIXED);
+				graph.addEdge(fixed);
+/*				
+System.out.println("NEXT PIERCING CURVE");
+System.out.println("new circle "+piercingCircle);
+System.out.println("split circle "+splitCircle);
+System.out.println("contained "+containment);
+*/			
+				// add attractor edges
+				ArrayList<String> containmentList = AbstractDiagram.findContourList(containment);
+				for(String containedCircle : containmentList) {
+					Edge attractor = new Edge(currentCircleNode,graph.firstNodeWithContour(containedCircle));
+					attractor.setType(APCircleDisplay.ATTRACTOR);
+					graph.addEdge(attractor);
+				}
+				
+				// rest are repulsor edges
+				for(Node n : graph.getNodes()) {
+					if(n == currentCircleNode) {
+						continue;
+					}
+
+					Edge existingEdge = graph.findEdgeBetween(n, currentCircleNode);
+					
+					if(existingEdge == null) {
+						Edge repulsor = new Edge(n, currentCircleNode);
+						repulsor.setType(APCircleDisplay.REPULSOR);
+						graph.addEdge(repulsor);
+					}
+				}
+			} // end circle iteration
+			
+			if(piercingCircle == null) {
+				// if no piercing found, not a pierced diagram so return null
+				return null;
+			}
+		
+		} // end outside loop
+
+		// remainingZones has to be size one, no need to do anything with the last circle, its already fully connected
+		String lastZone = remainingZones.get(0);
+		if(lastZone.length() != 1) {
+			return null;
+		}
+		
+		
+		// find the edge labels. Do this last to save time if the description is not pierced
+		for(Edge e : graph.getEdges()) {
+			if(e.getType().equals(APCircleDisplay.REPULSOR)) {
+				e.setLabel(findRepulsorLabel(e));
+			}
+			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
+				e.setLabel(findAttractorLabel(e));
+			}
+			if(e.getType().equals(APCircleDisplay.FIXED)) {
+				e.setLabel(Double.toString(findIdealNodeSeparation(graph,e)));
+			}
+
+		}
+		
+		return graph;
+	}
+
+	/**
+	 * Returns the complete intersection graph, or null if the description is not
+	 * a single piercing.
+	 */
+	public Graph generatePiercedAugmentedIntersectionGraph() {
+
 
 		if(abstractDiagram.getZoneList().size() <= 1) {
 			return new Graph();
@@ -239,7 +398,7 @@ System.out.println("contained "+containment);
 				e.setLabel(findAttractorLabel(e));
 			}
 			if(e.getType().equals(APCircleDisplay.FIXED)) {
-				e.setLabel(Double.toString(findIdealNodeSeparation(graph,e)));
+				e.setLabel(findFixedLabel(graph,e));
 			}
 
 		}
@@ -247,11 +406,75 @@ System.out.println("contained "+containment);
 		return graph;
 	}
 
+
+	public static String findAttractorLabel(Edge e) {
+		Node n1 = e.getFrom();
+		Node n2 = e.getTo();
+		double label1 = Double.parseDouble(n1.getLabel());
+		double label2 = Double.parseDouble(n2.getLabel());
+		double maxDistance = label1-label2;
+		if(maxDistance < 0) {
+			maxDistance = label2-label1;
+		}
+		double ret = Util.round(maxDistance,2);
+		return Double.toString(ret);
+	}
+	
+	
+	
+	public static String findRepulsorLabel(Edge e) {
+		Node n1 = e.getFrom();
+		Node n2 = e.getTo();
+		double label1 = Double.parseDouble(n1.getLabel());
+		double label2 = Double.parseDouble(n2.getLabel());
+		double minDistance = label1+label2;
+		double ret = Util.round(minDistance,2);
+		return Double.toString(ret);
+	}
+	
+
+	protected String findFixedLabel(Graph graph, Edge e) {
+		
+		if(!e.getType().equals(APCircleDisplay.FIXED)) {
+			System.out.println("Non fixed node passed to labelFixed "+e);
+			return null;
+		}
+
+
+		Node n1 = e.getFrom();
+		Node n2 = e.getTo();
+
+		double label1 = 20;
+		double label2 = 20;
+		try {
+			label1 = Double.parseDouble(n1.getLabel());
+			label2 = Double.parseDouble(n2.getLabel());
+		} catch (Exception exception) {
+			System.out.println(exception.getStackTrace());
+		}
+		
+		double intersectionArea = 0.0;
+	
+		for(String z : abstractDiagram.getZoneList()) {
+			
+			ArrayList<String> zList = AbstractDiagram.findContourList(z);
+			if(zList.contains(n1.getContour()) && zList.contains(n2.getContour())) {
+				intersectionArea += specification.get(z);
+			}
+		}
+			
+		double intersectionDistance = findCircleCircleSeparation(label1,label2,intersectionArea);
+
+		double ret = Util.round(intersectionDistance,2);
+		return Double.toString(ret);
+	}
+	
+
+
 	/**
-	 * Returns the complete intersection graph, or null if the description is not
-	 * a single piercing.
+	 * Returns the complete graph for general layout.
 	 */
-	public Graph generateAugmentedIntersectionGraph() {
+	public Graph generateGeneralAugmentedIntersectionGraph() {
 
 		if(abstractDiagram.getZoneList().size() <= 1) {
 			return new Graph();
@@ -266,7 +489,7 @@ System.out.println("contained "+containment);
 			for(String zone : abstractDiagram.getZoneList()) {
 				ArrayList<String> zoneList = AbstractDiagram.findContourList(zone);
 				if(zoneList.contains(circle)) {
-					double zoneArea = specification.get(zone);
+					double zoneArea = getSpecification().get(zone);
 					circleArea += zoneArea;
 				}
 			}
@@ -439,32 +662,6 @@ System.out.println(circle+" "+containingZones);
 
 
 
-	public static String findAttractorLabel(Edge e) {
-		Node n1 = e.getFrom();
-		Node n2 = e.getTo();
-		double label1 = Double.parseDouble(n1.getLabel());
-		double label2 = Double.parseDouble(n2.getLabel());
-		double maxDistance = label1-label2;
-		if(maxDistance < 0) {
-			maxDistance = label2-label1;
-		}
-		double ret = Util.round(maxDistance,2);
-		return Double.toString(ret);
-	}
-	
-	
-	
-	public static String findRepulsorLabel(Edge e) {
-		Node n1 = e.getFrom();
-		Node n2 = e.getTo();
-		double label1 = Double.parseDouble(n1.getLabel());
-		double label2 = Double.parseDouble(n2.getLabel());
-		double minDistance = label1+label2;
-		double ret = Util.round(minDistance,2);
-		return Double.toString(ret);
-	}
-	
-
 	protected double findIdealNodeSeparation(Graph graph, Edge e) {
 		
 		Node n1 = e.getFrom();
@@ -485,7 +682,7 @@ System.out.println(circle+" "+containingZones);
 			
 			ArrayList<String> zList = AbstractDiagram.findContourList(z);
 			if(zList.contains(n1.getContour()) && zList.contains(n2.getContour())) {
-				intersectionArea += specification.get(z);
+				intersectionArea += getSpecification().get(z);
 			}
 		}
 			
@@ -605,7 +802,7 @@ System.out.println(circle+" "+containingZones);
 		}
 		
 		abstractDiagram = ad;
-		specification = spec;
+		setSpecification(spec);
 		return true;
 	}
 
@@ -621,6 +818,14 @@ System.out.println(circle+" "+containingZones);
 		}
 
 		return ret;
+	}
+
+	public void setSpecification(HashMap<String,Double> specification) {
+		this.specification = specification;
+	}
+
+	public HashMap<String,Double> getSpecification() {
+		return specification;
 	}
 
 }

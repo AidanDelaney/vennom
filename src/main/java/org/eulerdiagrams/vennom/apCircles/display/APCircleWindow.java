@@ -99,23 +99,23 @@ public class APCircleWindow extends JFrame implements ActionListener {
 
 		gp.addGraphUtility(new CircleUtilityTest());
 		gp.addGraphUtility(new CreateRandomSpecificationByGraph());
-		gp.addGraphUtility(new CreateRandomSpecificationByAbstractDescription());
+		gp.addGraphUtility(new CreateRandomPiercedSpecificationByAbstractDescription());
 		gp.addGraphUtility(new RectifyLengths());
 		gp.addGraphUtility(new ReportPassingEdges());
 		gp.addGraphUtility(new ReportAreaProportions());
-		gp.addGraphUtility(new EnterSpecification());
+		gp.addGraphUtility(new EnterPiercedSpecification());
 		
 	}
 
 
 	private void initLayout() {
 
-		APForceModel fm = new APForceModel(KeyEvent.VK_Q,"Area-proportional",true);
+		PiercedAPForceModel fm = new PiercedAPForceModel(KeyEvent.VK_Q,"Pierced Area-proportional",true);
 		fm.setRandomize(false);
 		fm.setAnimateFlag(true);
 		gp.addGraphDrawer(fm);
 		
-		APForceModel fm1 = new APForceModel(KeyEvent.VK_W,"Area-proportional single iteration",true);
+		PiercedAPForceModel fm1 = new PiercedAPForceModel(KeyEvent.VK_W,"Pierced Area-proportional single iteration",true);
 		fm1.setIterations(1);
 		fm1.setRandomize(false);
 		fm1.setAnimateFlag(true);
