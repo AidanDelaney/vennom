@@ -2,7 +2,7 @@ package org.eulerdiagrams.vennom.apCircles;
 
 import static org.eulerdiagrams.vennom.apCircles.display.APCircleDisplay.*;
 
-import org.eulerdiagrams.vennom.apCircles.drawers.APForceModel;
+import org.eulerdiagrams.vennom.apCircles.drawers.GeneralAPForceModel;
 import org.eulerdiagrams.vennom.graph.*;
 import org.eulerdiagrams.vennom.graph.drawers.GraphDrawer;
 
@@ -40,6 +40,18 @@ public class TestGraph {
         REPULSOR.setSelectedLineColor(Color.gray);
         REPULSOR.setPriority(1018);
 
+        SEPARATOR = new EdgeType("separator");
+        SEPARATOR.setLineColor(Color.cyan);
+        SEPARATOR.setTextColor(Color.cyan);
+        SEPARATOR.setSelectedLineColor(Color.gray);
+        SEPARATOR.setPriority(1017);
+
+        IDEAL = new EdgeType("ideal");
+        IDEAL.setLineColor(Color.blue);
+        IDEAL.setTextColor(Color.blue);
+        IDEAL.setSelectedLineColor(Color.gray);
+        IDEAL.setPriority(1016);
+
         Graph.DEFAULT_NODE_TYPE.setHeight(20);
         Graph.DEFAULT_NODE_TYPE.setWidth(20);
         Graph.DEFAULT_NODE_TYPE.setBorderColor(Color.WHITE);
@@ -53,12 +65,12 @@ public class TestGraph {
         // Venn2 area spec
         AreaSpecification as = new AreaSpecification("a 100.0\nb 100.0\nab 500");
         JFrame frame = new JFrame();
-        GraphDrawer gd = new APForceModel();
+        GraphDrawer gd = new GeneralAPForceModel();
         APCirclePanel apc = new APCirclePanel(frame);
         apc.setSpecification(as);
         apc.addGraphDrawer(gd);
 
-        apc.setGraph(as.generateAugmentedIntersectionGraph());
+        apc.setGraph(as.generateGeneralAugmentedIntersectionGraph());
         gd.layout();
 
         for(Node n: gd.getGraph().getNodes()) {
