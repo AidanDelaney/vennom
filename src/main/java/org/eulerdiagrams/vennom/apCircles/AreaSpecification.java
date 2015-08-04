@@ -9,27 +9,27 @@ import org.eulerdiagrams.vennom.graph.*;
 
 public class AreaSpecification {
 
-	protected HashMap<String,Double> specification;
+	private HashMap<String,Double> specification;
 	protected AbstractDiagram abstractDiagram;
 	/** Dividing all specifications by this makes the total area 1.0 */
 	protected double normalizationFactor = 0.0;
 	
 	public AreaSpecification(AbstractDiagram abstractDiagram) {
 		this.abstractDiagram = abstractDiagram;
-		specification = new HashMap<String, Double>();
+		setSpecification(new HashMap<String, Double>());
 		setAllZoneAreas(0.0);
 		findNormalizationFactor();
 	}
 
 	public AreaSpecification(AbstractDiagram abstractDiagram, HashMap<String,Double> specification) {
 		this.abstractDiagram = abstractDiagram;
-		this.specification = specification;
+		this.setSpecification(specification);
 		findNormalizationFactor();
 	}
 
 	public AreaSpecification(String s) {
 		this.abstractDiagram = new AbstractDiagram("");
-		specification = new HashMap<String, Double>();
+		setSpecification(new HashMap<String, Double>());
 		fromString(s);
 		findNormalizationFactor();
 	}
@@ -37,8 +37,8 @@ public class AreaSpecification {
 
 	protected double findNormalizationFactor() {
 		double totalArea = 0.0;
-		for(String s : specification.keySet()) {
-			totalArea += specification.get(s);
+		for(String s : getSpecification().keySet()) {
+			totalArea += getSpecification().get(s);
 		}
 		return totalArea;
 	}
@@ -48,7 +48,7 @@ public class AreaSpecification {
 		if(normalizationFactor == 0.0) {
 			normalizationFactor = findNormalizationFactor();
 		}
-		double area = specification.get(zone);
+		double area = getSpecification().get(zone);
 		return area/normalizationFactor;
 	}
 	
@@ -69,7 +69,7 @@ public class AreaSpecification {
 		if(!abstractDiagram.getZoneList().contains(zone)) {
 			return false;
 		}
-		specification.put(zone, area);
+		getSpecification().put(zone, area);
 		return true;
 	}
 
@@ -81,7 +81,7 @@ public class AreaSpecification {
 		if(!abstractDiagram.getZoneList().contains(zone)) {
 			return -1.0;
 		}
-		return specification.get(zone);
+		return getSpecification().get(zone);
 	}
 
 	public AbstractDiagram getAbstractDiagram() {
@@ -89,11 +89,13 @@ public class AreaSpecification {
 	}
 	
 
+
 	/**
 	 * Returns the complete intersection graph, or null if the description is not
 	 * a single piercing.
 	 */
-	public Graph generatePeircedAugmentedIntersectionGraph() {
+	public Graph generatePiercedAugmentedIntersectionGraph() {
+
 
 		if(abstractDiagram.getZoneList().size() <= 1) {
 			return new Graph();
@@ -114,10 +116,12 @@ public class AreaSpecification {
 			}
 			
 			double circleRadius = Math.sqrt(circleArea/Math.PI);
-			double labelDouble = Util.round(circleRadius,2);
+			double labelDouble = circleRadius;
+//			labelDouble = Util.round(labelDouble,2);
 			
 			Node n = new Node(Double.toString(labelDouble));
 			n.setContour(circle);
+			n.setScore(labelDouble);
 			graph.addNode(n);
 			circleNodeMap.put(circle,n);
 		}
@@ -233,13 +237,22 @@ System.out.println("contained "+containment);
 		// find the edge labels. Do this last to save time if the description is not pierced
 		for(Edge e : graph.getEdges()) {
 			if(e.getType().equals(APCircleDisplay.REPULSOR)) {
-				e.setLabel(findRepulsorLabel(e));
+				double repulsion = findMinimumSeparation(e);
+				e.setLabel(Double.toString(repulsion));
+				e.setScore(repulsion);
+System.out.println("REPULSOR "+repulsion);
 			}
 			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
-				e.setLabel(findAttractorLabel(e));
+				double attraction = findAttractionValue(e);
+				e.setLabel(Double.toString(attraction));
+				e.setScore(attraction);
+System.out.println("ATTRACTOR "+attraction);
 			}
 			if(e.getType().equals(APCircleDisplay.FIXED)) {
-				e.setLabel(Double.toString(findIdealNodeSeparation(graph,e)));
+				double fixed = findFixedValue(graph,e);
+				e.setLabel(Double.toString(fixed));
+				e.setScore(fixed);
+System.out.println("FIXED "+fixed);
 			}
 
 		}
@@ -247,11 +260,78 @@ System.out.println("contained "+containment);
 		return graph;
 	}
 
+
+	public static double findAttractionValue(Edge e) {
+		Node n1 = e.getFrom();
+		Node n2 = e.getTo();
+		double label1 = n1.getScore();
+		double label2 = n2.getScore();
+		double maxDistance = label1-label2;
+		if(maxDistance < 0) {
+			maxDistance = label2-label1;
+		}
+		double ret = maxDistance;
+//		ret = Util.round(ret,2);
+		return ret;
+	}
+	
+
+	
+	public static Double findMinimumSeparation(Edge e) {
+		Node n1 = e.getFrom();
+		Node n2 = e.getTo();
+		double label1 = n1.getScore();
+		double label2 = n2.getScore();
+		double minDistance = label1+label2;
+		double ret = minDistance;
+//		ret = Util.round(ret,2);
+		return ret;
+	}
+	
+
+	protected double findFixedValue(Graph graph, Edge e) {
+		
+		if(!e.getType().equals(APCircleDisplay.FIXED)) {
+			System.out.println("Non fixed node passed to labelFixed "+e);
+			return -1;
+		}
+
+
+		Node n1 = e.getFrom();
+		Node n2 = e.getTo();
+
+		double label1 = 20;
+		double label2 = 20;
+		try {
+			label1 = n1.getScore();
+			label2 = n2.getScore();
+		} catch (Exception exception) {
+			System.out.println(exception.getStackTrace());
+		}
+		
+		double intersectionArea = 0.0;
+	
+		for(String z : abstractDiagram.getZoneList()) {
+			
+			ArrayList<String> zList = AbstractDiagram.findContourList(z);
+			if(zList.contains(n1.getContour()) && zList.contains(n2.getContour())) {
+				intersectionArea += specification.get(z);
+			}
+		}
+			
+		double intersectionDistance = findCircleCircleSeparation(label1,label2,intersectionArea);
+
+		double ret = intersectionDistance;
+//		ret = Util.round(ret,2);
+		return ret;
+	}
+	
+
+
 	/**
-	 * Returns the complete intersection graph, or null if the description is not
-	 * a single piercing.
+	 * Returns the complete graph for general layout.
 	 */
-	public Graph generateAugmentedIntersectionGraph() {
+	public Graph generateGeneralAugmentedIntersectionGraph() {
 
 		if(abstractDiagram.getZoneList().size() <= 1) {
 			return new Graph();
@@ -266,13 +346,14 @@ System.out.println("contained "+containment);
 			for(String zone : abstractDiagram.getZoneList()) {
 				ArrayList<String> zoneList = AbstractDiagram.findContourList(zone);
 				if(zoneList.contains(circle)) {
-					double zoneArea = specification.get(zone);
+					double zoneArea = getSpecification().get(zone);
 					circleArea += zoneArea;
 				}
 			}
 			double circleRadius = Math.sqrt(circleArea/Math.PI);
 			
 			Node n = new Node(Double.toString(circleRadius));
+			n.setScore(circleRadius);
 			n.setContour(circle);
 			graph.addNode(n);
 			circleNodeMap.put(circle,n);
@@ -305,18 +386,21 @@ System.out.println("contained "+containment);
 				Node n1 = circleNodeMap.get(c1);
 				Node n2 = circleNodeMap.get(c2);
 				if(intersect) {
-					Edge attractor = new Edge(n1,n2);
-					attractor.setLabel(Double.toString(findIdealNodeSeparation(graph,attractor)));
-
-					attractor.setType(APCircleDisplay.ATTRACTOR);
-					graph.addEdge(attractor);
-System.out.println("Attractor "+c1+" "+c2+" "+attractor.getLabel());
+					Edge ideal = new Edge(n1,n2);
+					double idealLength = findIdealNodeSeparation(graph,ideal);
+					ideal.setType(APCircleDisplay.IDEAL);
+					ideal.setLabel(Double.toString(idealLength));
+					ideal.setScore(idealLength);
+					graph.addEdge(ideal);
+System.out.println("ideal "+c1+" "+c2+" "+idealLength);
 				} else {
-					Edge repulsor = new Edge(n1,n2);
-					repulsor.setType(APCircleDisplay.REPULSOR);
-					repulsor.setLabel(findRepulsorLabel(repulsor));
-					graph.addEdge(repulsor);
-System.out.println("Repulsor "+c1+" "+c2+" "+repulsor.getLabel());					
+					Edge separator = new Edge(n1,n2);
+					double minSeparation = findMinimumSeparation(separator);
+					separator.setType(APCircleDisplay.SEPARATOR);
+					separator.setLabel(Double.toString(minSeparation));
+					separator.setScore(minSeparation);
+					graph.addEdge(separator);
+System.out.println("Separator "+c1+" "+c2+" "+minSeparation);					
 				}
 				
 			}
@@ -439,32 +523,6 @@ System.out.println(circle+" "+containingZones);
 
 
 
-	public static String findAttractorLabel(Edge e) {
-		Node n1 = e.getFrom();
-		Node n2 = e.getTo();
-		double label1 = Double.parseDouble(n1.getLabel());
-		double label2 = Double.parseDouble(n2.getLabel());
-		double maxDistance = label1-label2;
-		if(maxDistance < 0) {
-			maxDistance = label2-label1;
-		}
-		double ret = Util.round(maxDistance,2);
-		return Double.toString(ret);
-	}
-	
-	
-	
-	public static String findRepulsorLabel(Edge e) {
-		Node n1 = e.getFrom();
-		Node n2 = e.getTo();
-		double label1 = Double.parseDouble(n1.getLabel());
-		double label2 = Double.parseDouble(n2.getLabel());
-		double minDistance = label1+label2;
-		double ret = Util.round(minDistance,2);
-		return Double.toString(ret);
-	}
-	
-
 	protected double findIdealNodeSeparation(Graph graph, Edge e) {
 		
 		Node n1 = e.getFrom();
@@ -473,8 +531,8 @@ System.out.println(circle+" "+containingZones);
 		double label1 = 20;
 		double label2 = 20;
 		try {
-			label1 = Double.parseDouble(n1.getLabel());
-			label2 = Double.parseDouble(n2.getLabel());
+			label1 = n1.getScore();
+			label2 = n2.getScore();
 		} catch (Exception exception) {
 			System.out.println(exception.getStackTrace());
 		}
@@ -485,12 +543,12 @@ System.out.println(circle+" "+containingZones);
 			
 			ArrayList<String> zList = AbstractDiagram.findContourList(z);
 			if(zList.contains(n1.getContour()) && zList.contains(n2.getContour())) {
-				intersectionArea += specification.get(z);
+				intersectionArea += getSpecification().get(z);
 			}
 		}
 			
 		double intersectionDistance = findCircleCircleSeparation(label1,label2,intersectionArea);
-
+System.out.println(intersectionDistance+" "+label1+" "+label2+" "+intersectionArea+" ");
 		double ret = Util.round(intersectionDistance,2);
 		return ret;
 	}
@@ -605,7 +663,7 @@ System.out.println(circle+" "+containingZones);
 		}
 		
 		abstractDiagram = ad;
-		specification = spec;
+		setSpecification(spec);
 		return true;
 	}
 
@@ -621,6 +679,14 @@ System.out.println(circle+" "+containingZones);
 		}
 
 		return ret;
+	}
+
+	public void setSpecification(HashMap<String,Double> specification) {
+		this.specification = specification;
+	}
+
+	public HashMap<String,Double> getSpecification() {
+		return specification;
 	}
 
 }

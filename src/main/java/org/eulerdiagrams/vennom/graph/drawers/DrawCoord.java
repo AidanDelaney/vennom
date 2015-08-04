@@ -14,7 +14,7 @@ import org.eulerdiagrams.vennom.graph.*;
  * Used in the Spring Embedder graph drawing algorithm.
  *
  * @see Node
- * @see APForceModel
+ * @see PiercedAPForceModel
  *
  * @author Peter Rodgers
  */

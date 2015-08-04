@@ -12,9 +12,8 @@ import org.eulerdiagrams.vennom.graph.*;
 import org.eulerdiagrams.vennom.graph.drawers.GraphDrawer;
 import org.eulerdiagrams.vennom.graph.experiments.GraphExperiment;
 import org.eulerdiagrams.vennom.graph.utilities.GraphUtility;
-import org.eulerdiagrams.vennom.graph.views.GraphView;
-import org.eulerdiagrams.vennom.graph.views.GraphViewShowNodeLabel;
 import org.eulerdiagrams.vennom.apCircles.APCirclePanel;
+import org.eulerdiagrams.vennom.graph.views.*;
 import org.eulerdiagrams.vennom.apCircles.drawers.*;
 import org.eulerdiagrams.vennom.apCircles.utilities.*;
 import org.eulerdiagrams.vennom.apCircles.views.*;
@@ -77,9 +76,8 @@ public class APCircleWindow extends JFrame implements ActionListener {
 	public APCirclePanel getGraphPanel() {return gp;}
 
 	private void initView() {
-		// toggle node labels
+		gp.addGraphView(new GraphViewShowEdgeLabel(KeyEvent.VK_L, "Toggle Edge Labels",KeyEvent.VK_L));
 		gp.addGraphView(new GraphViewShowNodeLabel(KeyEvent.VK_K, "Toggle Node Labels",KeyEvent.VK_K));
-		// toggle node labels
 		gp.addGraphView(new CircleViewAPToggleShow(KeyEvent.VK_C, "Toggle Circles",KeyEvent.VK_C));
 // toggle parallel edge separation
 //		gp.addGraphView(new GraphViewSeparateEdges(KeyEvent.VK_P, "Toggle Separate Parallel Edges",KeyEvent.VK_P));
@@ -98,30 +96,42 @@ public class APCircleWindow extends JFrame implements ActionListener {
 	private void initUtility() {
 
 		gp.addGraphUtility(new CircleUtilityTest());
-		gp.addGraphUtility(new CreateRandomSpecificationByGraph());
-		gp.addGraphUtility(new CreateRandomSpecificationByAbstractDescription());
+//		gp.addGraphUtility(new CreateRandomSpecificationByGraph());
+		gp.addGraphUtility(new CreateRandomPiercedSpecificationByAbstractDescription());
 		gp.addGraphUtility(new RectifyLengths());
 		gp.addGraphUtility(new ReportPassingEdges());
 		gp.addGraphUtility(new ReportAreaProportions());
-		gp.addGraphUtility(new EnterSpecification());
+		gp.addGraphUtility(new EnterPiercedSpecification());
+		gp.addGraphUtility(new EnterGeneralSpecification());
 		
 	}
 
 
 	private void initLayout() {
 
-		APForceModel fm = new APForceModel(KeyEvent.VK_Q,"Area-proportional",true);
+		PiercedAPForceModel fm = new PiercedAPForceModel(KeyEvent.VK_Q,"Pierced area-proportional",true);
 		fm.setRandomize(false);
 		fm.setAnimateFlag(true);
 		gp.addGraphDrawer(fm);
 		
-		APForceModel fm1 = new APForceModel(KeyEvent.VK_W,"Area-proportional single iteration",true);
+		PiercedAPForceModel fm1 = new PiercedAPForceModel(KeyEvent.VK_W,"Pierced area-proportional single iteration",true);
 		fm1.setIterations(1);
 		fm1.setRandomize(false);
 		fm1.setAnimateFlag(true);
 		gp.addGraphDrawer(fm1);
 		
-		StandardSpringEmbedder se = new StandardSpringEmbedder(KeyEvent.VK_E,"Standard Spring Embedder",true);
+		GeneralAPForceModel fm2 = new GeneralAPForceModel(KeyEvent.VK_D,"General area-proportional",true);
+		fm2.setRandomize(false);
+		fm2.setAnimateFlag(true);
+		gp.addGraphDrawer(fm2);
+		
+		GeneralAPForceModel fm3 = new GeneralAPForceModel(KeyEvent.VK_F,"General area-proportional single iteration",true);
+		fm3.setIterations(1);
+		fm3.setRandomize(false);
+		fm3.setAnimateFlag(true);
+		gp.addGraphDrawer(fm3);
+		
+		StandardSpringEmbedder se = new StandardSpringEmbedder(KeyEvent.VK_S,"Standard Spring Embedder",true);
 		se.setRandomize(false);
 		se.setAnimateFlag(true);
 		gp.addGraphDrawer(se);
