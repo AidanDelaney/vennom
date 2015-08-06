@@ -52,7 +52,6 @@ public class Graph implements Serializable {
 /** Graph label, can be empty. */
 	protected String label = "";
 
-
 /** Separator between nodes in an adjacency list file */
 	public final char ADJACENCYSEPARATOR = ':';
 	public final char WEIGHTEDSEPARATOR = ' ';
@@ -72,9 +71,8 @@ public class Graph implements Serializable {
 	public Graph(String inLabel) {setLabel(inLabel);}
 
 
-/** Trival accessor. */
 	public String getLabel() {return label;}
-/** Trivial modifier. */
+
 	public void setLabel(String inLabel) {label=inLabel;}
 
 

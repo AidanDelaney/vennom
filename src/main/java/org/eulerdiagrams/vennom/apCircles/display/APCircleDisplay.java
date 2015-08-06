@@ -12,6 +12,7 @@ public class APCircleDisplay {
 	public static EdgeType FIXED;
 	public static EdgeType SEPARATOR;
 	public static EdgeType IDEAL;
+	public static EdgeType CONTAINMENT;
 	
 	
 	public static void main(String[] args) {
@@ -59,6 +60,12 @@ public class APCircleDisplay {
 		IDEAL.setTextColor(Color.blue);
 		IDEAL.setSelectedLineColor(Color.gray);
 		IDEAL.setPriority(1016);
+
+		CONTAINMENT = new EdgeType("containment");
+		CONTAINMENT.setLineColor(Color.magenta);
+		CONTAINMENT.setTextColor(Color.magenta);
+		CONTAINMENT.setSelectedLineColor(Color.magenta);
+		CONTAINMENT.setPriority(1016);
 
 		Graph.DEFAULT_NODE_TYPE.setHeight(20);
 		Graph.DEFAULT_NODE_TYPE.setWidth(20);

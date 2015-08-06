@@ -19,6 +19,10 @@ public class AbstractDiagram implements Comparable<AbstractDiagram>, Cloneable {
 	protected ArrayList<String> zoneList = null;
 //	protected String diagramString = null;
 	public static Random random = new Random(System.currentTimeMillis());
+	
+	/** for reporting the atomic diagrams */
+	protected ArrayList<AtomicAbstractDiagram> atomicAbstractDiagrams = null;
+
 
 	/** measures the usage of the brute force part of the isomorphism test */
 	public long bruteForceCount = 0;	
@@ -35,6 +39,7 @@ public static long timer4 = 0;
 	public long getBruteForceCount() {return bruteForceCount;}
 	public long getBruteForceTime() {return bruteForceTime;}
 	public boolean getBruteForceApplied() {return bruteForceApplied;}
+	public ArrayList<AtomicAbstractDiagram> getAtomicAbstractDiagrams() {return atomicAbstractDiagrams;}
 
 	
 	public static void main(String[] args) {
@@ -660,6 +665,8 @@ public static long timer4 = 0;
 			}
 		}
 		
+		atomicAbstractDiagrams = new ArrayList<AtomicAbstractDiagram>(queue);
+		
 		while(queue.size() != 0) {
 			AtomicAbstractDiagram parentDiagram = queue.get(0);
 			ArrayList<String> parentContours = parentDiagram.getAtomicDiagram().getContours();
@@ -693,6 +700,9 @@ public static long timer4 = 0;
 						}
 						parentZone = orderZone(parentZone);
 						AtomicAbstractDiagram aad = new AtomicAbstractDiagram(ad,parentDiagram, parentZone);
+						
+						atomicAbstractDiagrams.add(aad);
+
 						queue.add(aad);
 						addedContours += childAtomicContours;
 					}
@@ -857,6 +867,7 @@ public static long timer4 = 0;
 		}
 		return true;
 	}
+
 
 	
 	/**

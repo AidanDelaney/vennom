@@ -332,6 +332,7 @@ System.out.println("FIXED "+fixed);
 	 * Returns the complete graph for general layout.
 	 */
 	public Graph generateGeneralAugmentedIntersectionGraph() {
+		
 
 		if(abstractDiagram.getZoneList().size() <= 1) {
 			return new Graph();
@@ -340,6 +341,8 @@ System.out.println("FIXED "+fixed);
 		HashMap<String,Node> circleNodeMap = new HashMap<String,Node>();
 		
 		Graph graph = new Graph();
+		
+		
 		// add the nodes
 		for(String circle : abstractDiagram.getContours()) {
 			double circleArea = 0.0;
@@ -375,17 +378,29 @@ System.out.println("FIXED "+fixed);
 				String c2 = circles.get(j);
 
 				boolean intersect = false;
-				
 				for(String zone : zones) {
 					if(zone.contains(c1) && zone.contains(c2)) {
 						intersect = true;
 						break;
 					}
 				}
+				
+				boolean containment = false;
+				if(abstractDiagram.contourContainment(c1,c2)) { // c2 is entirely in c1
+					containment = true;
+				}
 
 				Node n1 = circleNodeMap.get(c1);
 				Node n2 = circleNodeMap.get(c2);
-				if(intersect) {
+				if(containment) {
+					Edge separator = new Edge(n1,n2);
+					double maxSeparation = findMaxContainmentDistance(n1,n2);
+					separator.setType(APCircleDisplay.CONTAINMENT);
+					separator.setLabel(Double.toString(maxSeparation));
+					separator.setScore(maxSeparation);
+					graph.addEdge(separator);
+System.out.println("containment "+c1+" "+c2+" "+maxSeparation);					
+				} else if(intersect) {
 					Edge ideal = new Edge(n1,n2);
 					double idealLength = findIdealNodeSeparation(graph,ideal);
 					ideal.setType(APCircleDisplay.IDEAL);
@@ -400,128 +415,35 @@ System.out.println("ideal "+c1+" "+c2+" "+idealLength);
 					separator.setLabel(Double.toString(minSeparation));
 					separator.setScore(minSeparation);
 					graph.addEdge(separator);
-System.out.println("Separator "+c1+" "+c2+" "+minSeparation);					
+System.out.println("separator "+c1+" "+c2+" "+minSeparation);					
 				}
 				
 			}
 		}
 		
-/*		
-	
-		while(remainingZones.size() != 1) {
-			String piercingCircle = null;
 
-			for(String circle : circles) {
-	
-				ArrayList<String> containingZones = new ArrayList<String>();
-				for(String z : remainingZones) {
-					ArrayList<String> zList = AbstractDiagram.findContourList(z);
-					if(zList.contains(circle)) {
-						containingZones.add(z);
-					}
-				}
-System.out.println(circle+" "+containingZones);
-
-				String z1 = containingZones.get(0);
-				String z2 = containingZones.get(1);
-				
-				String z1Minusz2 = AbstractDiagram.zoneMinus(z1, z2);
-				String z2Minusz1 = AbstractDiagram.zoneMinus(z2, z1);
-				
-				String splitCircle = null;
-				String containment = null;
-				if(z1Minusz2.length() == 1 && z2Minusz1.length() == 0) {
-					splitCircle = z1Minusz2;
-					containment = AbstractDiagram.zoneIntersection(z1,z2);
-					containment = AbstractDiagram.zoneMinus(containment,circle);
-				}
-				if(z1Minusz2.length() == 0 && z2Minusz1.length() == 1) {
-					splitCircle = z2Minusz1;
-					containment = AbstractDiagram.zoneIntersection(z1,z2);
-					containment = AbstractDiagram.zoneMinus(containment,circle);
-				}
-
-
-				if(splitCircle == null) {
-					continue;
-				}
-				
-				piercingCircle = circle;
-
-				remainingZones.remove(z1);
-				remainingZones.remove(z2);
-				String z1Reduced = AbstractDiagram.zoneMinus(z1,piercingCircle);
-				String z2Reduced = AbstractDiagram.zoneMinus(z2,piercingCircle);
-				if(z1Reduced.length() != 0 && !remainingZones.contains(z1Reduced)) {
-					remainingZones.add(z1Reduced);
-				}
-				if(z2Reduced.length() != 0 && !remainingZones.contains(z2Reduced)) {
-					remainingZones.add(z2Reduced);
-				}
-
-				// add fixed edges
-				Node currentCircleNode = graph.firstNodeWithContour(piercingCircle);
-				Edge fixed = new Edge(currentCircleNode,graph.firstNodeWithContour(splitCircle));
-				fixed.setType(APCircleDisplay.FIXED);
-				graph.addEdge(fixed);
-
-		
-				// add attractor edges
-				ArrayList<String> containmentList = AbstractDiagram.findContourList(containment);
-				for(String containedCircle : containmentList) {
-					Edge attractor = new Edge(currentCircleNode,graph.firstNodeWithContour(containedCircle));
-					attractor.setType(APCircleDisplay.ATTRACTOR);
-					graph.addEdge(attractor);
-				}
-				
-				// rest are repulsor edges
-				for(Node n : graph.getNodes()) {
-					if(n == currentCircleNode) {
-						continue;
-					}
-
-					Edge existingEdge = graph.findEdgeBetween(n, currentCircleNode);
-					
-					if(existingEdge == null) {
-						Edge repulsor = new Edge(n, currentCircleNode);
-						repulsor.setType(APCircleDisplay.REPULSOR);
-						graph.addEdge(repulsor);
-					}
-				}
-			} // end circle iteration
-			
-			if(piercingCircle == null) {
-				// if no piercing found, not a pierced diagram so return null
-				return null;
-			}
-		
-		} // end outside loop
-
-		// remainingZones has to be size one, no need to do anything with the last circle, its already fully connected
-		String lastZone = remainingZones.get(0);
-		if(lastZone.length() != 1) {
-			return null;
-		}
-
-		
-		// find the edge labels. Do this last to save time if the description is not pierced
-		for(Edge e : graph.getEdges()) {
-			if(e.getType().equals(APCircleDisplay.REPULSOR)) {
-				e.setLabel(findRepulsorLabel(e));
-			}
-			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
-				e.setLabel(findAttractorLabel(e));
-			}
-			if(e.getType().equals(APCircleDisplay.FIXED)) {
-				e.setLabel(findFixedLabel(graph,e));
-			}
-
-		}
-*/		
 		return graph;
 	}
 
 
+	/**
+	 * Circle for n2 entirely within n1
+	 */
+	protected double findMaxContainmentDistance(Node n1, Node n2) {
+
+		double radius1 = 20;
+		double radius2 = 20;
+		try {
+			radius1 = n1.getScore();
+			radius2 = n2.getScore();
+		} catch (Exception exception) {
+			System.out.println(exception.getStackTrace());
+		}
+
+		double maxSeparation = radius1-radius2;
+		
+		return maxSeparation;
+	}
 
 	protected double findIdealNodeSeparation(Graph graph, Edge e) {
 		
@@ -548,7 +470,7 @@ System.out.println(circle+" "+containingZones);
 		}
 			
 		double intersectionDistance = findCircleCircleSeparation(label1,label2,intersectionArea);
-System.out.println(intersectionDistance+" "+label1+" "+label2+" "+intersectionArea+" ");
+
 		double ret = Util.round(intersectionDistance,2);
 		return ret;
 	}
