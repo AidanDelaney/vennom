@@ -39,7 +39,7 @@ public class CreateRandomPiercedSpecificationByAbstractDescription extends Graph
 	public int zoneAreaMin = 100;
 	public int zoneAreaMax = 10000;
 	public double zoneChance = 0.3; // chances of a movable edge being an attractor
-	public static Random r = new Random(System.currentTimeMillis());
+	public static Random random = new Random();
 
 	
 /** Trivial constructor. */
@@ -60,10 +60,10 @@ public class CreateRandomPiercedSpecificationByAbstractDescription extends Graph
 
 		int i = 0;
 		while(g == null) {
-			AreaSpecification as = createRandomAreaSpecification();
+			AreaSpecification as = createRandomAreaSpecification(numberOfCircles, System.currentTimeMillis());
+//			AreaSpecification as = createRandomAreaSpecification(numberOfCircles, i);
 			g = as.generatePiercedAugmentedIntersectionGraph();
 			i++;
-System.out.println("Attempt "+i+"\n"+as);
 		}
 
 		getGraphPanel().setGraph(g);
@@ -74,13 +74,14 @@ System.out.println("Attempt "+i+"\n"+as);
 	}
 
 
-	public AreaSpecification createRandomAreaSpecification() {
+	public AreaSpecification createRandomAreaSpecification(int circleCount, long seed) {
 		
-		AbstractDiagram ad = AbstractDiagram.randomDiagramFactory(numberOfCircles,false,zoneChance);
+		AbstractDiagram ad = AbstractDiagram.randomDiagramFactory(circleCount,false,zoneChance,seed);
 
+		random = new Random(seed+1);
 		HashMap<String,Double> mapping = new HashMap<String,Double>();
 		for(String zone : ad.getZoneList()) {
-			double area = r.nextInt(1+zoneAreaMax-zoneAreaMin);
+			double area = random.nextInt(1+zoneAreaMax-zoneAreaMin);
 			mapping.put(zone,area);
 		}
 	

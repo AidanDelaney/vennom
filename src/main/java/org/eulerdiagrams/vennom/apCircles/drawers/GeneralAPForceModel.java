@@ -58,6 +58,10 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 	protected boolean randomize = false;
 /** Gives the number of milliseconds the last graph drawing took */
 	protected long time = 0;
+/** x limit, set on layout start */
+	protected int limitX = 600;
+/** y limit, set set on layout start */
+	protected int limitY = 600;
 
 /** Trivial constructor. */
 	public GeneralAPForceModel() {
@@ -93,6 +97,9 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 
 /** Draws the graph. */
 	public void layout() {
+		limitX = getGraphPanel().getWidth();
+		limitY = getGraphPanel().getHeight();
+		
 		if(randomize) {
 			getGraph().randomizeNodePoints(new Point(50,50),400,400);
 		}
@@ -125,21 +132,22 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 			maxMovement = findMaximumMovement();
 			
 			if(i >= iterations) {
-				System.out.println("Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+				System.out.println("General AP - Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
 				break;
 			}
 		}
 		
 		if(maxMovement-movementThreshold <= 0) {
-			System.out.println("Exit due to under movement threshold "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+			System.out.println("General AP - Exit due to under movement threshold "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
 		
 		}
-		System.out.println("Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
+		System.out.println("General AP - Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
 
 		
 		for(Node n : getGraph().getNodes()) {
 			Point2D.Double newCentre = currentNodeCentres.get(n);
 			Point centreInt = new Point(Util.convertToInteger(newCentre.x),Util.convertToInteger(newCentre.y));
+			n.setPreciseCentre(newCentre);
 			n.setCentre(centreInt);
 		}
 
@@ -344,6 +352,9 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
  * Finds the new location of a node.
  */
 	public Point2D.Double findForceOnNode(Node n) {
+		
+		double radius = n.getScore();
+		
 		Point2D.Double p = oldNodeCentres.get(n);
 
 		double xContainment = 0.0;
@@ -399,8 +410,6 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 
 					}
 					
-System.out.println("containmentForce "+containmentForce);
-
 					// attract the nodes
 					double xForce = containmentForce*xForceShare;
 					if(xDistance > 0) {
@@ -433,8 +442,6 @@ System.out.println("containmentForce "+containmentForce);
 
 					}
 					
-System.out.println("separatorForce "+separatorForce);
-
 					// repulse the nodes
 					double xForce = separatorForce*xForceShare;
 					if(xDistance < 0) {
@@ -460,8 +467,7 @@ System.out.println("separatorForce "+separatorForce);
 					if(idealForce > forceThreshold) {
 						idealForce = forceThreshold;
 					}
-System.out.println("idealForce "+idealForce);
-					
+
 					double xForce = idealForce*xForceShare;
 					if(xDistance > 0) {
 						xForce = -xForce;
@@ -485,10 +491,23 @@ System.out.println("idealForce "+idealForce);
 		}
 		double totalXForce = f*(xContainment + xSeparator + xIdeal);
 		double totalYForce = f*(yContainment + ySeparator + yIdeal);
-System.out.println("totalXForce "+totalXForce);
-System.out.println("totalYForce "+totalYForce);
+
 		double newX = p.x + totalXForce;
 		double newY = p.y + totalYForce;
+
+		// stop the node going out of the drawable area
+		if(newX < radius) {
+			newX = radius;
+		}
+		if(newY < radius) {
+			newY = radius;
+		}
+		if(newX > limitX - radius) {
+			newX = limitX - radius;
+		}
+		if(newY > limitY - radius) {
+			newY = limitY - radius;
+		}
 		
 		Point2D.Double ret = new Point2D.Double(newX,newY);
 		return ret;

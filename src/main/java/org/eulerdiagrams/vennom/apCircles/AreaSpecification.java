@@ -125,7 +125,7 @@ public class AreaSpecification {
 			graph.addNode(n);
 			circleNodeMap.put(circle,n);
 		}
-		graph.randomizeNodePoints(new Point(50,50),400,400);
+		graph.randomizeNodePoints(new Point(50,50),400,400,1);
 
 		ArrayList<String> remainingZones = new ArrayList<String>(abstractDiagram.getZoneList());
 		ArrayList<String> circles = abstractDiagram.getContours();
@@ -240,19 +240,16 @@ System.out.println("contained "+containment);
 				double repulsion = findMinimumSeparation(e);
 				e.setLabel(Double.toString(repulsion));
 				e.setScore(repulsion);
-System.out.println("REPULSOR "+repulsion);
 			}
 			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
 				double attraction = findAttractionValue(e);
 				e.setLabel(Double.toString(attraction));
 				e.setScore(attraction);
-System.out.println("ATTRACTOR "+attraction);
 			}
 			if(e.getType().equals(APCircleDisplay.FIXED)) {
 				double fixed = findFixedValue(graph,e);
 				e.setLabel(Double.toString(fixed));
 				e.setScore(fixed);
-System.out.println("FIXED "+fixed);
 			}
 
 		}
@@ -362,7 +359,7 @@ System.out.println("FIXED "+fixed);
 			circleNodeMap.put(circle,n);
 		}
 		
-		graph.randomizeNodePoints(new Point(50,50),400,400);
+		graph.randomizeNodePoints(new Point(50,50),400,400,1);
 
 		ArrayList<String> zones = new ArrayList<String>(abstractDiagram.getZoneList());
 		ArrayList<String> circles = abstractDiagram.getContours();
@@ -399,7 +396,6 @@ System.out.println("FIXED "+fixed);
 					separator.setLabel(Double.toString(maxSeparation));
 					separator.setScore(maxSeparation);
 					graph.addEdge(separator);
-System.out.println("containment "+c1+" "+c2+" "+maxSeparation);					
 				} else if(intersect) {
 					Edge ideal = new Edge(n1,n2);
 					double idealLength = findIdealNodeSeparation(graph,ideal);
@@ -407,7 +403,6 @@ System.out.println("containment "+c1+" "+c2+" "+maxSeparation);
 					ideal.setLabel(Double.toString(idealLength));
 					ideal.setScore(idealLength);
 					graph.addEdge(ideal);
-System.out.println("ideal "+c1+" "+c2+" "+idealLength);
 				} else {
 					Edge separator = new Edge(n1,n2);
 					double minSeparation = findMinimumSeparation(separator);
@@ -415,7 +410,6 @@ System.out.println("ideal "+c1+" "+c2+" "+idealLength);
 					separator.setLabel(Double.toString(minSeparation));
 					separator.setScore(minSeparation);
 					graph.addEdge(separator);
-System.out.println("separator "+c1+" "+c2+" "+minSeparation);					
 				}
 				
 			}

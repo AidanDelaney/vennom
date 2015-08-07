@@ -103,6 +103,7 @@ public class APCircleWindow extends JFrame implements ActionListener {
 		gp.addGraphUtility(new ReportAreaProportions());
 		gp.addGraphUtility(new EnterPiercedSpecification());
 		gp.addGraphUtility(new EnterGeneralSpecification());
+		gp.addGraphUtility(new TestRandomPierced());
 		
 	}
 

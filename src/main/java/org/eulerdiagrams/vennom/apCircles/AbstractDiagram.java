@@ -121,8 +121,9 @@ public static long timer4 = 0;
 	}
 	
 	
-	public static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition) {
+	public static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition, long seed) {
 
+		random = new Random(seed);
 		ArrayList<String> zones = Enumerate.findAllZones(numberOfContours);
 		StringBuffer adZones = new StringBuffer();
 		for(String z: zones) {
@@ -133,6 +134,13 @@ public static long timer4 = 0;
 		
 		AbstractDiagram ad = new AbstractDiagram(adZones.toString());
 		ad.addZone("");
+		return ad;
+	}
+	
+	public static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition) {
+
+		long seed = System.currentTimeMillis();
+		AbstractDiagram ad = randomDiagramFactory(numberOfContours, includeNull, chanceOfZoneAddition, seed);
 		return ad;
 	}
 	
@@ -1887,6 +1895,45 @@ timer2 = System.currentTimeMillis()-startTimer2;
 			}
 		}
 	
+	}
+	
+	
+	/**
+	 * Finds pairs of concurrent contours (3 concurrent contours forms 3 pairwise instances).
+	 * Returned as pairs of letters.
+	 */
+	public ArrayList<String> findConcurrentContours() {
+		ArrayList<String> ret = new ArrayList<String>();
+		ArrayList<String> contours = getContours();
+		for(int i = 0; i < contours.size(); i++) {
+			for(int j = i+1; j < contours.size(); j++) {
+				String c1 = contours.get(i);
+				String c2 = contours.get(j);
+				if(concurrent(c1,c2)) {
+					ret.add(c1+c2);
+				}
+				
+			}
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Test to see if the two contours are concurrent.
+	 */
+	public boolean concurrent(String c1, String c2) {
+
+		for(String zone : getZoneList()) {
+			if(zone.contains(c1) && !zone.contains(c2)) {
+				return false;
+			}
+			if(!zone.contains(c1) && zone.contains(c2)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	

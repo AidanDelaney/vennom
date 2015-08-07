@@ -55,6 +55,10 @@ public class PiercedAPForceModel extends GraphDrawer implements Serializable {
 	protected boolean randomize = false;
 /** Gives the number of milliseconds the last graph drawing took */
 	protected long time = 0;
+	/** x limit, set on layout start */
+	protected int limitX = 600;
+/** y limit, set set on layout start */
+	protected int limitY = 600;
 
 /** Trivial constructor. */
 	public PiercedAPForceModel() {
@@ -89,6 +93,9 @@ public class PiercedAPForceModel extends GraphDrawer implements Serializable {
 
 /** Draws the graph. */
 	public void layout() {
+		
+		limitX = getGraphPanel().getWidth();
+		limitY = getGraphPanel().getHeight();
 		
 		if(randomize) {
 			getGraph().randomizeNodePoints(new Point(50,50),400,400);
@@ -131,6 +138,7 @@ public class PiercedAPForceModel extends GraphDrawer implements Serializable {
 					for(Node n : getGraph().getNodes()) {
 						Point2D.Double newCentre = currentNodeCentres.get(n);
 						Point centreInt = new Point(Util.convertToInteger(newCentre.x),Util.convertToInteger(newCentre.y));
+						n.setPreciseCentre(newCentre);
 						n.setCentre(centreInt);
 					}
 					getGraphPanel().update(getGraphPanel().getGraphics());
@@ -144,11 +152,15 @@ public class PiercedAPForceModel extends GraphDrawer implements Serializable {
 			maxMovement = findMaximumMovement();
 			
 			if(i >= iterations) {
-				System.out.println("Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+				System.out.println("Pierced AP - Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
 				break;
 			}
 		}
-System.out.println("Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
+		if(maxMovement-movementThreshold <= 0) {
+			System.out.println("Pierced AP - Exit due to under movement threshold "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+		
+		}
+		System.out.println("Pierced AP - Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
 
 
 
@@ -195,7 +207,9 @@ System.out.println("Iterations: "+i+", max movement: "+maxMovement+", seconds: "
  * Finds the new location of a node.
  */
 	public Point2D.Double findForceOnNode(Node n) {
-System.out.println("NODE "+n);
+
+		double radius = n.getScore();
+		
 		Point2D.Double p = oldNodeCentres.get(n);
 
 		double xRepulsive = 0.0;
@@ -240,7 +254,6 @@ System.out.println("NODE "+n);
 					
 					double repulsiveForce = repulsorMultiplier/(outsideBorderDistance*outsideBorderDistance);
 					
-System.out.print(e.getScore()+ " red Force before thresholding "+repulsiveForce);
 					if(repulsiveForce > forceThreshold) {
 						repulsiveForce = forceThreshold;
 
@@ -249,7 +262,6 @@ System.out.print(e.getScore()+ " red Force before thresholding "+repulsiveForce)
 						// this is bad, use a big force
 						repulsiveForce = forceThreshold*2;
 					}
-System.out.println(" after "+repulsiveForce);
 					// repulse the nodes
 					double xForce = repulsiveForce*xForceShare;
 					if(xDistance < 0) {
@@ -296,11 +308,6 @@ System.out.println(" after "+repulsiveForce);
 					// this repulses the circles from their border, when they are inside, this brings them together
 					//double attractiveForce = attractorMultipiler*centreDistance;
 					double repulsiveForce = attractorMultipiler/(insideBorderDifference*insideBorderDifference);
-double actualLength = Util.distance(e.getFrom().getCentre(), e.getTo().getCentre());
-System.out.println("actualLength "+actualLength);
-					
-System.out.println("largeRadius "+largeRadius+" smallRadius "+smallRadius+" centreDistance "+centreDistance+" borderGap "+insideBorderDifference);
-System.out.print(e.getScore()+ " green Force before thresholding "+repulsiveForce);
 					if(repulsiveForce > forceThreshold) {
 						repulsiveForce = forceThreshold;
 					}
@@ -309,7 +316,6 @@ System.out.print(e.getScore()+ " green Force before thresholding "+repulsiveForc
 						// this is bad, use a big force
 						repulsiveForce = forceThreshold*2;
 					}
-System.out.println(" after "+repulsiveForce);
 					// repulse the nodes
 					double xForce = repulsiveForce*xForceShare;
 					if(xDistance > 0) {
@@ -339,6 +345,20 @@ if(n.getLabel().equals("20")) {
 		
 		double newX = p.x + totalXForce;
 		double newY = p.y + totalYForce;
+		
+		// stop the node going out of the drawable area
+		if(newX < radius) {
+			newX = radius;
+		}
+		if(newY < radius) {
+			newY = radius;
+		}
+		if(newX > limitX - radius) {
+			newX = limitX - radius;
+		}
+		if(newY > limitY - radius) {
+			newY = limitY - radius;
+		}
 		
 		Point2D.Double ret = new Point2D.Double(newX,newY);
 		return ret;
