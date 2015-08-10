@@ -272,7 +272,7 @@ public class ConcreteContour {
 				}
 			}
 		}
-
+		
 		// filter out the intersections that are completely contained
 		// in the other contours
 		HashMap<String, Area> retZoneMap = new HashMap<String, Area>();

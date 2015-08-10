@@ -1,6 +1,10 @@
 package org.eulerdiagrams.vennom.apCircles;
 
 import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.util.*;
 
 
@@ -13,6 +17,9 @@ public class AreaSpecification {
 	protected AbstractDiagram abstractDiagram;
 	/** Dividing all specifications by this makes the total area 1.0 */
 	protected double normalizationFactor = 0.0;
+	
+	public static float scalingFactor = -1;
+	public static int polygonResolution = 1000;
 	
 	public AreaSpecification(AbstractDiagram abstractDiagram) {
 		this.abstractDiagram = abstractDiagram;
@@ -34,6 +41,13 @@ public class AreaSpecification {
 		findNormalizationFactor();
 	}
 	
+	
+	public void setSpecification(HashMap<String,Double> specification) {this.specification = specification;}
+
+	public HashMap<String,Double> getSpecification() {return specification;}
+
+	
+
 
 	protected double findNormalizationFactor() {
 		double totalArea = 0.0;
@@ -597,13 +611,149 @@ System.out.println("contained "+containment);
 		return ret;
 	}
 
-	public void setSpecification(HashMap<String,Double> specification) {
-		this.specification = specification;
+	
+
+	static public ArrayList<ConcreteContour> convertCirclesToCCs(Graph g, int polygonResolution) {
+		
+		ArrayList<ConcreteContour> circleContours = new ArrayList<ConcreteContour>();
+		
+//graphPanel.polygons = new ArrayList<Polygon>();
+		// scale polygons for best resolution
+		float biggestRadius = -1;
+		int i = 0;
+		for(Node n : g.getNodes()) {
+			double radius = Double.parseDouble(n.getLabel());
+			if(radius > biggestRadius) {
+				biggestRadius = (float)radius;
+			}
+			i++;
+		}
+		
+		scalingFactor = 1.0E4f/biggestRadius; // value found by experimentation
+//scalingFactor = 1;
+
+//System.out.println("Approximation error ");
+		for(Node n : g.getNodes()) {
+			int scaledX = Util.convertToInteger(n.getX()*scalingFactor);
+			int scaledY = Util.convertToInteger(n.getY()*scalingFactor);
+			
+			double radius = Double.parseDouble(n.getLabel());
+			
+			Polygon p = RegularPolygon.generateRegularPolygon(scaledX, scaledY, radius*scalingFactor, polygonResolution);
+			
+			ConcreteContour cc = new ConcreteContour(n.getContour(), p);
+			circleContours.add(cc);
+// graphPanel.polygons.add(p);
+//report approximation error
+			
+			double actualArea = (float)(Math.PI*radius*radius);
+//System.out.println("scaledActualArea "+(actualArea*scalingFactor*scalingFactor));
+			float scaledPolygonArea = Util.computePolygonAreaFloat(p);
+//System.out.println(n.getContour()+" scaledPolygonArea "+scaledPolygonArea);
+			float polygonArea= scaledPolygonArea/(scalingFactor*scalingFactor);
+			double percentError = 100*(polygonArea-actualArea)/actualArea;
+			if(Math.abs(percentError) > 0.1) {
+				System.out.println(n.getContour()+" has circle area error > 0.1% is: "+percentError+"% actual area: "+actualArea+" polygon Area: "+polygonArea);
+			}
+
+		}
+		
+		return circleContours;
 	}
 
-	public HashMap<String,Double> getSpecification() {
-		return specification;
+	
+	public static AreaSpecification exactRandomDiagramFactory(int minX, int minY, int maxX, int maxY, int minRadius, int maxRadius, int circleCount, long seed) {
+
+		ArrayList<Integer> xList = new ArrayList<Integer>();
+		ArrayList<Integer> yList = new ArrayList<Integer>();
+		ArrayList<Double> radiusList = new ArrayList<Double>();
+		Random random = new Random(seed);
+		for(int i = 0; i < circleCount; i++) {
+			int x = random.nextInt(1+maxX-minX);
+			x += minX;
+			int y = random.nextInt(1+maxY-minY);
+			y += minY;
+			double radius = random.nextInt(1+maxRadius-minRadius);
+			radius += minRadius;
+			
+			xList.add(x);
+			yList.add(y);
+			radiusList.add(radius);
+		}
+		AreaSpecification as = findAreaSpecificationFromCircles(xList,yList,radiusList);
+		
+		return as;
 	}
 
+
+	public static AreaSpecification findAreaSpecificationFromCircles(ArrayList<Integer> xList, ArrayList<Integer> yList, ArrayList<Double> radiusList) {
+
+		Graph g = new Graph();
+		for(int i = 0; i < radiusList.size(); i++) {
+			Double radius = radiusList.get(i);
+			int x = xList.get(i);
+			int y = yList.get(i);
+			Node n = new Node(radius.toString());
+			n.setX(x);
+			n.setY(y);
+			n.setScore(radius);
+			Character label = (char)('a'+i);
+			n.setContour(label.toString());
+			g.addNode(n);
+//System.out.print(label+" "+x+":"+y+":"+radius+" ");
+		}
+//System.out.println();
+		
+		ArrayList<ConcreteContour> circleConcreteContours = AreaSpecification.convertCirclesToCCs(g,polygonResolution);
+		HashMap<String,Double> currentValuesMap = new HashMap<String,Double>();
+		HashMap<String, Area> zoneAreaMap = ConcreteContour.generateZoneAreas(circleConcreteContours);
+		for (String zone : zoneAreaMap.keySet()) {
+			Area area = zoneAreaMap.get(zone);
+	
+			ArrayList<Polygon> polygons = ConcreteContour.polygonsFromArea(area);
+			if (zone.equals("")) {
+				// outer zone
+				continue;
+			}
+	
+			// remove polygons that surround holes in the zone
+			// we only want polygons where the fill is the zone
+			// eg. diagram "0 a b ab" where a and b go through each other
+			// has two polys filled with the zone for both a and b
+			// the diagram "0 a b" drawn normally has three
+			// polys for 0 (including border), only one of which
+			// is filled with 0.
+			//
+			// What about holes in holes? Does this happen with
+			// simple polygons? I don't think so.
+			ArrayList<Polygon> polysCopy = new ArrayList<Polygon>(polygons);
+			for (Polygon polygon : polysCopy) {
+				Point2D insidePoint = ConcreteContour.findPointInsidePolygon(polygon);
+				if (insidePoint != null && !area.contains(insidePoint)) {
+					polygons.remove(polygon);
+				}
+			}
+	
+			double totalPolygonArea = 0.0;
+			for(Polygon p : polygons) {
+	//graphPanel.polygons.add(p);
+				double scaledPolygonArea = Util.computePolygonArea(p);
+				double polygonArea= scaledPolygonArea/(scalingFactor*scalingFactor);
+				totalPolygonArea += polygonArea;
+			}
+			currentValuesMap.put(zone,totalPolygonArea);
+		}
+		
+		
+		ArrayList<String> zoneList = new ArrayList<String>(currentValuesMap.keySet());
+		AbstractDiagram.sortZoneList(zoneList);
+		AbstractDiagram ad = new AbstractDiagram(zoneList);
+		
+		AreaSpecification ret = new AreaSpecification(ad,currentValuesMap);
+		
+		return ret;
+	}
+
+	
 }
 

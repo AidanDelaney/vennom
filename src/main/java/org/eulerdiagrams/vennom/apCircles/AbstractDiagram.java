@@ -26,7 +26,7 @@ public class AbstractDiagram implements Comparable<AbstractDiagram>, Cloneable {
 
 	/** measures the usage of the brute force part of the isomorphism test */
 	public long bruteForceCount = 0;	
-	/** how long the isomorphsim brute force test took */
+	/** how long the isomorphism brute force test took */
 	public long bruteForceTime = 0;
 	/** indicating that the brute force part of the isomorphism test was used */
 	protected boolean bruteForceApplied = false;
