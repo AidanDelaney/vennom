@@ -5,6 +5,10 @@ import java.awt.Polygon;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -397,19 +401,25 @@ System.out.println("contained "+containment);
 				}
 				
 				boolean containment = false;
+
+
 				if(abstractDiagram.contourContainment(c1,c2)) { // c2 is entirely in c1
+					containment = true;
+				}
+				if(abstractDiagram.contourContainment(c2,c1)) { // c2 is entirely in c1
 					containment = true;
 				}
 
 				Node n1 = circleNodeMap.get(c1);
 				Node n2 = circleNodeMap.get(c2);
 				if(containment) {
-					Edge separator = new Edge(n1,n2);
+					Edge containing = new Edge(n1,n2);
 					double maxSeparation = findMaxContainmentDistance(n1,n2);
-					separator.setType(APCircleDisplay.CONTAINMENT);
-					separator.setLabel(Double.toString(maxSeparation));
-					separator.setScore(maxSeparation);
-					graph.addEdge(separator);
+					containing.setType(APCircleDisplay.CONTAINMENT);
+					containing.setLabel(Double.toString(maxSeparation));
+					containing.setScore(maxSeparation);
+					graph.addEdge(containing);
+//System.out.println("CONTAINMENT "+maxSeparation);
 				} else if(intersect) {
 					Edge ideal = new Edge(n1,n2);
 					double idealLength = findIdealNodeSeparation(graph,ideal);
@@ -417,6 +427,7 @@ System.out.println("contained "+containment);
 					ideal.setLabel(Double.toString(idealLength));
 					ideal.setScore(idealLength);
 					graph.addEdge(ideal);
+//System.out.println("IDEAL "+idealLength);
 				} else {
 					Edge separator = new Edge(n1,n2);
 					double minSeparation = findMinimumSeparation(separator);
@@ -424,6 +435,7 @@ System.out.println("contained "+containment);
 					separator.setLabel(Double.toString(minSeparation));
 					separator.setScore(minSeparation);
 					graph.addEdge(separator);
+//System.out.println("SEPARATOR "+minSeparation);
 				}
 				
 			}
@@ -448,7 +460,7 @@ System.out.println("contained "+containment);
 			System.out.println(exception.getStackTrace());
 		}
 
-		double maxSeparation = radius1-radius2;
+		double maxSeparation = Math.abs(radius1-radius2);
 		
 		return maxSeparation;
 	}
@@ -492,10 +504,7 @@ System.out.println("contained "+containment);
 	 */
 	private double findCircleCircleSeparation(double radius1, double radius2, double intersectionArea) {
 
-		
-		double area1 = Math.PI*radius1*radius1;
-		double area2 = Math.PI*radius2*radius2;
-
+	
 		
 		// bisection search bit starts here
 		// two starting limits when circles just touch outside and inside
@@ -661,8 +670,7 @@ System.out.println("contained "+containment);
 		return circleContours;
 	}
 
-	
-	public static AreaSpecification exactRandomDiagramFactory(int minX, int minY, int maxX, int maxY, int minRadius, int maxRadius, int circleCount, long seed) {
+	public static AreaSpecification exactRandomDiagramFactory(int minX, int minY, int maxX, int maxY, int minRadius, int maxRadius, int circleCount, long seed, String fileName) {
 
 		ArrayList<Integer> xList = new ArrayList<Integer>();
 		ArrayList<Integer> yList = new ArrayList<Integer>();
@@ -681,6 +689,31 @@ System.out.println("contained "+containment);
 			radiusList.add(radius);
 		}
 		AreaSpecification as = findAreaSpecificationFromCircles(xList,yList,radiusList);
+		
+		if(fileName != null && fileName.length() > 0) {
+			File file = new File(fileName);
+
+			String svg = "<svg  width=\""+500+"\" height=\""+500+"\">\n";
+			for (int i = 0; i < circleCount; i++) {
+				double x = xList.get(i);
+				double y = yList.get(i);
+				double r = radiusList.get(i);
+				svg += "\t<circle cx=\""+x+"\" cy=\""+y+"\" r=\""+r+"\" fill=\"none\" stroke=\"black\" stroke-width=\"2\" />\n";
+			}
+			
+			svg += "</svg>";
+			try {
+				BufferedWriter b = new BufferedWriter(new FileWriter(file));
+
+		// save the nodes
+				b.write(svg);
+				b.newLine();
+				b.close();
+			}
+			catch(IOException e){
+				System.out.println("An IO exception occured when saving svg in exactRandomDiagramFactory("+file.getName()+"\n"+e+"\n");
+			}
+		}
 		
 		return as;
 	}
@@ -753,6 +786,7 @@ System.out.println("contained "+containment);
 		
 		return ret;
 	}
+
 
 	
 }

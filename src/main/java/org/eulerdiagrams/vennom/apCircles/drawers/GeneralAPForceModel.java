@@ -25,9 +25,25 @@ import org.eulerdiagrams.vennom.graph.drawers.GraphDrawer;
 public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	protected double idealMultipiler = 0.1;
-	protected double separatorMultiplier = 10000.0;
-	protected double containmentMultiplier = 0.01;
+
+/*
+	public double idealMultipiler = 0.1;
+	public double separatorMultiplier = 10000.0;
+	public double containmentMultiplier = 0.01;
+	public double f = 1.0;
+*/	
+/*
+	public double idealMultipiler = 0.05;
+	public double separatorMultiplier = 10000.0;
+	public double containmentMultiplier = 0.01;
+	public double f = 1.0;
+*/
+	
+	// these values determined by experimentation
+	public double idealMultipiler = 0.0475;
+	public double separatorMultiplier = 19000.0;
+	public double containmentMultiplier = 0.01;
+	public double f = 1.0; // movement multiplier
 	
 	/** Extra space between circles */
 	protected double separatorPadding = 20;
@@ -35,17 +51,15 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 	/** Extra space for contained circles */
 	protected double containmentPadding = 5;
 	
-/** The amount of movement on each iteration */
-	protected double f = 1.0;
 /** The number of iterations */
 	protected int iterations = 10000;
 //protected int iterations = 1;
 /** The maximum time to run for, in milliseconds */
 	protected long timeLimit = 2000;
 /** The amount of movement below which the algorithm stops*/
-	protected double movementThreshold = 0.01;
+	protected double movementThreshold = 0.001;
 /** The maximum allowed force when no structure issues for a single repulsion or attraction */
-	protected double forceThreshold = 20;
+	protected double forceThreshold = 50;
 /** The maximum force applied on one iteration */
 	protected double maxMovement;
 /** This holds copies of current node locations for double precision*/
@@ -128,20 +142,30 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 				Point2D.Double newPos = findForceOnNode(n);
 				currentNodeCentres.put(n,newPos);
 			}
+			
+			if(animateFlag && getGraphPanel() != null) {
+				for(Node n : getGraph().getNodes()) {
+					Point2D.Double newCentre = currentNodeCentres.get(n);
+					Point centreInt = new Point(Util.convertToInteger(newCentre.x),Util.convertToInteger(newCentre.y));
+					n.setPreciseCentre(newCentre);
+					n.setCentre(centreInt);
+				}
+				getGraphPanel().update(getGraphPanel().getGraphics());
+			}
 
 			maxMovement = findMaximumMovement();
 			
 			if(i >= iterations) {
-				System.out.println("General AP - Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+//				System.out.println("General AP - Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
 				break;
 			}
 		}
 		
 		if(maxMovement-movementThreshold <= 0) {
-			System.out.println("General AP - Exit due to under movement threshold "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+//			System.out.println("General AP - Exit due to under movement threshold "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
 		
 		}
-		System.out.println("General AP - Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
+//		System.out.println("General AP - Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
 
 		
 		for(Node n : getGraph().getNodes()) {

@@ -513,7 +513,7 @@ public class ConcreteContour {
 			delta = delta / 2;
 		}
 
-		System.out.println("Can't find internal point for polygon");
+//		System.out.println("Can't find internal point for polygon");
 
 		return null; // should never get here for simple polygons
 	}

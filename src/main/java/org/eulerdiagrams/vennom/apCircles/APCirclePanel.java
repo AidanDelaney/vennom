@@ -16,6 +16,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.font.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 /**
@@ -500,7 +504,7 @@ g2.draw(p);
 			} else {
 				g2.setColor(nt.getSelectedTextColor());
 			}
-
+			
 			Font font = new Font(LABELFONTNAME,LABELFONTSTYLE,LABELFONTSIZE);
 			FontRenderContext frc = g2.getFontRenderContext();
 			TextLayout labelLayout = new TextLayout(n.getLabel(), font, frc);
@@ -515,6 +519,11 @@ g2.draw(p);
 	}
 
 	
+	private Point getLabelCentre(Node n) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/** Draws a circle on the graphics */
 	public void paintCircle(Graphics2D g2, Node n, Color c) {
 
@@ -903,6 +912,45 @@ g2.draw(p);
 			selection.clear();
 			repaint();
 		}
+	}
+
+	public boolean saveCirclesSVG(File file) {
+		String svg = fileCirclesToSVG();
+		try {
+			BufferedWriter b = new BufferedWriter(new FileWriter(file));
+
+// save the nodes
+			b.write(svg);
+			b.newLine();
+			b.close();
+		}
+		catch(IOException e){
+			System.out.println("An IO exception occured when executing fileSaveSVG("+file.getName()+"\n"+e+"\n");
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 
+	 * Generates an svg of the circles
+	 */
+	public String fileCirclesToSVG() {
+		
+		String ret = "<svg  width=\""+getWidth()+"\" height=\""+getHeight()+"\">\n";
+		for (Node n : getGraph().getNodes()) {
+			double x = n.getX();
+			double y = n.getY();
+			if(n.getPreciseCentre() != null) {
+				x = n.getPreciseCentre().x;
+				y = n.getPreciseCentre().y;
+			}
+			ret += "\t<circle cx=\""+x+"\" cy=\""+y+"\" r=\""+n.getPreciseRadius()+"\" fill=\"none\" stroke=\"black\" stroke-width=\"2\" />\n";
+			ret += "\t<text x=\""+x+"\" y=\""+y+"\">"+n.getContour()+"</text>\n";
+		}
+		
+		ret += "</svg>";
+		return ret;
 	}
 
 }

@@ -876,6 +876,33 @@ public static long timer4 = 0;
 		return true;
 	}
 
+	/**
+	 * See if the circle is entirely inside the zone.
+	 * z and c must be in the diagram.
+	 */
+	public boolean zoneContainment(String z, String c) {
+		boolean foundInZ = false;
+		for(String zone : zoneList) {
+			if(zone.equals(z)) {
+				continue;
+			}
+			if(zone.contains(c)) {
+				boolean isSubZone = true;
+				for(String subC : findContourList(z)) {
+					if(!zone.contains(subC)) {
+						isSubZone = false;
+						break;
+					}
+				}
+				if(!isSubZone) {
+					return false;
+				} else {
+					foundInZ = true;
+				}
+			}
+		}
+		return foundInZ;
+	}
 
 	
 	/**
