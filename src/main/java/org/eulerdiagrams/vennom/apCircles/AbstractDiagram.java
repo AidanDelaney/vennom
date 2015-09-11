@@ -19,10 +19,14 @@ public class AbstractDiagram implements Comparable<AbstractDiagram>, Cloneable {
 	protected ArrayList<String> zoneList = null;
 //	protected String diagramString = null;
 	public static Random random = new Random(System.currentTimeMillis());
+	
+	/** for reporting the atomic diagrams */
+	protected ArrayList<AtomicAbstractDiagram> atomicAbstractDiagrams = null;
+
 
 	/** measures the usage of the brute force part of the isomorphism test */
 	public long bruteForceCount = 0;	
-	/** how long the isomorphsim brute force test took */
+	/** how long the isomorphism brute force test took */
 	public long bruteForceTime = 0;
 	/** indicating that the brute force part of the isomorphism test was used */
 	protected boolean bruteForceApplied = false;
@@ -35,6 +39,7 @@ public static long timer4 = 0;
 	public long getBruteForceCount() {return bruteForceCount;}
 	public long getBruteForceTime() {return bruteForceTime;}
 	public boolean getBruteForceApplied() {return bruteForceApplied;}
+	public ArrayList<AtomicAbstractDiagram> getAtomicAbstractDiagrams() {return atomicAbstractDiagrams;}
 
 	
 	public static void main(String[] args) {
@@ -116,8 +121,9 @@ public static long timer4 = 0;
 	}
 	
 	
-	public static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition) {
+	public static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition, long seed) {
 
+		random = new Random(seed);
 		ArrayList<String> zones = Enumerate.findAllZones(numberOfContours);
 		StringBuffer adZones = new StringBuffer();
 		for(String z: zones) {
@@ -128,6 +134,13 @@ public static long timer4 = 0;
 		
 		AbstractDiagram ad = new AbstractDiagram(adZones.toString());
 		ad.addZone("");
+		return ad;
+	}
+	
+	public static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition) {
+
+		long seed = System.currentTimeMillis();
+		AbstractDiagram ad = randomDiagramFactory(numberOfContours, includeNull, chanceOfZoneAddition, seed);
 		return ad;
 	}
 	
@@ -660,6 +673,8 @@ public static long timer4 = 0;
 			}
 		}
 		
+		atomicAbstractDiagrams = new ArrayList<AtomicAbstractDiagram>(queue);
+		
 		while(queue.size() != 0) {
 			AtomicAbstractDiagram parentDiagram = queue.get(0);
 			ArrayList<String> parentContours = parentDiagram.getAtomicDiagram().getContours();
@@ -693,6 +708,9 @@ public static long timer4 = 0;
 						}
 						parentZone = orderZone(parentZone);
 						AtomicAbstractDiagram aad = new AtomicAbstractDiagram(ad,parentDiagram, parentZone);
+						
+						atomicAbstractDiagrams.add(aad);
+
 						queue.add(aad);
 						addedContours += childAtomicContours;
 					}
@@ -856,6 +874,34 @@ public static long timer4 = 0;
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * See if the circle is entirely inside the zone.
+	 * z and c must be in the diagram.
+	 */
+	public boolean zoneContainment(String z, String c) {
+		boolean foundInZ = false;
+		for(String zone : zoneList) {
+			if(zone.equals(z)) {
+				continue;
+			}
+			if(zone.contains(c)) {
+				boolean isSubZone = true;
+				for(String subC : findContourList(z)) {
+					if(!zone.contains(subC)) {
+						isSubZone = false;
+						break;
+					}
+				}
+				if(!isSubZone) {
+					return false;
+				} else {
+					foundInZ = true;
+				}
+			}
+		}
+		return foundInZ;
 	}
 
 	
@@ -1876,6 +1922,45 @@ timer2 = System.currentTimeMillis()-startTimer2;
 			}
 		}
 	
+	}
+	
+	
+	/**
+	 * Finds pairs of concurrent contours (3 concurrent contours forms 3 pairwise instances).
+	 * Returned as pairs of letters.
+	 */
+	public ArrayList<String> findConcurrentContours() {
+		ArrayList<String> ret = new ArrayList<String>();
+		ArrayList<String> contours = getContours();
+		for(int i = 0; i < contours.size(); i++) {
+			for(int j = i+1; j < contours.size(); j++) {
+				String c1 = contours.get(i);
+				String c2 = contours.get(j);
+				if(concurrent(c1,c2)) {
+					ret.add(c1+c2);
+				}
+				
+			}
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Test to see if the two contours are concurrent.
+	 */
+	public boolean concurrent(String c1, String c2) {
+
+		for(String zone : getZoneList()) {
+			if(zone.contains(c1) && !zone.contains(c2)) {
+				return false;
+			}
+			if(!zone.contains(c1) && zone.contains(c2)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 	

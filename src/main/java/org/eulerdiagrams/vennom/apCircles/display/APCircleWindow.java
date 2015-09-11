@@ -103,6 +103,9 @@ public class APCircleWindow extends JFrame implements ActionListener {
 		gp.addGraphUtility(new ReportAreaProportions());
 		gp.addGraphUtility(new EnterPiercedSpecification());
 		gp.addGraphUtility(new EnterGeneralSpecification());
+		gp.addGraphUtility(new TestRandomPierced());
+		gp.addGraphUtility(new TestExactGeneral());
+		gp.addGraphUtility(new GeneralParameterFinder());
 		
 	}
 
@@ -180,6 +183,9 @@ public class APCircleWindow extends JFrame implements ActionListener {
 		JMenuItem fileSaveXMLItem = new JMenuItem("Save XML File...");
 		fileMenu.add(fileSaveXMLItem);
 
+		JMenuItem fileSaveSVGItem = new JMenuItem("Save SVG File...");
+		fileMenu.add(fileSaveSVGItem);
+
 		JMenuItem filePNGItem = new JMenuItem("Export to png");
 		fileMenu.add(filePNGItem);
 
@@ -232,6 +238,12 @@ public class APCircleWindow extends JFrame implements ActionListener {
 		fileSaveXMLItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				fileSaveXML();
+			}
+		});
+
+		fileSaveSVGItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				fileSaveSVG();
 			}
 		});
 
@@ -553,6 +565,25 @@ public class APCircleWindow extends JFrame implements ActionListener {
 		}
 */	}
 
+	
+	
+	protected void fileSaveSVG() {
+		JFileChooser chooser = null;
+		if (currentFile == null) {
+			chooser = new JFileChooser(startDirectory);
+		} else {
+			chooser = new JFileChooser(currentFile);
+			if (!currentFile.isDirectory()) {
+				chooser.setSelectedFile(currentFile);
+			}
+		}
+		int returnVal = chooser.showSaveDialog(gw);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			currentFile = chooser.getSelectedFile();
+			getGraphPanel().saveCirclesSVG(currentFile);
+		}
+	}
+	
 
 	protected void fileExit() {
 		System.exit(0);

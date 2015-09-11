@@ -1,6 +1,14 @@
 package org.eulerdiagrams.vennom.apCircles;
 
 import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -13,6 +21,9 @@ public class AreaSpecification {
 	protected AbstractDiagram abstractDiagram;
 	/** Dividing all specifications by this makes the total area 1.0 */
 	protected double normalizationFactor = 0.0;
+	
+	public static float scalingFactor = -1;
+	public static int polygonResolution = 1000;
 	
 	public AreaSpecification(AbstractDiagram abstractDiagram) {
 		this.abstractDiagram = abstractDiagram;
@@ -34,6 +45,13 @@ public class AreaSpecification {
 		findNormalizationFactor();
 	}
 	
+	
+	public void setSpecification(HashMap<String,Double> specification) {this.specification = specification;}
+
+	public HashMap<String,Double> getSpecification() {return specification;}
+
+	
+
 
 	protected double findNormalizationFactor() {
 		double totalArea = 0.0;
@@ -125,7 +143,7 @@ public class AreaSpecification {
 			graph.addNode(n);
 			circleNodeMap.put(circle,n);
 		}
-		graph.randomizeNodePoints(new Point(50,50),400,400);
+		graph.randomizeNodePoints(new Point(50,50),400,400,1);
 
 		ArrayList<String> remainingZones = new ArrayList<String>(abstractDiagram.getZoneList());
 		ArrayList<String> circles = abstractDiagram.getContours();
@@ -240,19 +258,16 @@ System.out.println("contained "+containment);
 				double repulsion = findMinimumSeparation(e);
 				e.setLabel(Double.toString(repulsion));
 				e.setScore(repulsion);
-System.out.println("REPULSOR "+repulsion);
 			}
 			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
 				double attraction = findAttractionValue(e);
 				e.setLabel(Double.toString(attraction));
 				e.setScore(attraction);
-System.out.println("ATTRACTOR "+attraction);
 			}
 			if(e.getType().equals(APCircleDisplay.FIXED)) {
 				double fixed = findFixedValue(graph,e);
 				e.setLabel(Double.toString(fixed));
 				e.setScore(fixed);
-System.out.println("FIXED "+fixed);
 			}
 
 		}
@@ -332,6 +347,7 @@ System.out.println("FIXED "+fixed);
 	 * Returns the complete graph for general layout.
 	 */
 	public Graph generateGeneralAugmentedIntersectionGraph() {
+		
 
 		if(abstractDiagram.getZoneList().size() <= 1) {
 			return new Graph();
@@ -340,6 +356,8 @@ System.out.println("FIXED "+fixed);
 		HashMap<String,Node> circleNodeMap = new HashMap<String,Node>();
 		
 		Graph graph = new Graph();
+		
+		
 		// add the nodes
 		for(String circle : abstractDiagram.getContours()) {
 			double circleArea = 0.0;
@@ -359,7 +377,7 @@ System.out.println("FIXED "+fixed);
 			circleNodeMap.put(circle,n);
 		}
 		
-		graph.randomizeNodePoints(new Point(50,50),400,400);
+		graph.randomizeNodePoints(new Point(50,50),400,400,1);
 
 		ArrayList<String> zones = new ArrayList<String>(abstractDiagram.getZoneList());
 		ArrayList<String> circles = abstractDiagram.getContours();
@@ -375,24 +393,41 @@ System.out.println("FIXED "+fixed);
 				String c2 = circles.get(j);
 
 				boolean intersect = false;
-				
 				for(String zone : zones) {
 					if(zone.contains(c1) && zone.contains(c2)) {
 						intersect = true;
 						break;
 					}
 				}
+				
+				boolean containment = false;
+
+
+				if(abstractDiagram.contourContainment(c1,c2)) { // c2 is entirely in c1
+					containment = true;
+				}
+				if(abstractDiagram.contourContainment(c2,c1)) { // c2 is entirely in c1
+					containment = true;
+				}
 
 				Node n1 = circleNodeMap.get(c1);
 				Node n2 = circleNodeMap.get(c2);
-				if(intersect) {
+				if(containment) {
+					Edge containing = new Edge(n1,n2);
+					double maxSeparation = findMaxContainmentDistance(n1,n2);
+					containing.setType(APCircleDisplay.CONTAINMENT);
+					containing.setLabel(Double.toString(maxSeparation));
+					containing.setScore(maxSeparation);
+					graph.addEdge(containing);
+//System.out.println("CONTAINMENT "+maxSeparation);
+				} else if(intersect) {
 					Edge ideal = new Edge(n1,n2);
 					double idealLength = findIdealNodeSeparation(graph,ideal);
 					ideal.setType(APCircleDisplay.IDEAL);
 					ideal.setLabel(Double.toString(idealLength));
 					ideal.setScore(idealLength);
 					graph.addEdge(ideal);
-System.out.println("ideal "+c1+" "+c2+" "+idealLength);
+//System.out.println("IDEAL "+idealLength);
 				} else {
 					Edge separator = new Edge(n1,n2);
 					double minSeparation = findMinimumSeparation(separator);
@@ -400,128 +435,35 @@ System.out.println("ideal "+c1+" "+c2+" "+idealLength);
 					separator.setLabel(Double.toString(minSeparation));
 					separator.setScore(minSeparation);
 					graph.addEdge(separator);
-System.out.println("Separator "+c1+" "+c2+" "+minSeparation);					
+//System.out.println("SEPARATOR "+minSeparation);
 				}
 				
 			}
 		}
 		
-/*		
-	
-		while(remainingZones.size() != 1) {
-			String piercingCircle = null;
 
-			for(String circle : circles) {
-	
-				ArrayList<String> containingZones = new ArrayList<String>();
-				for(String z : remainingZones) {
-					ArrayList<String> zList = AbstractDiagram.findContourList(z);
-					if(zList.contains(circle)) {
-						containingZones.add(z);
-					}
-				}
-System.out.println(circle+" "+containingZones);
-
-				String z1 = containingZones.get(0);
-				String z2 = containingZones.get(1);
-				
-				String z1Minusz2 = AbstractDiagram.zoneMinus(z1, z2);
-				String z2Minusz1 = AbstractDiagram.zoneMinus(z2, z1);
-				
-				String splitCircle = null;
-				String containment = null;
-				if(z1Minusz2.length() == 1 && z2Minusz1.length() == 0) {
-					splitCircle = z1Minusz2;
-					containment = AbstractDiagram.zoneIntersection(z1,z2);
-					containment = AbstractDiagram.zoneMinus(containment,circle);
-				}
-				if(z1Minusz2.length() == 0 && z2Minusz1.length() == 1) {
-					splitCircle = z2Minusz1;
-					containment = AbstractDiagram.zoneIntersection(z1,z2);
-					containment = AbstractDiagram.zoneMinus(containment,circle);
-				}
-
-
-				if(splitCircle == null) {
-					continue;
-				}
-				
-				piercingCircle = circle;
-
-				remainingZones.remove(z1);
-				remainingZones.remove(z2);
-				String z1Reduced = AbstractDiagram.zoneMinus(z1,piercingCircle);
-				String z2Reduced = AbstractDiagram.zoneMinus(z2,piercingCircle);
-				if(z1Reduced.length() != 0 && !remainingZones.contains(z1Reduced)) {
-					remainingZones.add(z1Reduced);
-				}
-				if(z2Reduced.length() != 0 && !remainingZones.contains(z2Reduced)) {
-					remainingZones.add(z2Reduced);
-				}
-
-				// add fixed edges
-				Node currentCircleNode = graph.firstNodeWithContour(piercingCircle);
-				Edge fixed = new Edge(currentCircleNode,graph.firstNodeWithContour(splitCircle));
-				fixed.setType(APCircleDisplay.FIXED);
-				graph.addEdge(fixed);
-
-		
-				// add attractor edges
-				ArrayList<String> containmentList = AbstractDiagram.findContourList(containment);
-				for(String containedCircle : containmentList) {
-					Edge attractor = new Edge(currentCircleNode,graph.firstNodeWithContour(containedCircle));
-					attractor.setType(APCircleDisplay.ATTRACTOR);
-					graph.addEdge(attractor);
-				}
-				
-				// rest are repulsor edges
-				for(Node n : graph.getNodes()) {
-					if(n == currentCircleNode) {
-						continue;
-					}
-
-					Edge existingEdge = graph.findEdgeBetween(n, currentCircleNode);
-					
-					if(existingEdge == null) {
-						Edge repulsor = new Edge(n, currentCircleNode);
-						repulsor.setType(APCircleDisplay.REPULSOR);
-						graph.addEdge(repulsor);
-					}
-				}
-			} // end circle iteration
-			
-			if(piercingCircle == null) {
-				// if no piercing found, not a pierced diagram so return null
-				return null;
-			}
-		
-		} // end outside loop
-
-		// remainingZones has to be size one, no need to do anything with the last circle, its already fully connected
-		String lastZone = remainingZones.get(0);
-		if(lastZone.length() != 1) {
-			return null;
-		}
-
-		
-		// find the edge labels. Do this last to save time if the description is not pierced
-		for(Edge e : graph.getEdges()) {
-			if(e.getType().equals(APCircleDisplay.REPULSOR)) {
-				e.setLabel(findRepulsorLabel(e));
-			}
-			if(e.getType().equals(APCircleDisplay.ATTRACTOR)) {
-				e.setLabel(findAttractorLabel(e));
-			}
-			if(e.getType().equals(APCircleDisplay.FIXED)) {
-				e.setLabel(findFixedLabel(graph,e));
-			}
-
-		}
-*/		
 		return graph;
 	}
 
 
+	/**
+	 * Circle for n2 entirely within n1
+	 */
+	protected double findMaxContainmentDistance(Node n1, Node n2) {
+
+		double radius1 = 20;
+		double radius2 = 20;
+		try {
+			radius1 = n1.getScore();
+			radius2 = n2.getScore();
+		} catch (Exception exception) {
+			System.out.println(exception.getStackTrace());
+		}
+
+		double maxSeparation = Math.abs(radius1-radius2);
+		
+		return maxSeparation;
+	}
 
 	protected double findIdealNodeSeparation(Graph graph, Edge e) {
 		
@@ -548,7 +490,7 @@ System.out.println(circle+" "+containingZones);
 		}
 			
 		double intersectionDistance = findCircleCircleSeparation(label1,label2,intersectionArea);
-System.out.println(intersectionDistance+" "+label1+" "+label2+" "+intersectionArea+" ");
+
 		double ret = Util.round(intersectionDistance,2);
 		return ret;
 	}
@@ -562,10 +504,7 @@ System.out.println(intersectionDistance+" "+label1+" "+label2+" "+intersectionAr
 	 */
 	private double findCircleCircleSeparation(double radius1, double radius2, double intersectionArea) {
 
-		
-		double area1 = Math.PI*radius1*radius1;
-		double area2 = Math.PI*radius2*radius2;
-
+	
 		
 		// bisection search bit starts here
 		// two starting limits when circles just touch outside and inside
@@ -681,13 +620,174 @@ System.out.println(intersectionDistance+" "+label1+" "+label2+" "+intersectionAr
 		return ret;
 	}
 
-	public void setSpecification(HashMap<String,Double> specification) {
-		this.specification = specification;
+	
+
+	static public ArrayList<ConcreteContour> convertCirclesToCCs(Graph g, int polygonResolution) {
+		
+		ArrayList<ConcreteContour> circleContours = new ArrayList<ConcreteContour>();
+		
+//graphPanel.polygons = new ArrayList<Polygon>();
+		// scale polygons for best resolution
+		float biggestRadius = -1;
+		int i = 0;
+		for(Node n : g.getNodes()) {
+			double radius = Double.parseDouble(n.getLabel());
+			if(radius > biggestRadius) {
+				biggestRadius = (float)radius;
+			}
+			i++;
+		}
+		
+		scalingFactor = 1.0E4f/biggestRadius; // value found by experimentation
+//scalingFactor = 1;
+
+//System.out.println("Approximation error ");
+		for(Node n : g.getNodes()) {
+			int scaledX = Util.convertToInteger(n.getX()*scalingFactor);
+			int scaledY = Util.convertToInteger(n.getY()*scalingFactor);
+			
+			double radius = Double.parseDouble(n.getLabel());
+			
+			Polygon p = RegularPolygon.generateRegularPolygon(scaledX, scaledY, radius*scalingFactor, polygonResolution);
+			
+			ConcreteContour cc = new ConcreteContour(n.getContour(), p);
+			circleContours.add(cc);
+// graphPanel.polygons.add(p);
+//report approximation error
+			
+			double actualArea = (float)(Math.PI*radius*radius);
+//System.out.println("scaledActualArea "+(actualArea*scalingFactor*scalingFactor));
+			float scaledPolygonArea = Util.computePolygonAreaFloat(p);
+//System.out.println(n.getContour()+" scaledPolygonArea "+scaledPolygonArea);
+			float polygonArea= scaledPolygonArea/(scalingFactor*scalingFactor);
+			double percentError = 100*(polygonArea-actualArea)/actualArea;
+			if(Math.abs(percentError) > 0.1) {
+				System.out.println(n.getContour()+" has circle area error > 0.1% is: "+percentError+"% actual area: "+actualArea+" polygon Area: "+polygonArea);
+			}
+
+		}
+		
+		return circleContours;
 	}
 
-	public HashMap<String,Double> getSpecification() {
-		return specification;
+	public static AreaSpecification exactRandomDiagramFactory(int minX, int minY, int maxX, int maxY, int minRadius, int maxRadius, int circleCount, long seed, String fileName) {
+
+		ArrayList<Integer> xList = new ArrayList<Integer>();
+		ArrayList<Integer> yList = new ArrayList<Integer>();
+		ArrayList<Double> radiusList = new ArrayList<Double>();
+		Random random = new Random(seed);
+		for(int i = 0; i < circleCount; i++) {
+			int x = random.nextInt(1+maxX-minX);
+			x += minX;
+			int y = random.nextInt(1+maxY-minY);
+			y += minY;
+			double radius = random.nextInt(1+maxRadius-minRadius);
+			radius += minRadius;
+			
+			xList.add(x);
+			yList.add(y);
+			radiusList.add(radius);
+		}
+		AreaSpecification as = findAreaSpecificationFromCircles(xList,yList,radiusList);
+		
+		if(fileName != null && fileName.length() > 0) {
+			File file = new File(fileName);
+
+			String svg = "<svg  width=\""+500+"\" height=\""+500+"\">\n";
+			for (int i = 0; i < circleCount; i++) {
+				double x = xList.get(i);
+				double y = yList.get(i);
+				double r = radiusList.get(i);
+				svg += "\t<circle cx=\""+x+"\" cy=\""+y+"\" r=\""+r+"\" fill=\"none\" stroke=\"black\" stroke-width=\"2\" />\n";
+			}
+			
+			svg += "</svg>";
+			try {
+				BufferedWriter b = new BufferedWriter(new FileWriter(file));
+
+		// save the nodes
+				b.write(svg);
+				b.newLine();
+				b.close();
+			}
+			catch(IOException e){
+				System.out.println("An IO exception occured when saving svg in exactRandomDiagramFactory("+file.getName()+"\n"+e+"\n");
+			}
+		}
+		
+		return as;
 	}
 
+
+	public static AreaSpecification findAreaSpecificationFromCircles(ArrayList<Integer> xList, ArrayList<Integer> yList, ArrayList<Double> radiusList) {
+
+		Graph g = new Graph();
+		for(int i = 0; i < radiusList.size(); i++) {
+			Double radius = radiusList.get(i);
+			int x = xList.get(i);
+			int y = yList.get(i);
+			Node n = new Node(radius.toString());
+			n.setX(x);
+			n.setY(y);
+			n.setScore(radius);
+			Character label = (char)('a'+i);
+			n.setContour(label.toString());
+			g.addNode(n);
+//System.out.print(label+" "+x+":"+y+":"+radius+" ");
+		}
+//System.out.println();
+		
+		ArrayList<ConcreteContour> circleConcreteContours = AreaSpecification.convertCirclesToCCs(g,polygonResolution);
+		HashMap<String,Double> currentValuesMap = new HashMap<String,Double>();
+		HashMap<String, Area> zoneAreaMap = ConcreteContour.generateZoneAreas(circleConcreteContours);
+		for (String zone : zoneAreaMap.keySet()) {
+			Area area = zoneAreaMap.get(zone);
+	
+			ArrayList<Polygon> polygons = ConcreteContour.polygonsFromArea(area);
+			if (zone.equals("")) {
+				// outer zone
+				continue;
+			}
+	
+			// remove polygons that surround holes in the zone
+			// we only want polygons where the fill is the zone
+			// eg. diagram "0 a b ab" where a and b go through each other
+			// has two polys filled with the zone for both a and b
+			// the diagram "0 a b" drawn normally has three
+			// polys for 0 (including border), only one of which
+			// is filled with 0.
+			//
+			// What about holes in holes? Does this happen with
+			// simple polygons? I don't think so.
+			ArrayList<Polygon> polysCopy = new ArrayList<Polygon>(polygons);
+			for (Polygon polygon : polysCopy) {
+				Point2D insidePoint = ConcreteContour.findPointInsidePolygon(polygon);
+				if (insidePoint != null && !area.contains(insidePoint)) {
+					polygons.remove(polygon);
+				}
+			}
+	
+			double totalPolygonArea = 0.0;
+			for(Polygon p : polygons) {
+	//graphPanel.polygons.add(p);
+				double scaledPolygonArea = Util.computePolygonArea(p);
+				double polygonArea= scaledPolygonArea/(scalingFactor*scalingFactor);
+				totalPolygonArea += polygonArea;
+			}
+			currentValuesMap.put(zone,totalPolygonArea);
+		}
+		
+		
+		ArrayList<String> zoneList = new ArrayList<String>(currentValuesMap.keySet());
+		AbstractDiagram.sortZoneList(zoneList);
+		AbstractDiagram ad = new AbstractDiagram(zoneList);
+		
+		AreaSpecification ret = new AreaSpecification(ad,currentValuesMap);
+		
+		return ret;
+	}
+
+
+	
 }
 
