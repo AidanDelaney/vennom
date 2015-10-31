@@ -19,9 +19,6 @@ public class GeneralAPForceModelSolver {
 	/** During iterations, we can send updates at each iteration */
 	private UpdateRecipient forUpdates;
 	
-	/** The maximum force applied on one iteration */
-	private double maxMovement;
-
 	/** The amount of movement below which the algorithm stops*/
     private double movementThreshold;
 
@@ -55,8 +52,6 @@ public class GeneralAPForceModelSolver {
 
 		maxIterations = 10000;
 		
-		maxMovement = Double.MAX_VALUE;
-
 	    movementThreshold = 0.001;
 
 	    forceThreshold = 50;
@@ -127,6 +122,9 @@ public class GeneralAPForceModelSolver {
 			currentNodeCentres.put(n, new Point2D.Double(n.getCentre().x,n.getCentre().y));
 		}
 
+		// The maximum movement undergone at this iteration step
+		double maxMovement = Double.MAX_VALUE;
+		
 		int i = 0;
 		while(maxMovement-movementThreshold > 0) {
 			
