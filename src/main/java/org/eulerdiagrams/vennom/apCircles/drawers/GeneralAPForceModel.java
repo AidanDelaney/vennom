@@ -22,185 +22,116 @@ import org.eulerdiagrams.vennom.graph.drawers.GraphDrawer;
  *
  * @author Peter Rodgers
  */
-public class GeneralAPForceModel extends GraphDrawer implements Serializable {
+public class GeneralAPForceModel extends GraphDrawer implements Serializable, 
+		UpdateRecipient {
 
 	private static final long serialVersionUID = 1L;
 
-/*
-	public double idealMultipiler = 0.1;
-	public double separatorMultiplier = 10000.0;
-	public double containmentMultiplier = 0.01;
-	public double f = 1.0;
-*/	
-/*
-	public double idealMultipiler = 0.05;
-	public double separatorMultiplier = 10000.0;
-	public double containmentMultiplier = 0.01;
-	public double f = 1.0;
-*/
-	
-	// these values determined by experimentation
-	public double idealMultipiler = 0.0475;
-	public double separatorMultiplier = 19000.0;
-	public double containmentMultiplier = 0.01;
-	public double f = 1.0; // movement multiplier
-	
-	/** Extra space between circles */
-	protected double separatorPadding = 20;
-	
-	/** Extra space for contained circles */
-	protected double containmentPadding = 5;
-	
-/** The number of iterations */
-	protected int iterations = 10000;
-//protected int iterations = 1;
-/** The maximum time to run for, in milliseconds */
-	protected long timeLimit = 2000;
-/** The amount of movement below which the algorithm stops*/
-	protected double movementThreshold = 0.001;
-/** The maximum allowed force when no structure issues for a single repulsion or attraction */
-	protected double forceThreshold = 50;
-/** The maximum force applied on one iteration */
-	protected double maxMovement;
-/** This holds copies of current node locations for double precision*/
-	protected HashMap<Node,Point2D.Double> currentNodeCentres = new HashMap<Node,Point2D.Double>();
-/** This holds copies of old node locations */
-	protected HashMap<Node,Point2D.Double> oldNodeCentres = new HashMap<Node,Point2D.Double>();
-/** Set to redraw on each iteration */
-	protected boolean animateFlag = true;
-/** Set to randomize the graph before spring embedding */
+	/** Set to randomize the graph before spring embedding */
 	protected boolean randomize = false;
-/** Gives the number of milliseconds the last graph drawing took */
-	protected long time = 0;
-/** x limit, set on layout start */
-	protected int limitX = 600;
-/** y limit, set set on layout start */
-	protected int limitY = 600;
+	
+	/** The GeneralAPForceModel has some GUI-related content.  It delegates
+	    the non-GUI work to the solver class.*/
+	private GeneralAPForceModelSolver solver;
 
-/** Trivial constructor. */
+	// Solver settings which the ForceModel client may change
+	public void setIdealMultiplier(double val){
+		solver.setIdealMultiplier(val);
+	}
+	public void setSeparatorMultiplier(double val){
+		solver.setSeparatorMultiplier(val);
+	}
+	public void setContainmentMultiplier(double val){
+		solver.setContainmentMultiplier(val);
+	}
+	public void setF(double val){
+		solver.setF(val);
+	}
+
+	/** Limit the number of allowed iterations performed during the solve */
+	public void setIterations(int inIterations) {
+		solver.setMaxIterations( inIterations);
+	}
+
+	/** Set to redraw on each iteration */
+	protected boolean animateFlag = true;
+
+	/** Gives the number of milliseconds the last graph drawing took */
+	protected long time = 0;
+	
+	/** Trivial constructor. */
 	public GeneralAPForceModel() {
 		super(KeyEvent.VK_Z,"AP General Spring Embedder");
+		solver = new GeneralAPForceModelSolver();
 	}
 	
-
-/** Trivial constructor. */
+	/** Trivial constructor. */
 	public GeneralAPForceModel(int key, String s) {
 		super(key,s);
+		solver = new GeneralAPForceModelSolver();
 	}
-/** Constructor. */
+	
+	/** Constructor. */
 	public GeneralAPForceModel(int key, String s, boolean inRandomize) {
 		super(key,s);
 		randomize = inRandomize;
+		solver = new GeneralAPForceModelSolver();
 	}
-/** Full constructor. */
+	
+	/** Full constructor. */
 	public GeneralAPForceModel(int key, String s, int mnemomic, boolean inRandomize) {
 		super(key,s,mnemomic);
 		randomize = inRandomize;
+		solver = new GeneralAPForceModelSolver();
 	}
 
-
+	/** time taken to complete the preceding solve */
 	public long getTime() {return time;}
-	public int getIterations() {return iterations;}
+	
+	/** whether to allow animation */
 	public boolean getAnimateFlag() {return animateFlag;}
-
-	public void setIterations(int inIterations) {iterations = inIterations;}
+	/** whether to allow animation */
 	public void setAnimateFlag(boolean inAnimateFlag) {animateFlag = inAnimateFlag;}
+	
+	/** whether to randomize the graph before solving */
 	public void setRandomize(boolean flag) {randomize = flag;}
 
 
-
-/** Draws the graph. */
+	/** Draws the graph. */
 	public void layout() {
-		limitX = getGraphPanel().getWidth();
-		limitY = getGraphPanel().getHeight();
 		
+		// prepare graph before solve
 		if(randomize) {
 			getGraph().randomizeNodePoints(new Point(50,50),400,400);
 		}
-	
-		maxMovement = Double.MAX_VALUE;
 
-		currentNodeCentres.clear();
-		for(Node n : getGraph().getNodes()) {
-			currentNodeCentres.put(n, new Point2D.Double(n.getCentre().x,n.getCentre().y));
-		}
+		// set limits on graph
+		solver.setLimits( getGraphPanel().getWidth(), getGraphPanel().getHeight() );
 
-		int i = 0;
-		long startTime = System.currentTimeMillis();
-		while(maxMovement-movementThreshold > 0) {
-			
-			i++;
+		// request update calls at each iteration step
+		solver.setUpdateRecipient(this);
 
-			//set up the node centres storage
-			oldNodeCentres.clear();
-			for(Node n : getGraph().getNodes()) {
-				Point2D.Double currentCentre = currentNodeCentres.get(n);
-				oldNodeCentres.put(n, new Point2D.Double(currentCentre.x,currentCentre.y));
-			}
+		// do work
+		solver.layout( getGraph() );
 
-			for(Node n : getGraph().getNodes()) {
-				Point2D.Double newPos = findForceOnNode(n);
-				currentNodeCentres.put(n,newPos);
-			}
-			
-			if(animateFlag && getGraphPanel() != null) {
-				for(Node n : getGraph().getNodes()) {
-					Point2D.Double newCentre = currentNodeCentres.get(n);
-					Point centreInt = new Point(Util.convertToInteger(newCentre.x),Util.convertToInteger(newCentre.y));
-					n.setPreciseCentre(newCentre);
-					n.setCentre(centreInt);
-				}
-				getGraphPanel().update(getGraphPanel().getGraphics());
-			}
-
-			maxMovement = findMaximumMovement();
-			
-			if(i >= iterations) {
-//				System.out.println("General AP - Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
-				break;
-			}
-		}
-		
-		if(maxMovement-movementThreshold <= 0) {
-//			System.out.println("General AP - Exit due to under movement threshold "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
-		
-		}
-//		System.out.println("General AP - Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
-
-		
-		for(Node n : getGraph().getNodes()) {
-			Point2D.Double newCentre = currentNodeCentres.get(n);
-			Point centreInt = new Point(Util.convertToInteger(newCentre.x),Util.convertToInteger(newCentre.y));
-			n.setPreciseCentre(newCentre);
-			n.setCentre(centreInt);
-		}
-
+		// refresh view
 		if(getGraphPanel() != null) {
 			getGraphPanel().repaint();
 			getGraphPanel().update(getGraphPanel().getGraphics());
-		}
-		
+		}		
 	}
 	
-
-	
-	private double findMaximumMovement() {
-	
-		double max = 0;
-		
-		for(Node n : getGraph().getNodes()) {
-			Point2D.Double oldP = oldNodeCentres.get(n);
-			Point2D.Double currentP = currentNodeCentres.get(n);
-			
-			double distance = Util.distance(oldP, currentP);
-			if(distance > max) {
-				max = distance;
+	/** when to update the view */
+	public void update(){
+		if(animateFlag && getGraphPanel() != null) {
+			for(Node n : getGraph().getNodes()) {
+				Point2D.Double newCentre = solver.currentNodeCentre(n);
+				Point centreInt = new Point(Util.convertToInteger(newCentre.x),Util.convertToInteger(newCentre.y));
+				n.setPreciseCentre(newCentre);
+				n.setCentre(centreInt);
 			}
-			
-		}
-		
-		return max;
-		
+			getGraphPanel().update(getGraphPanel().getGraphics());
+		}		
 	}
 
 	
@@ -375,171 +306,7 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 /**
  * Finds the new location of a node.
  */
-	public Point2D.Double findForceOnNode(Node n) {
 		
-		double radius = n.getScore();
-		
-		Point2D.Double p = oldNodeCentres.get(n);
-
-		double xContainment = 0.0;
-		double yContainment = 0.0;
-		double xSeparator = 0.0;
-		double ySeparator = 0.0;
-		double xIdeal = 0.0;
-		double yIdeal = 0.0;
-		
-		for(Node nextN : getGraph().getNodes()) {
-			if(n == nextN) {
-				continue;
-			}
-			Point2D.Double nextP = oldNodeCentres.get(nextN);
-
-			Edge e = getGraph().findEdgeBetween(n,nextN);
-			
-			if(e != null) {
-				
-				double centreDistance = Util.distance(p,nextP);
-				double radiusFrom = e.getFrom().getScore();
-				double radiusTo = e.getTo().getScore();
-				
-				double xDistance = p.x - nextP.x;
-				double yDistance = p.y - nextP.y;
-
-				double absXDistance = Math.abs(xDistance);
-				double absYDistance = Math.abs(yDistance);
-
-				double xForceShare = absXDistance/(absXDistance+absYDistance);
-				double yForceShare = absYDistance/(absXDistance+absYDistance);
-				if(absXDistance+absYDistance == 0) {
-					xForceShare = 1;
-					yForceShare = 0;
-				}
-				
-				EdgeType et = e.getType();
-				
-				if(et.equals(APCircleDisplay.CONTAINMENT)) {
-					
-					double separation = centreDistance;
-					if(separation == 0) {
-						separation = 0.1;
-					}
-					double containmentForce = containmentMultiplier * separation;
-					
-					if(centreDistance <= e.getScore()-containmentPadding) {
-						containmentForce = 0;
-					}
-					
-					if(containmentForce > forceThreshold) {
-						containmentForce = forceThreshold;
-
-					}
-					
-					// attract the nodes
-					double xForce = containmentForce*xForceShare;
-					if(xDistance > 0) {
-						xForce = -xForce;
-					}
-					xContainment += xForce;
-
-
-					double yForce = containmentForce*yForceShare;
-					if(yDistance > 0) {
-						yForce = -yForce;
-					}
-					yContainment += yForce;
-				}
-
-				if(et.equals(APCircleDisplay.SEPARATOR)) {
-					
-					double separation = centreDistance;
-					if(separation == 0) {
-						separation = 0.1;
-					}
-					double separatorForce = separatorMultiplier/(separation*separation);
-					
-					if(centreDistance >= e.getScore()+separatorPadding) {
-						separatorForce = 0;
-					}
-					
-					if(separatorForce > forceThreshold) {
-						separatorForce = forceThreshold;
-
-					}
-					
-					// repulse the nodes
-					double xForce = separatorForce*xForceShare;
-					if(xDistance < 0) {
-						xForce = -xForce;
-					}
-					xSeparator += xForce;
-
-
-					double yForce = separatorForce*yForceShare;
-					if(yDistance < 0) {
-						yForce = -yForce;
-					}
-					ySeparator += yForce;
-				}
-
-				
-				if(et.equals(APCircleDisplay.IDEAL)) {
-
-					double distanceFromIdeal = Math.abs(centreDistance-e.getScore());
-					
-					double idealForce = idealMultipiler*distanceFromIdeal;
-					
-					if(idealForce > forceThreshold) {
-						idealForce = forceThreshold;
-					}
-
-					double xForce = idealForce*xForceShare;
-					if(xDistance > 0) {
-						xForce = -xForce;
-					}
-					if(centreDistance-e.getScore() < 0) { // too short
-						xForce = -xForce;
-					}
-					xIdeal += xForce;
-
-					double yForce = idealForce*yForceShare;
-					if(yDistance > 0) {
-						yForce = -yForce;
-					}
-					if(centreDistance-e.getScore() < 0) { // too short
-						yForce = -yForce;
-					}
-					yIdeal += yForce;
-				}
-
-			}
-		}
-		double totalXForce = f*(xContainment + xSeparator + xIdeal);
-		double totalYForce = f*(yContainment + ySeparator + yIdeal);
-
-		double newX = p.x + totalXForce;
-		double newY = p.y + totalYForce;
-
-		// stop the node going out of the drawable area
-		if(newX < radius) {
-			newX = radius;
-		}
-		if(newY < radius) {
-			newY = radius;
-		}
-		if(newX > limitX - radius) {
-			newX = limitX - radius;
-		}
-		if(newY > limitY - radius) {
-			newY = limitY - radius;
-		}
-		
-		Point2D.Double ret = new Point2D.Double(newX,newY);
-		return ret;
-		
-	}
-	
-	
-	
 	
 	/** Centre the graph on the given point */
 	public void centreGraph(double centreX, double centreY) {
@@ -564,8 +331,8 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 			double minY = Double.MAX_VALUE;
 
 			for(Node node : getGraph().getNodes()) {
-				double x = currentNodeCentres.get(node).x;
-				double y = currentNodeCentres.get(node).y;
+				double x = solver.currentNodeCentre(node).x;
+				double y = solver.currentNodeCentre(node).y;
 				if(x > maxX) {
 					maxX = x;
 				}
@@ -586,22 +353,10 @@ public class GeneralAPForceModel extends GraphDrawer implements Serializable {
 			Point2D.Double ret = new Point2D.Double(x,y);
 			return ret;
 		}
-		
-		
+	
 		/** Move all the nodes and edge bends by the values given */
 		public void moveNodes(double moveX, double moveY) {
-		
-			for(Node node : getGraph().getNodes()) {
-				double x = currentNodeCentres.get(node).x+moveX;
-				double y = currentNodeCentres.get(node).y+moveY;
-				Point2D.Double point = new Point2D.Double(x,y);
-				currentNodeCentres.put(node,point);
-			}
-		
+			solver.moveNodes(getGraph(), moveX, moveY);
 		}
-
-
-
-	
 }
 
