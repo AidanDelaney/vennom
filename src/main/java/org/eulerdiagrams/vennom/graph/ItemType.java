@@ -4,7 +4,7 @@ import java.util.*;
 
 
 
-/** 
+/**
  * Shared stuff for NodeType and EdgeType. Forms a double linked tree.
  *
  * @author Peter Rodgers
@@ -12,6 +12,44 @@ import java.util.*;
 
 
 public abstract class ItemType {
+
+
+@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((children == null) ? 0 : children.hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ItemType other = (ItemType) obj;
+        if (children == null) {
+            if (other.children != null)
+                return false;
+        } else if (!children.equals(other.children))
+            return false;
+        if (label == null) {
+            if (other.label != null)
+                return false;
+        } else if (!label.equals(other.label))
+            return false;
+        if (parent == null) {
+            if (other.parent != null)
+                return false;
+        } else if (!parent.equals(other.parent))
+            return false;
+        return true;
+    }
 
 
 /** unique, non empty label, set at object creation and unmodifiable */
@@ -63,7 +101,7 @@ public abstract class ItemType {
 
 		if (parent != null) {
 			parent.removeChild(this);
-		} 
+		}
 		if(t != null) {
 			t.addChild(this);
 		}
@@ -117,7 +155,7 @@ public abstract class ItemType {
  * Check type tree consistency of the current type to ensure internal data
  * structures are correct. That is, check the redundant children and parent
  * data matches below and above this node. Its not perfect, as we start
- * at a particular node and test the nodes upwards, if 
+ * at a particular node and test the nodes upwards, if
  * This method is a useful test to ensure that internal methods that change
  * the type tree leave a tree.
  */
@@ -183,7 +221,7 @@ public abstract class ItemType {
 	}
 
 
-/** 
+/**
  * Outputs the content of the entire type tree that the type is in
  * for debugging purposes.
  */

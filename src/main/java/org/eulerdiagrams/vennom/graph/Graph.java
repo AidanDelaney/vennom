@@ -81,7 +81,7 @@ public class Graph implements Serializable {
  * @return true if the node is added, false if it fails because it already there.
  */
 	public boolean addNode(Node n) {
-	
+
 		if (containsNode(n)) {
 			return(false);
 		}
@@ -123,7 +123,7 @@ public class Graph implements Serializable {
  * start of an algorithm which uses the visited flags of nodes.
  */
 	public void setNodesVisited() {
-		setNodesVisited(getNodes(),false);		
+		setNodesVisited(getNodes(),false);
 	}
 
 
@@ -503,9 +503,9 @@ public class Graph implements Serializable {
 	public ArrayList<Node> connectedSet(Node n) {
 
 		ArrayList<Node> ret = new ArrayList<Node>();
-		
+
 		setNodesVisited();
-		
+
 		Iterator<Node> ni = getNodes().iterator();
 		if(!ni.hasNext()) {
 			return(ret);
@@ -535,7 +535,7 @@ public class Graph implements Serializable {
 
 
 	/**
-	 * Tree test by breadth first search. 
+	 * Tree test by breadth first search.
 	 * @return true if the graph is a tree, false if it is unconnected.
 	 */
 	public boolean isTree() {
@@ -543,21 +543,21 @@ public class Graph implements Serializable {
 		if(nodes.size() == 0) {
 			return true;
 		}
-		
+
 		if(!connected()) {
 			return false;
 		}
-		
+
 		setNodesVisited(false);
 		setEdgesVisited(false);
 
 		Node n = nodes.get(0);
 		n.setVisited(true);
-		
+
 		ArrayList<Node> queue = new ArrayList<Node>();
-		
+
 		queue.add(n);
-		
+
 		while(queue.size() != 0) {
 			Node head = queue.get(0);
 			queue.remove(head);
@@ -573,9 +573,9 @@ public class Graph implements Serializable {
 					queue.add(neighbour);
 				}
 			}
-		
+
 		}
-		
+
 		return true;
 	}
 
@@ -828,7 +828,7 @@ public class Graph implements Serializable {
 			b.newLine();
 // use match to save the index, as match cannot be saved
 			ArrayList<Node> nodeList  = new ArrayList<Node>(getNodes());
-			int index = 0; 
+			int index = 0;
 			while (index < nodeList.size()){
 				Node n = (Node)nodeList.get(index);
 				n.setMatch(new Integer(index));
@@ -951,7 +951,7 @@ public class Graph implements Serializable {
 	public boolean loadAll(File file) {
 
 		int contourCount = 0;
-		
+
 		clear();
 
 		try {
@@ -1237,7 +1237,7 @@ public class Graph implements Serializable {
 						String contour = parseLine.toString();
 						n.setContour(contour);
 					}
-					
+
 // get node contour
 
 
@@ -1678,7 +1678,7 @@ public class Graph implements Serializable {
 			}
 		}
 	}
-	
+
 
 
 	/**
@@ -1761,7 +1761,7 @@ public class Graph implements Serializable {
  * by the parameters.
  */
 	public void randomizeNodePoints(Point topleft, int width, int height, long seed) {
-		
+
 		Random r = new Random(seed);
 		for(Node n : getNodes()) {
 			int x = r.nextInt(width);
@@ -1804,7 +1804,7 @@ public class Graph implements Serializable {
  * false otherwise.
  */
 	public boolean equalsByNodeLabel(Graph g) {
-	
+
 		String n1[] = new String[getNodes().size()];
 
 // first test that the two graphs have the same number of node labels
@@ -1880,7 +1880,119 @@ public class Graph implements Serializable {
 
 	}
 
-	/**
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ADJACENCYSEPARATOR;
+        result = prime * result + COORDINATESEPARATOR;
+        result = prime * result + FILESEPARATOR;
+        result = prime * result
+                + ((FILESTARTEDGES == null) ? 0 : FILESTARTEDGES.hashCode());
+        result = prime * result + ((FILESTARTEDGETYPES == null) ? 0
+                : FILESTARTEDGETYPES.hashCode());
+        result = prime * result
+                + ((FILESTARTNODES == null) ? 0 : FILESTARTNODES.hashCode());
+        result = prime * result + ((FILESTARTNODETYPES == null) ? 0
+                : FILESTARTNODETYPES.hashCode());
+        result = prime * result + SIMPLEFILESEPARATOR;
+        result = prime * result + WEIGHTEDSEPARATOR;
+        result = prime * result + XYSEPARATOR;
+        long temp;
+        temp = Double.doubleToLongBits(bestCount);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result
+                + ((bestPath == null) ? 0 : bestPath.hashCode());
+        result = prime * result + ((edges == null) ? 0 : edges.hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        result = prime * result + ((nodes == null) ? 0 : nodes.hashCode());
+        result = prime * result + Arrays.hashCode(stack);
+        result = prime * result + stackp;
+        result = prime * result + ((start == null) ? 0 : start.hashCode());
+        result = prime * result + Arrays.hashCode(trail);
+        result = prime * result + trailp;
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Graph other = (Graph) obj;
+        if (ADJACENCYSEPARATOR != other.ADJACENCYSEPARATOR)
+            return false;
+        if (COORDINATESEPARATOR != other.COORDINATESEPARATOR)
+            return false;
+        if (FILESEPARATOR != other.FILESEPARATOR)
+            return false;
+        if (FILESTARTEDGES == null) {
+            if (other.FILESTARTEDGES != null)
+                return false;
+        } else if (!FILESTARTEDGES.equals(other.FILESTARTEDGES))
+            return false;
+        if (FILESTARTEDGETYPES == null) {
+            if (other.FILESTARTEDGETYPES != null)
+                return false;
+        } else if (!FILESTARTEDGETYPES.equals(other.FILESTARTEDGETYPES))
+            return false;
+        if (FILESTARTNODES == null) {
+            if (other.FILESTARTNODES != null)
+                return false;
+        } else if (!FILESTARTNODES.equals(other.FILESTARTNODES))
+            return false;
+        if (FILESTARTNODETYPES == null) {
+            if (other.FILESTARTNODETYPES != null)
+                return false;
+        } else if (!FILESTARTNODETYPES.equals(other.FILESTARTNODETYPES))
+            return false;
+        if (SIMPLEFILESEPARATOR != other.SIMPLEFILESEPARATOR)
+            return false;
+        if (WEIGHTEDSEPARATOR != other.WEIGHTEDSEPARATOR)
+            return false;
+        if (XYSEPARATOR != other.XYSEPARATOR)
+            return false;
+        if (Double.doubleToLongBits(bestCount) != Double
+                .doubleToLongBits(other.bestCount))
+            return false;
+        if (bestPath == null) {
+            if (other.bestPath != null)
+                return false;
+        } else if (!bestPath.equals(other.bestPath))
+            return false;
+        if (edges == null) {
+            if (other.edges != null)
+                return false;
+        } else if (!edges.equals(other.edges))
+            return false;
+        if (label == null) {
+            if (other.label != null)
+                return false;
+        } else if (!label.equals(other.label))
+            return false;
+        if (nodes == null) {
+            if (other.nodes != null)
+                return false;
+        } else if (!nodes.equals(other.nodes))
+            return false;
+        if (!Arrays.equals(stack, other.stack))
+            return false;
+        if (stackp != other.stackp)
+            return false;
+        if (start == null) {
+            if (other.start != null)
+                return false;
+        } else if (!start.equals(other.start))
+            return false;
+        if (!Arrays.equals(trail, other.trail))
+            return false;
+        if (trailp != other.trailp)
+            return false;
+        return true;
+    }
+    /**
 	 * Finds the first node in the graph with the given contour.
 	 * @return null if there is no such node, or if there is more than one.
 	 */
@@ -1930,7 +2042,7 @@ public class Graph implements Serializable {
 		for(Node n : getNodes()) {
 			paths.put(n,null);
 		}
-			
+
 		queue.add(startNode);
 		paths.put(startNode,path);
 
@@ -2008,7 +2120,7 @@ public class Graph implements Serializable {
 		}
 
 		return(K);
-	}	
+	}
 
 
 
@@ -2040,18 +2152,18 @@ public class Graph implements Serializable {
 		} else {
 			return(new ArrayList<Node>());
 		}
-		
+
 		trailp = 0;
 		trail = new Edge[edges.size()];
 		stackp = 0;
 		stack = new Edge[edges.size()];
-		
+
 		if(recursiveVersion) {
 			findEulerTrailSMK(startVertex);
 		} else {
 			findEulerTrailSMK2(startVertex);
 		}
-		
+
 		// this stuff converts from an array of edges
 		// to a list of nodes
 		ArrayList<Node> ret = new ArrayList<Node>();
@@ -2062,8 +2174,8 @@ public class Graph implements Serializable {
 			return ret;
 		}
 
-		
-		// try it twice, as the from and to nodes as the start node. 
+
+		// try it twice, as the from and to nodes as the start node.
 		Edge e = trail[0];
 		Node n = e.getFrom();
 		boolean success = true;
@@ -2103,11 +2215,11 @@ for(int i = 0; i < trail.length; i++) {
 }
 System.out.println();
 System.out.println("node list "+ret);
-*/	
+*/
 		return ret;
 	}
-	
-	
+
+
 	private Edge findEdgeSMK(Node node) {
 		for(Edge e : node.unvisitedConnectingEdges()) {
 			e.setVisited(true);
@@ -2115,10 +2227,10 @@ System.out.println("node list "+ret);
 		}
 		return null;
 	}
-	
-	/** recursive version */	
+
+	/** recursive version */
 	private void findEulerTrailSMK(Node vertexA) {
-		
+
 		Edge edge = findEdgeSMK(vertexA);
 		if(edge == null) {
 			return;
@@ -2129,7 +2241,7 @@ System.out.println("node list "+ret);
 		findEulerTrailSMK(vertexA);
 
 		return;
-	}	
+	}
 
 
 	/** Non recursive version */
@@ -2685,7 +2797,7 @@ System.out.println("Isomorphic");
 			pos = inPos;
 		}
 
-		
+
 	}
 
 
@@ -2722,7 +2834,7 @@ System.out.println("Isomorphic");
 
 		boolean ret = true;
 		for(Node matchedNode : matched1) {
-			Node oppositeNode = (Node)matchedNode.getMatch(); 
+			Node oppositeNode = (Node)matchedNode.getMatch();
 
 			if (matchedNode.getScore() != oppositeNode.getScore()) {
 				ret = false;
@@ -3004,7 +3116,7 @@ private Node start = null;
 //edge may have already been traversed once this tour
 					if(!containsConnections(edgePath,e,2)) {
 						tspRec(nextEdgePath,nextCount,nextNode);
-					}	
+					}
 				}
 			}
 		}
@@ -3021,7 +3133,7 @@ private Node start = null;
 		for(Edge e : edgeCollection) {
 			nodeList.remove(e.getFrom());
 			nodeList.remove(e.getTo());
-		}		
+		}
 		if(nodeList.size() != 0) {
 			return(false);
 		}
@@ -3054,7 +3166,7 @@ private Node start = null;
 /**
  * Finds a node within the passed point, or returns null
  * if the argument point is not over a node. The padding
- * refers to the distance the point can be from the 
+ * refers to the distance the point can be from the
  * node, and must be greater than 0. If there is more
  * than one node, it finds the
  * last one in the collection, which hopefully should
@@ -3078,7 +3190,7 @@ private Node start = null;
 /**
  * Finds an edge close to the passed point, or returns null
  * if the argument point is not over an edge. The padding
- * refers to the distance the point can be from the 
+ * refers to the distance the point can be from the
  * edge, and must be greater than 0. If there is more
  * than one edge, it finds the
  * last one in the collection, which hopefully should
@@ -3196,7 +3308,7 @@ private Node start = null;
 	public ArrayList getNodesWithFewEdges(int edgeNumber) {
 
 		ArrayList<Node> ret = new ArrayList<Node>();
-		
+
 		for(Node n : getNodes()) {
 			if(n.connectingEdges().size() <= edgeNumber) {
 				ret.add(n);
@@ -3204,8 +3316,8 @@ private Node start = null;
 		}
 		return ret;
 	}
-	
-	
+
+
 	/** returns the list of nodes with degree equal to or less than the given parameter */
 	public int edgeIntersections() {
 		int count = 0;
@@ -3221,26 +3333,26 @@ private Node start = null;
 		}
 		return count/2;
 	}
-	
-	
+
+
 /** Centre the graph on the given point */
 	public void centreOnPoint(int centreX, int centreY) {
 		Point graphCentre = getCentre();
-	
+
 		int moveX = centreX - graphCentre.x;
 		int moveY = centreY - graphCentre.y;
-		
+
 		moveGraph(moveX,moveY);
 	}
 
 /** Move all the nodes and edge bends by the values given */
 	public void moveGraph(int moveX, int moveY) {
-	
+
 		for(Node node : getNodes()) {
 			node.setX(node.getX()+moveX);
 			node.setY(node.getY()+moveY);
 		}
-	
+
 		for(Edge edge : getEdges()) {
 			for(Point point : edge.getBends()) {
 				point.x = point.x+moveX;
@@ -3273,7 +3385,7 @@ private Node start = null;
 		return(true);
 	}
 
-	
+
 	/**
 	 * Finds the first edge between the two nodes, or returns null
 	 */
@@ -3290,7 +3402,7 @@ private Node start = null;
 		return null;
 
 	}
-		
+
 
 	/**
 	 * Finds the first node in the graph containing the argument
@@ -3307,7 +3419,7 @@ private Node start = null;
 			}
 		}
 		return null;
-	}	
+	}
 
 	/**
 	 * Add edge between nodes if there is not already one present.
@@ -3332,13 +3444,13 @@ private Node start = null;
 		return newEdge;
 	}
 
-	
+
 	/**
 	 * Returns the difference in characters between the two labels, the
 	 * returned String is ordered.
 	 */
 	public static String findLabelDifferences(String label1, String label2) {
-		
+
 		ArrayList<String> labelList1 = AbstractDiagram.findContourList(label1);
 		ArrayList<String> labelList2 = AbstractDiagram.findContourList(label2);
 
@@ -3349,42 +3461,42 @@ private Node start = null;
 				labelList2.remove(contour1);
 			}
 		}
-		
+
 		labelList1.addAll(labelList2);
-		
+
 		Collections.sort(labelList1);
 		StringBuffer ret = new StringBuffer();
 		for(String l: labelList1) {
 			ret.append(l);
 		}
-		
+
 		return ret.toString();
 	}
-	
-	
+
+
 	/**
 	 * Returns the intersection in characters between the two labels, the
 	 * returned String is ordered.
 	 */
 	public static String findLabelIntersection(String label1, String label2) {
-		
+
 		ArrayList<String> labelList1 = AbstractDiagram.findContourList(label1);
 		ArrayList<String> labelList2 = AbstractDiagram.findContourList(label2);
 
 		ArrayList<String> retList = new ArrayList<String>();
-		
+
 		for(String contour: labelList1) {
 			if(labelList2.contains(contour)) {
 				retList.add(contour);
 			}
 		}
-		
+
 		Collections.sort(retList);
 		StringBuffer ret = new StringBuffer();
 		for(String l: retList) {
 			ret.append(l);
 		}
-		
+
 		return ret.toString();
 	}
 
@@ -3397,7 +3509,7 @@ private Node start = null;
 	public String toString() {
 		return(getLabel()+"\nNodes:"+getNodes().toString()+"\nEdges:"+getEdges().toString());
 	}
-	
+
 }
 
 

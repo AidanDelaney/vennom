@@ -15,6 +15,93 @@ import java.awt.*;
  */
 public class NodeType extends ItemType implements Serializable {
 
+@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((borderColor == null) ? 0 : borderColor.hashCode());
+        result = prime * result
+                + ((fillColor == null) ? 0 : fillColor.hashCode());
+        result = prime * result + height;
+        result = prime * result + ((selectedBorderColor == null) ? 0
+                : selectedBorderColor.hashCode());
+        result = prime * result + ((selectedFillColor == null) ? 0
+                : selectedFillColor.hashCode());
+        result = prime * result
+                + ((selectedStroke == null) ? 0 : selectedStroke.hashCode());
+        result = prime * result + ((selectedTextColor == null) ? 0
+                : selectedTextColor.hashCode());
+        result = prime * result
+                + ((shapeString == null) ? 0 : shapeString.hashCode());
+        result = prime * result + ((stroke == null) ? 0 : stroke.hashCode());
+        result = prime * result
+                + ((textColor == null) ? 0 : textColor.hashCode());
+        result = prime * result + width;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        NodeType other = (NodeType) obj;
+        if (borderColor == null) {
+            if (other.borderColor != null)
+                return false;
+        } else if (!borderColor.equals(other.borderColor))
+            return false;
+        if (fillColor == null) {
+            if (other.fillColor != null)
+                return false;
+        } else if (!fillColor.equals(other.fillColor))
+            return false;
+        if (height != other.height)
+            return false;
+        if (selectedBorderColor == null) {
+            if (other.selectedBorderColor != null)
+                return false;
+        } else if (!selectedBorderColor.equals(other.selectedBorderColor))
+            return false;
+        if (selectedFillColor == null) {
+            if (other.selectedFillColor != null)
+                return false;
+        } else if (!selectedFillColor.equals(other.selectedFillColor))
+            return false;
+        if (selectedStroke == null) {
+            if (other.selectedStroke != null)
+                return false;
+        } else if (!selectedStroke.equals(other.selectedStroke))
+            return false;
+        if (selectedTextColor == null) {
+            if (other.selectedTextColor != null)
+                return false;
+        } else if (!selectedTextColor.equals(other.selectedTextColor))
+            return false;
+        if (shapeString == null) {
+            if (other.shapeString != null)
+                return false;
+        } else if (!shapeString.equals(other.shapeString))
+            return false;
+        if (stroke == null) {
+            if (other.stroke != null)
+                return false;
+        } else if (!stroke.equals(other.stroke))
+            return false;
+        if (textColor == null) {
+            if (other.textColor != null)
+                return false;
+        } else if (!textColor.equals(other.textColor))
+            return false;
+        if (width != other.width)
+            return false;
+        return true;
+    }
+
 /** Height of a node, top to bottom. */
 	protected int height = 30;
 /** Width of a node, leftmost to rightmost. */
@@ -112,7 +199,7 @@ public class NodeType extends ItemType implements Serializable {
 		return ret;
 	}
 
-/** 
+/**
 * Outputs the content of the node type for debugging purposes.
 */
 	public String toString() {
