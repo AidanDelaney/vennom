@@ -21,6 +21,82 @@ import org.eulerdiagrams.vennom.apCircles.APCirclePanel;
 
 public class Edge implements Serializable {
 
+@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((bends == null) ? 0 : bends.hashCode());
+        result = prime * result + ((from == null) ? 0 : from.hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        result = prime * result + ((match == null) ? 0 : match.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(score);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((shape == null) ? 0 : shape.hashCode());
+        result = prime * result + ((to == null) ? 0 : to.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + (visited ? 1231 : 1237);
+        temp = Double.doubleToLongBits(weight);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Edge other = (Edge) obj;
+        if (bends == null) {
+            if (other.bends != null)
+                return false;
+        } else if (!bends.equals(other.bends))
+            return false;
+        if (from == null) {
+            if (other.from != null)
+                return false;
+        } else if (!from.equals(other.from))
+            return false;
+        if (label == null) {
+            if (other.label != null)
+                return false;
+        } else if (!label.equals(other.label))
+            return false;
+        if (match == null) {
+            if (other.match != null)
+                return false;
+        } else if (!match.equals(other.match))
+            return false;
+        if (Double.doubleToLongBits(score) != Double
+                .doubleToLongBits(other.score))
+            return false;
+        if (shape == null) {
+            if (other.shape != null)
+                return false;
+        } else if (!shape.equals(other.shape))
+            return false;
+        if (to == null) {
+            if (other.to != null)
+                return false;
+        } else if (!to.equals(other.to))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        if (visited != other.visited)
+            return false;
+        if (Double.doubleToLongBits(weight) != Double
+                .doubleToLongBits(other.weight))
+            return false;
+        return true;
+    }
+
+
 /** Source node. Must be assigned.*/
 	protected Node from;
 /** Target node. Must be assigned.*/
@@ -180,7 +256,7 @@ public class Edge implements Serializable {
  */
 	public boolean setFromTo(Node inFrom, Node inTo) {
 
-		Node oldFrom=from;		
+		Node oldFrom=from;
 		if(!setFrom(inFrom)) {
 			return(false);
 		}
@@ -238,7 +314,7 @@ public class Edge implements Serializable {
 	 * be apparent.
 	 */
 		public void reverse() {
-			
+
 			Node oldFrom = from;
 			setFrom(to);
 			setTo(oldFrom);
@@ -250,13 +326,13 @@ public class Edge implements Serializable {
  * if there are no edge bends in either edge.
  */
 	public boolean straightLineIntersects(Edge e) {
-		
+
 		// if the edges connect to the same node there is no crossing
 		if(getFrom() == e.getFrom()) {return false;}
 		if(getFrom() == e.getTo()) {return false;}
 		if(getTo() == e.getFrom()) {return false;}
 		if(getTo() == e.getTo()) {return false;}
-		
+
 		int x1 = getFrom().getX();
 		int y1 = getFrom().getY();
 		int x2 = getTo().getX();
@@ -347,4 +423,4 @@ public class Edge implements Serializable {
 
 }
 
- 
+

@@ -15,6 +15,72 @@ import java.awt.*;
  */
 public class EdgeType extends ItemType implements Serializable {
 
+@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (directed ? 1231 : 1237);
+        result = prime * result
+                + ((lineColor == null) ? 0 : lineColor.hashCode());
+        result = prime * result + priority;
+        result = prime * result + ((selectedLineColor == null) ? 0
+                : selectedLineColor.hashCode());
+        result = prime * result
+                + ((selectedStroke == null) ? 0 : selectedStroke.hashCode());
+        result = prime * result + ((selectedTextColor == null) ? 0
+                : selectedTextColor.hashCode());
+        result = prime * result + ((stroke == null) ? 0 : stroke.hashCode());
+        result = prime * result
+                + ((textColor == null) ? 0 : textColor.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        EdgeType other = (EdgeType) obj;
+        if (directed != other.directed)
+            return false;
+        if (lineColor == null) {
+            if (other.lineColor != null)
+                return false;
+        } else if (!lineColor.equals(other.lineColor))
+            return false;
+        if (priority != other.priority)
+            return false;
+        if (selectedLineColor == null) {
+            if (other.selectedLineColor != null)
+                return false;
+        } else if (!selectedLineColor.equals(other.selectedLineColor))
+            return false;
+        if (selectedStroke == null) {
+            if (other.selectedStroke != null)
+                return false;
+        } else if (!selectedStroke.equals(other.selectedStroke))
+            return false;
+        if (selectedTextColor == null) {
+            if (other.selectedTextColor != null)
+                return false;
+        } else if (!selectedTextColor.equals(other.selectedTextColor))
+            return false;
+        if (stroke == null) {
+            if (other.stroke != null)
+                return false;
+        } else if (!stroke.equals(other.stroke))
+            return false;
+        if (textColor == null) {
+            if (other.textColor != null)
+                return false;
+        } else if (!textColor.equals(other.textColor))
+            return false;
+        return true;
+    }
+
 /** Indicates if the edge is directed. */
 	protected boolean directed = false;
 	protected Color lineColor = Color.black;
@@ -114,7 +180,7 @@ public class EdgeType extends ItemType implements Serializable {
 		return ret;
 	}
 
-/** 
+/**
 * Outputs the content of the type.
 */
 	public String toString() {
