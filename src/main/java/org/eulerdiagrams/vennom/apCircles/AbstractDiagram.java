@@ -3,7 +3,6 @@ package org.eulerdiagrams.vennom.apCircles;
 import java.util.*;
 
 import org.eulerdiagrams.vennom.graph.*;
-
 import org.eulerdiagrams.vennom.apCircles.comparators.*;
 import org.eulerdiagrams.vennom.apCircles.enumerate.*;
 
@@ -31,35 +30,16 @@ public class AbstractDiagram implements Comparable<AbstractDiagram>, Cloneable {
 	/** indicating that the brute force part of the isomorphism test was used */
 	protected boolean bruteForceApplied = false;
 	protected HashMap<String,String> contourLabelMap = new HashMap<String,String>();
-public static long timer1 = 0;
-public static long timer2 = 0;
-public static long timer3 = 0;
-public static long timer4 = 0;
+
+private static long timer1 = 0;
+private static long timer2 = 0;
+private static long timer3 = 0;
+private static long timer4 = 0;
 	
 	public long getBruteForceCount() {return bruteForceCount;}
 	public long getBruteForceTime() {return bruteForceTime;}
 	public boolean getBruteForceApplied() {return bruteForceApplied;}
 	public ArrayList<AtomicAbstractDiagram> getAtomicAbstractDiagrams() {return atomicAbstractDiagrams;}
-
-	
-	public static void main(String[] args) {
- 		AbstractDiagram ad1,ad2;
-	/*	ad1 = new AbstractDiagram("a b ");
-		ad2 = new AbstractDiagram("c");
-		System.out.println(ad1.isomorphicTo(ad2));
-		System.out.println(failOnZoneSizeCount);*/
- 		
- 		
- 		//ad1 = new AbstractDiagram("a b ab abc ac d bd e ae");
- 		//ad1 = new AbstractDiagram("a b ab abc bc bcd bd");
- 		ad1 = new AbstractDiagram("a b ab abc bc bd bcd be bce abcf abf");
- 		//ad1 = new AbstractDiagram("a b ba");
- 		//ad1 = new AbstractDiagram("a b ab bc abc bcd abcd bcde bce bf f g bg bh bgh bghi bhi bgj gj");
- 		
- 		//ad1=new AbstractDiagram("0 a b c d f ab ac ad af"); 
- 		//ad1.checkInductivePiercingDiagram();
- 		
-	}
 	
 	
 	/**
@@ -103,7 +83,7 @@ public static long timer4 = 0;
 	}
 
 	
-	public static AbstractDiagram VennFactory(int numberOfContours) {
+	private static AbstractDiagram VennFactory(int numberOfContours) {
 		ArrayList<String> zones = Enumerate.findAllZones(numberOfContours);
 		StringBuffer adZones = new StringBuffer();
 		adZones.append("0");
@@ -133,11 +113,12 @@ public static long timer4 = 0;
 		}
 		
 		AbstractDiagram ad = new AbstractDiagram(adZones.toString());
-		ad.addZone("");
+		if(includeNull)
+			ad.addZone("");
 		return ad;
 	}
 	
-	public static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition) {
+	private static AbstractDiagram randomDiagramFactory(int numberOfContours, boolean includeNull, double chanceOfZoneAddition) {
 
 		long seed = System.currentTimeMillis();
 		AbstractDiagram ad = randomDiagramFactory(numberOfContours, includeNull, chanceOfZoneAddition, seed);
@@ -151,17 +132,17 @@ public static long timer4 = 0;
 	 * lexographically. Returns null if a contour is specified more than once
 	 * in any single zone or if there are duplicate zones.
 	 */
-	public static ArrayList<String> findZoneList(String diagramString) {
+	private static ArrayList<String> findZoneList(String diagramString) {
 		ArrayList<String> ret = new ArrayList<String>();
 		String[] splitString = diagramString.split(" ");
 		
 		for(int i = 0; i< splitString.length; i++) {
 			String zoneString = splitString[i];
 			if(zoneString.length() > 0) {
-				if(isOutsideZone(zoneString)) { // deal with "0" being the empty set
+				if(AbstractDiagram.isOutsideZone(zoneString)) { // deal with "0" being the empty set
 					zoneString = "";
 				}
-				String orderedZone = orderZone(zoneString);
+				String orderedZone = AbstractDiagram.orderZone(zoneString);
 				if(orderedZone == null) {
 					System.out.println("findZoneList("+diagramString+"): duplicate contour in zone "+zoneString);
 					return null;
@@ -191,7 +172,7 @@ public static long timer4 = 0;
 			if(zoneString.equals("0")) { // deal with "0" being the empty set
 				zoneString = "";
 			}
-			String orderedZone = orderZone(zoneString);
+			String orderedZone = AbstractDiagram.orderZone(zoneString);
 			if(orderedZone == null) {
 				System.out.println("construcZoneList("+zones+"): duplicate contour in zone "+zoneString);
 				return null;
@@ -228,7 +209,6 @@ public static long timer4 = 0;
 		return ret;
 	}	
 	
-	
 	/** 
 	 * Orders the zone string and detects duplicates. Returns null on duplicate.
 	 */
@@ -247,17 +227,13 @@ public static long timer4 = 0;
 		}
 
 		return sortedZoneStringBuffer.toString();
-	}
-
-	
-
-	
+	}	
 	/**
 	 * Finds the duplicates in the String.
 	 */
-	public static ArrayList<String> findDuplicateContours(String contours) {
+	private static ArrayList<String> findDuplicateContours(String contours) {
 		
-		ArrayList<String> contourList = findContourList(contours);
+		ArrayList<String> contourList = AbstractDiagram.findContourList(contours);
 		Collections.sort(contourList);
 		
 		ArrayList<String> ret = new ArrayList<String>();
@@ -298,7 +274,7 @@ public static long timer4 = 0;
 	public static ArrayList<String> findContoursFromZones(ArrayList<String> zones) {
 		ArrayList<String> contours = new ArrayList<String>(); 
 		for(String zone: zones) {
-			ArrayList<String> zoneContours = findContourList(zone);
+			ArrayList<String> zoneContours = AbstractDiagram.findContourList(zone);
 			contours.addAll(zoneContours);
 		}
 		Collections.sort(contours);
@@ -312,7 +288,7 @@ public static long timer4 = 0;
 	 * Takes a list of zones and returns a sorted list of contours
 	 * appearing in the zones.
 	 */
-	public static ArrayList<String> findSortedContoursFromZones(ArrayList<String> zones) {
+	private static ArrayList<String> findSortedContoursFromZones(ArrayList<String> zones) {
 		
 		ArrayList<String> contours = findContoursFromZones(zones);
 		
@@ -340,7 +316,6 @@ public static long timer4 = 0;
 		return contours;
 	}
 	
-
 	/** Takes a string and returns the list of characters in the string */
 	public static ArrayList<String> findContourList(String zoneLabel) {
 		String[] zones = zoneLabel.split("");
@@ -348,8 +323,7 @@ public static long timer4 = 0;
 		zoneList.remove(""); // split adds a blank entry in index 0
 		return zoneList;
 	}
-	
-	
+
 	/**
 	 * Generate the containment graph with only contours linking to
 	 * its immediate parents. Each contour is a node,
@@ -380,7 +354,7 @@ public static long timer4 = 0;
 	 * without using e or any edges where there is another edge going
 	 * in the opposite direction.
 	 */
-	public static boolean alternativePath(Graph g, Edge e) {
+	private static boolean alternativePath(Graph g, Edge e) {
 		
 		Node source = e.getFrom();
 		Node target = e.getTo();
@@ -453,7 +427,7 @@ public static long timer4 = 0;
 
 		// now add appropriate edges
 		for(String zone : zoneList) {
-			ArrayList<String> contours = findContourList(zone);
+			ArrayList<String> contours = AbstractDiagram.findContourList(zone);
 			for(int i = 0; i< contours.size(); i++) {
 				String ci = contours.get(i);
 				for(int j = i+1; j< contours.size(); j++) {
@@ -476,7 +450,7 @@ public static long timer4 = 0;
 	 * does not already exist.
 	 * @return true if an edge is added.
 	 */
-	public boolean addUniqueEdge(Graph graph, String label1, String label2) {
+	private static boolean addUniqueEdge(Graph graph, String label1, String label2) {
 		Node n1 = graph.firstNodeWithLabel(label1);
 		Node n2 = graph.firstNodeWithLabel(label2);
 		
@@ -501,7 +475,7 @@ public static long timer4 = 0;
 		// first get the pairs of intersecting contours
 		ArrayList<String> intersectingPairs = new ArrayList<String>();
 		for(String zone : zoneList) {
-			ArrayList<String> contours = findContourList(zone);
+			ArrayList<String> contours = AbstractDiagram.findContourList(zone);
 			for(int i = 0; i< contours.size(); i++) {
 				String ci = contours.get(i);
 				for(int j = i+1; j< contours.size(); j++) {
@@ -578,7 +552,7 @@ public static long timer4 = 0;
 		ArrayList<String> ret = new ArrayList<String>();
 		for(StringBuffer sb : intersectionGroups) {
 			String group = sb.toString();
-			group = orderZone(group);
+			group = AbstractDiagram.orderZone(group);
 			ret.add(group);
 		}
 		
@@ -685,7 +659,7 @@ public static long timer4 = 0;
 				for(Edge e : parentNode.getEdgesTo()) {
 					Node childNode = e.getFrom();
 					String childAtomicContours = childNode.getLabel();
-					ArrayList<String> childContourList = findContourList(childAtomicContours);
+					ArrayList<String> childContourList = AbstractDiagram.findContourList(childAtomicContours);
 					if(!addedContours.contains(childContourList.get(0))) {
 						// child is not yet in the tree
 						AbstractDiagram ad = findAtomicDiagram(childAtomicContours);
@@ -706,7 +680,7 @@ public static long timer4 = 0;
 								}
 							}
 						}
-						parentZone = orderZone(parentZone);
+						parentZone = AbstractDiagram.orderZone(parentZone);
 						AtomicAbstractDiagram aad = new AtomicAbstractDiagram(ad,parentDiagram, parentZone);
 						
 						atomicAbstractDiagrams.add(aad);
@@ -732,7 +706,7 @@ public static long timer4 = 0;
 	public AbstractDiagram findAtomicDiagram(String atomicContours) {
 		
 		ArrayList<String> zones = findZonesContainingContours(atomicContours);
-		ArrayList<String> contours =  findContourList(atomicContours);
+		ArrayList<String> contours =  AbstractDiagram.findContourList(atomicContours);
 		Collections.sort(contours);
 		
 		ArrayList<String> zoneList = new ArrayList<String>();
@@ -771,7 +745,7 @@ public static long timer4 = 0;
 	public ArrayList<String> findZonesContainingContours(String contours) {
 		
 		ArrayList<String> ret = new ArrayList<String>();
-		ArrayList<String> splitContourList = findContourList(contours);
+		ArrayList<String> splitContourList = AbstractDiagram.findContourList(contours);
 		
 		for(String zone : getZoneList()) {
 			for(String contour : splitContourList) {
@@ -825,7 +799,7 @@ public static long timer4 = 0;
 		String g2s = groups.get(group2);
 		String mergedGroup = g1s+g2s;
 		
-		mergedGroup = orderZone(mergedGroup);
+		mergedGroup = AbstractDiagram.orderZone(mergedGroup);
 		
 		groups.remove(g1s);
 		groups.remove(g2s);
@@ -838,7 +812,7 @@ public static long timer4 = 0;
 	
 	
 	/** Merge the labels in all parents of the given node, assumes a DAG. */
-	public static String findAllParents(Graph g, Node n) {
+	private static String findAllParents(Graph g, Node n) {
 		
 		String ret = "";
 		
@@ -855,7 +829,7 @@ public static long timer4 = 0;
 			queue.addAll(currentN.getEdgesFrom());
 		}
 		
-		ret = orderZone(ret);
+		ret = AbstractDiagram.orderZone(ret);
 		
 		return ret;
 		
@@ -888,7 +862,7 @@ public static long timer4 = 0;
 			}
 			if(zone.contains(c)) {
 				boolean isSubZone = true;
-				for(String subC : findContourList(z)) {
+				for(String subC : AbstractDiagram.findContourList(z)) {
 					if(!zone.contains(subC)) {
 						isSubZone = false;
 						break;
@@ -942,9 +916,9 @@ public static long timer4 = 0;
 	public static String zoneIntersection(String z1, String z2) {
 		ArrayList<String> intersection = new ArrayList<String>();
 		
-		ArrayList<String> c2List = findContourList(z2);
+		ArrayList<String> c2List = AbstractDiagram.findContourList(z2);
 		
-		for(String c1 : findContourList(z1)) {
+		for(String c1 : AbstractDiagram.findContourList(z1)) {
 			if(c2List.contains(c1)) {
 				intersection.add(c1);
 			}
@@ -966,9 +940,9 @@ public static long timer4 = 0;
 	 */
 	public static String zoneUnion(String z1, String z2) {
 		
-		ArrayList<String> union = findContourList(z2);
+		ArrayList<String> union = AbstractDiagram.findContourList(z2);
 		
-		for(String c1 : findContourList(z1)) {
+		for(String c1 : AbstractDiagram.findContourList(z1)) {
 			if(!union.contains(c1)) {
 				union.add(c1);
 			}
@@ -990,9 +964,9 @@ public static long timer4 = 0;
 	 */
 	public static String zoneMinus(String z1, String z2) {
 		
-		ArrayList<String> c1List = findContourList(z1);
+		ArrayList<String> c1List = AbstractDiagram.findContourList(z1);
 		
-		for(String c2 : findContourList(z2)) {
+		for(String c2 : AbstractDiagram.findContourList(z2)) {
 			if(c1List.contains(c2)) {
 				c1List.remove(c2);
 			}
@@ -1014,7 +988,7 @@ public static long timer4 = 0;
 	 * Removes duplicates from the sorted List, returns true
 	 * if duplicates found, false if not.
 	 */
-	public static boolean removeDuplicatesFromSortedList(List list) {
+	private static boolean removeDuplicatesFromSortedList(List list) {
 		Object last = null;
 		boolean found = false;
 		ListIterator li = list.listIterator();
@@ -1035,12 +1009,11 @@ public static long timer4 = 0;
 		return found;
 	}
 	
-	
 	/**
 	 * Finds duplicates in a the sorted List, returns true
 	 * if duplicates found, false if not.
 	 */
-	public static boolean hasDuplicatesInSortedList(List list) {
+	static boolean hasDuplicatesInSortedList(List list) {
 		Object last = null;
 		ListIterator li = list.listIterator();
 		while(li.hasNext()) {
@@ -1059,7 +1032,6 @@ public static long timer4 = 0;
 		return false;
 	}
 	
-	
 	/**
 	 * Sorts the list of strings and checks for duplicates. Returns
 	 * true if there are no duplicates, false if there are. The
@@ -1069,7 +1041,7 @@ public static long timer4 = 0;
 		ZoneStringComparator zComp = new ZoneStringComparator();
 		Collections.sort(zoneList,zComp);
 		
-		if(hasDuplicatesInSortedList(zoneList)) {
+		if(AbstractDiagram.hasDuplicatesInSortedList(zoneList)) {
 			return false;
 		}
 
@@ -1093,7 +1065,7 @@ public static long timer4 = 0;
 			// like a->b, b->a
 			
 			// first split the zone and convert it into a list that can be changed
-			ArrayList<String> splitZoneList = findContourList(z);
+			ArrayList<String> splitZoneList = AbstractDiagram.findContourList(z);
 
 			String newZone = "";
 			// find occurences of keys and replace them in the new zone
@@ -1106,7 +1078,7 @@ public static long timer4 = 0;
 			}
 			
 			// newZone might need to be reordered
-			newZone = orderZone(newZone);
+			newZone = AbstractDiagram.orderZone(newZone);
 			if(newZone == null) {
 				System.out.println("remapContourStrings(): duplicate contour in zone "+z+" new zone "+newZone+" caused by map");
 				return false;
@@ -1134,7 +1106,7 @@ public static long timer4 = 0;
 		Iterator<String> i = zoneList.iterator();
 		while(i.hasNext()) {
 			String zone = i.next();
-			if(!isOutsideZone(zone)) {
+			if(!AbstractDiagram.isOutsideZone(zone)) {
 				ret += zone;
 			}
 			if(i.hasNext()) {
@@ -1145,7 +1117,6 @@ public static long timer4 = 0;
 
 	}
 
-	
 	public static boolean isOutsideZone(String zone) {
 		if(zone.equals("")  || zone.equals("0") || zone.equals("O")) {
 			return true;
@@ -1397,7 +1368,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	
 	
 	
-	public static ArrayList<GroupMap> firstCombination(ArrayList<Integer> intList) {
+	private static ArrayList<GroupMap> firstCombination(ArrayList<Integer> intList) {
 		ArrayList<GroupMap> ret = new ArrayList<GroupMap>();
 		for(Integer i : intList) {
 			GroupMap gm = new GroupMap(i);
@@ -1413,7 +1384,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	 * index and the third number is the current rhs index, increment the
 	 * combinations by one, or return false if at the end.
 	 */
-	public static boolean nextCombination(ArrayList<GroupMap> current) {
+	private static boolean nextCombination(ArrayList<GroupMap> current) {
 		
 		if(current.size() == 0) {
 			return false;
@@ -1454,7 +1425,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 			
 			int zoneSize = z.length();
 			
-			ArrayList<String> splitZoneList = findContourList(z);
+			ArrayList<String> splitZoneList = AbstractDiagram.findContourList(z);
 			for(String c : splitZoneList) {
 				String key = c+zoneSize; // key is the contour and size of zone
 				Integer occurrences = sizeMap.get(key);
@@ -1521,7 +1492,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	/**
 	 * Compare two lists that consist of contour occurrences at zone sizes
 	 */
-	public static boolean compareOccurrences(ArrayList<Integer> list1, ArrayList<Integer> list2) {
+	private static boolean compareOccurrences(ArrayList<Integer> list1, ArrayList<Integer> list2) {
 		if(list1.size() != list2.size()) {
 			return false;
 		}
@@ -1600,7 +1571,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	 * the ordering in the HashMap, with contours having the
 	 * same order in the same list. The list must be sorted on the hashmap values.
 	 */
-	public static ArrayList<ArrayList<String>> groupContoursByMap(ArrayList<String> contours, HashMap<String,Integer> map) {
+	private static ArrayList<ArrayList<String>> groupContoursByMap(ArrayList<String> contours, HashMap<String,Integer> map) {
 		ArrayList<ArrayList<String>> ret = new ArrayList<ArrayList<String>>();
 		if(contours.size() == 0) {
 			return ret;
@@ -1637,7 +1608,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	/**
 	 * Find the complement diagram.
 	 */
-	public AbstractDiagram complement() {
+	private AbstractDiagram complement() {
 		
 		ArrayList<String> contours = getContours();
 		ArrayList<String> zones = getZoneList();
@@ -1688,7 +1659,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 		// set up the contours by the size of zones they occur in
 		HashMap<Integer,ArrayList<String>> zoneSizeToContours = new HashMap<Integer,ArrayList<String>>();
 		for(String zone: zoneList) {
-			ArrayList<String> splitZoneList = findContourList(zone);
+			ArrayList<String> splitZoneList = AbstractDiagram.findContourList(zone);
 			
 			int zoneSize = splitZoneList.size();
 			ArrayList<String> contourList = zoneSizeToContours.get(zoneSize);
@@ -1826,21 +1797,21 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	
 	public boolean addZone(String z) {
 		String zoneString = z;
-		if(isOutsideZone(zoneString)) { // deal with "0" being the empty set
+		if(AbstractDiagram.isOutsideZone(zoneString)) { // deal with "0" being the empty set
 			zoneString = "";
 		}
 
 		if(zoneList.contains(zoneString)) {
 			return false;
 		}
-		String orderedZone = orderZone(zoneString);
+		String orderedZone = AbstractDiagram.orderZone(zoneString);
 		zoneList.add(orderedZone);
 		sortZoneList(zoneList);
 		return true;
 	}
 	public boolean removeZone(String z) {
 		String zoneString = z;
-		if(isOutsideZone(zoneString)) { // deal with "0" being the empty set
+		if(AbstractDiagram.isOutsideZone(zoneString)) { // deal with "0" being the empty set
 			zoneString = "";
 		}
 		
@@ -1881,7 +1852,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	}
 	
 	
-	public AbstractDiagram removePiercing() {
+	private AbstractDiagram removePiercing() {
 		for(String s : this.getContours()) {
 			ArrayList<String> zones = new ArrayList<String>();
 			for(String s1: this.getZoneList()){
@@ -1905,7 +1876,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 		return null;
 	}
 	
-	public void checkInductivePiercingDiagram(){		
+	private void checkInductivePiercingDiagram(){		
 		boolean stop = false;
 		AbstractDiagram newDiagram = this.clone();
 		
@@ -1920,8 +1891,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 				stop = true;
 			//	System.out.println("is IPD");
 			}
-		}
-	
+		}	
 	}
 	
 	
