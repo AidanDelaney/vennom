@@ -13,44 +13,102 @@ import org.junit.Test;
 
 public class TestGraph {
 
-    @Test
-    // A symmetric Venn2
-    public void testVenn2_001() {
-        // Venn2 area spec
-    	String task = "a 100.0\nb 100.0\nab 500";
-        AreaSpecification as = new AreaSpecification(task);
+    // generate test code by switching this on
+    // then we see code we can paste into the test
+    // TODO this is only a manageable system for a handful of tests
+    // we we expect to be pretty geometrically stable
+	static void generateTestCode(Graph g)
+	{
+        ArrayList<Node> nodes = g.getNodes();
+
+        System.out.println("ArrayList<Node> nodes = g.getNodes();");
+        System.out.println("assertEquals(nodes.size(), "+nodes.size()+");");
+        for(int i=0; i<nodes.size();++i){
+            System.out.println("Node n"+i+" = nodes.get("+i+");");
+            Node n = nodes.get(i);
+            System.out.println("assertTrue(n"+i+".getContour().equals(\""+n.getContour()+"\"));"
+                              +" // will break if the graph nodes get reordered");
+            System.out.println("Point p"+i+" = n"+i+".getCentre();");
+            Point p = n.getCentre();
+        	System.out.println("assertEquals(p"+i+".x, "+p.x+");");
+        	System.out.println("assertEquals(p"+i+".y, "+p.y+");");
+            System.out.println("double r"+i+" = n"+i+".getPreciseRadius();");
+            System.out.println("assertEquals(r"+i+", "+n.getPreciseRadius()+", 0.1);");
+        }
+	}
+	
+	static class TestData{
+		public String testName;
+		public ArrayList<TestContourData> contourData;	
+		public TestData( String s, 
+				         ArrayList<TestContourData> cs ){
+			testName = s;
+			contourData = cs;
+		}
+		// print to String?  Serialize?
+		// compare?
+	}
+	static class TestContourData{
+		public String contourName;
+		public double x;
+		public double y;
+		public double r;
+		public TestContourData(String _n, double _x, double _y, double _r)
+			{contourName = _n; x = _x; y = _y; r = _r;}
+		// print to String?  Serialize?
+		// compare?
+	}
+	static TestData generateTestData(String name, Graph g){		
+		ArrayList<TestContourData> cs = new ArrayList<TestContourData>();
+		cs.add(new TestContourData("a", 1, 2, 3));
+		cs.add(new TestContourData("b", 2, 2, 3));
+		TestData td = new TestData( name, cs );
+		return td;
+	}
+	
+	// This wraps the essence of the Vennom tasks - turn a String into a 
+	// layout-enriched Graph.  Extract it here so all tests can share code
+	// to, for example, verify the layout conforms to the task.
+	private Graph generateForceLayout( String task ){
+		System.out.println("task is\n"+task);
+		
+		AreaSpecification as = new AreaSpecification(task);
         VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
         Graph g = vl.layout();
+        // validate?
 
-        System.out.println("task is\n"+task);
+        // nodes are never null
         for(Node n: g.getNodes()) {
             assertThat(n, is(not(nullValue())));
             System.out.println(n.getContour() + ", " + n.getPreciseRadius() + ", " 
                              + n.getCentre().x + ", " + n.getCentre().y);
         }
         
-        // generate test code by switching this on
-        // then we see code we can put into the test
-        // TODO this is only a manageable system for a handful of tests
-        // we we expect to be pretty geometrically stable
-        boolean regenerate_geometry_checks = false;
-        if(regenerate_geometry_checks){
-            ArrayList<Node> nodes = g.getNodes();
+        return g;
+	}
+	
+    @Test
+    // test the generation of test code (at least this generates code coverage of it)
+    public void test_testCodeGeneration() {
+    	String task = "a 100.0\nb 100.0\nab 500";
+    	Graph g = generateForceLayout( task );
+    	
+    	// this next line is the purpose of this test
+    	generateTestCode(g);   
+    }
+    
 
-            System.out.println("ArrayList<Node> nodes = g.getNodes();");
-            System.out.println("assertEquals(nodes.size(), "+nodes.size()+");");
-            for(int i=0; i<nodes.size();++i){
-	            System.out.println("Node n"+i+" = nodes.get("+i+");");
-	            Node n = nodes.get(i);
-	            System.out.println("assertTrue(n"+i+".getContour().equals(\""+n.getContour()+"\"));"
-	                              +" // will break if the graph nodes get reordered");
-	            System.out.println("Point p"+i+" = n"+i+".getCentre();");
-	            Point p = n.getCentre();
-	        	System.out.println("assertEquals(p"+i+".x, "+p.x+");");
-	        	System.out.println("assertEquals(p"+i+".y, "+p.y+");");
-	            System.out.println("double r"+i+" = n"+i+".getPreciseRadius();");
-	            System.out.println("assertEquals(r"+i+", "+n.getPreciseRadius()+", 0.1);");
-            }
+	@Test
+    // A symmetric Venn2
+    public void testVenn2_001() {
+        // Venn2 area spec
+    	String task = "a 100.0\nb 100.0\nab 500";
+    	Graph g = generateForceLayout( task );
+
+    	// if this test fails and we want to refresh the checking code below,
+    	boolean regenerate_geometry_checks = false;
+        if(regenerate_geometry_checks){
+        	generateTestCode(g);
         }
             
         ArrayList<Node> nodes = g.getNodes();
@@ -77,8 +135,7 @@ public class TestGraph {
         
         // TODO write a function which takes the String task
         // and the graph and an error tolerance and validates the result.
-        // Does this code already exist?
-        
+        // Does this code already exist?        
     }
     
     @Test
@@ -103,22 +160,7 @@ public class TestGraph {
         // we we expect to be pretty geometrically stable
         boolean regenerate_geometry_checks = false;
         if(regenerate_geometry_checks){
-            ArrayList<Node> nodes = g.getNodes();
-
-            System.out.println("ArrayList<Node> nodes = g.getNodes();");
-            System.out.println("assertEquals(nodes.size(), "+nodes.size()+");");
-            for(int i=0; i<nodes.size();++i){
-	            System.out.println("Node n"+i+" = nodes.get("+i+");");
-	            Node n = nodes.get(i);
-	            System.out.println("assertTrue(n"+i+".getContour().equals(\""+n.getContour()+"\"));"
-	                              +" // will break if the graph nodes get reordered");
-	            System.out.println("Point p"+i+" = n"+i+".getCentre();");
-	            Point p = n.getCentre();
-	        	System.out.println("assertEquals(p"+i+".x, "+p.x+");");
-	        	System.out.println("assertEquals(p"+i+".y, "+p.y+");");
-	            System.out.println("double r"+i+" = n"+i+".getPreciseRadius();");
-	            System.out.println("assertEquals(r"+i+", "+n.getPreciseRadius()+", 0.1);");
-            }
+        	generateTestCode(g);
         }
             
         ArrayList<Node> nodes = g.getNodes();
@@ -138,4 +180,5 @@ public class TestGraph {
         double r1 = n1.getPreciseRadius();
         assertEquals(r1, 14.927053303604616, 0.1);        
     }
+    
 }
