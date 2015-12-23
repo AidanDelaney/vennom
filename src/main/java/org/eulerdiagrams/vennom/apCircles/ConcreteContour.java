@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -82,10 +81,6 @@ public class ConcreteContour {
 		this.polygon = polygon;
 		resetArea();
 	}
-	public void addConcurrentLabel(String s){
-		if(!concurrentLabels.contains(s))
-			concurrentLabels+=s;
-	}
 	public String getConcurrentLabels(){
 		return concurrentLabels;
 	}
@@ -109,7 +104,7 @@ public class ConcreteContour {
 		return area;
 	}
 
-	public void resetArea() {
+	private void resetArea() {
 		if (polygon == null) {
 			area = new Area();
 		} else {
@@ -355,69 +350,6 @@ public class ConcreteContour {
 		}
 		return ret;
 	}
-
-	/**
-	 * Find the duplicate zones by testing for connectivity of polygons that
-	 * make up the zones, then checking for holes. This assumes no duplicate
-	 * contours.
-	 */
-	public static ArrayList<String> findDuplicateZones(
-			ArrayList<ConcreteContour> concreteContours) {
-		ArrayList<String> retZones = new ArrayList<String>();
-
-		if (concreteContours == null) {
-			return retZones;
-		}
-
-		HashMap<String, Area> zoneAreaMap = generateZoneAreas(concreteContours);
-
-		// find zones where multiple polygons that make up the zone
-		for (String zone : zoneAreaMap.keySet()) {
-			Area area = zoneAreaMap.get(zone);
-
-			ArrayList<Polygon> polygons = polygonsFromArea(area);
-			Polygon outerPolygon = null;
-			if (zone.equals("")) {
-				// outer zone is a special case where 3 nested polygons
-				// can appear - the hole, the bounds outside hole and
-				// the border, so remove the border for now.
-				outerPolygon = findOuterPolygon(polygons);
-				polygons.remove(outerPolygon);
-			}
-
-			// remove polygons that surround holes in the zone
-			// we only want polygons where the fill is the zone
-			// eg. diagram "0 a b ab" where a and b go through each other
-			// has two polys filled with the zone for both a and b
-			// the diagram "0 a b" drawn normally has three
-			// polys for 0 (including border), only one of which
-			// is filled with 0.
-			//
-			// What about holes in holes? Does this happen with
-			// simple polygons? I don't think so.
-			ArrayList<Polygon> polysCopy = new ArrayList<Polygon>(polygons);
-			for (Polygon polygon : polysCopy) {
-				Point2D insidePoint = findPointInsidePolygon(polygon);
-				if (insidePoint != null && !area.contains(insidePoint)) {
-					polygons.remove(polygon);
-				}
-			}
-
-			if (zone.equals("")) {
-				polygons.add(outerPolygon);
-			}
-
-			if (polygons.size() > 1) {
-				retZones.add(zone);
-			}
-		}
-
-		AbstractDiagram.sortZoneList(retZones);
-
-		return retZones;
-	}
-	
-	
 	
 	
 

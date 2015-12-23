@@ -197,19 +197,6 @@ public class APCirclePanel extends JPanel implements MouseListener, MouseMotionL
 		gv.setGraphPanel(null);
 	}
 
-/** Add a graph experiment to the panel. */
-	public void addGraphExperiment(GraphExperiment ge) {
-		graphExperimentList.add(ge);
-		ge.setGraphPanel(this);
-	}
-
-/** Removes a graph experiment from the panel. */
-	public void removeGraphExperiment(GraphExperiment ge) {
-		graphExperimentList.remove(ge);
-		ge.setGraphPanel(null);
-	}
-
-
 	public void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
 
@@ -379,8 +366,6 @@ g2.draw(p);
 		if(!selection.contains(e)) {
 			Stroke stroke = et.getStroke();
 			if(et.equals(APCircleDisplay.FIXED)) {
-				Node n1 = e.getFrom();
-				Node n2 = e.getTo();
 				double desiredLength = 0;
 				try {
 					desiredLength = Double.parseDouble(e.getLabel());
@@ -519,11 +504,6 @@ g2.draw(p);
 	}
 
 	
-	private Point getLabelCentre(Node n) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	/** Draws a circle on the graphics */
 	public void paintCircle(Graphics2D g2, Node n, Color c) {
 

@@ -20,12 +20,9 @@ public class AbstractDiagram implements Comparable<AbstractDiagram>, Cloneable {
 	
 
 	/** measures the usage of the brute force part of the isomorphism test */
-	public long bruteForceCount = 0;	
-	/** how long the isomorphism brute force test took */
-	public long bruteForceTime = 0;
-	/** indicating that the brute force part of the isomorphism test was used */
-	protected boolean bruteForceApplied = false;
-	protected HashMap<String,String> contourLabelMap = new HashMap<String,String>();
+	private long bruteForceCount = 0;	
+
+	private HashMap<String,String> contourLabelMap = new HashMap<String,String>();
 
 private static long timer1 = 0;
 private static long timer2 = 0;
@@ -33,8 +30,6 @@ private static long timer3 = 0;
 private static long timer4 = 0;
 	
 	public long getBruteForceCount() {return bruteForceCount;}
-	public long getBruteForceTime() {return bruteForceTime;}
-	public boolean getBruteForceApplied() {return bruteForceApplied;}
 	
 	
 	/**
@@ -672,14 +667,11 @@ private static long timer4 = 0;
 		
 		//long startTime = System.currentTimeMillis();
 		bruteForceCount = 0;
-		bruteForceTime = 0;
 
 timer1 = 0;
 timer2 = 0;
 timer3 = 0;
 timer4 = 0;
-
-		bruteForceApplied = false;
 		
 		AbstractDiagram ad1 = new AbstractDiagram(this);
 
@@ -789,7 +781,6 @@ timer2 = System.currentTimeMillis()-startTimer2;
 		
 		
 		long startBruteForceTime = System.currentTimeMillis();
-		bruteForceApplied = true;
 		
 		ArrayList<GroupMap> combination = firstCombination(listSizes);
 		boolean loop = true;
@@ -822,17 +813,12 @@ timer2 = System.currentTimeMillis()-startTimer2;
 			adCopy.remapContourStrings(mapping);
 			if(ad1.compareTo(adCopy) == 0) {
 
-				bruteForceTime = System.currentTimeMillis()-startBruteForceTime;
 				succeedAfterMapping++;
 				return true;
 			}
 
 			loop = nextCombination(combination);
-		}
-		
-		bruteForceTime = System.currentTimeMillis()-startBruteForceTime;
-		
-		
+		}				
 		
 		failAfterMapping++;
 

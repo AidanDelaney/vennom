@@ -52,6 +52,15 @@ public class TestVennomLayout {
         assertThat(graph1, is(equalTo(graph2)));
     }
 
+    @Test
+    // Only FORCELAYOUT is supported
+    public void test_04() {
+        AreaSpecification as1 = new AreaSpecification("A 100\nB 100\n");
+        VennomLayout vl1 = new VennomLayout(VennomLayout.FORCE_LAYOUT+1, as1); // unexpected layout type
+        Graph graph1 = vl1.layout();
+
+        assertTrue(graph1 == null);
+    }    
     // generate test code by switching this on
     // then we see code we can paste into the test
     // TODO this is only a manageable system for a handful of tests

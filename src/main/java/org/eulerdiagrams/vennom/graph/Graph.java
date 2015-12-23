@@ -5,7 +5,6 @@ import java.io.*;
 import java.awt.*;
 
 import org.eulerdiagrams.vennom.apCircles.*;
-
 import org.eulerdiagrams.vennom.graph.comparators.*;
 
 
@@ -46,11 +45,11 @@ public class Graph implements Serializable {
 
 
 /** Collection of nodes. */
-	protected ArrayList<Node> nodes = new ArrayList<Node>();
+	private ArrayList<Node> nodes = new ArrayList<Node>();
 /** Collection of edges. */
-	protected ArrayList<Edge> edges = new ArrayList<Edge>();
+	private ArrayList<Edge> edges = new ArrayList<Edge>();
 /** Graph label, can be empty. */
-	protected String label = "";
+	private String label = "";
 
 /** Separator between nodes in an adjacency list file */
 	public final char ADJACENCYSEPARATOR = ':';
@@ -163,15 +162,6 @@ public class Graph implements Serializable {
 		}
 	}
 
-
-/**
- * Set the match fields of all the nodes in the graph to null.
- */
-	public void setNodesMatches() {
-		setNodesMatches(nodes,null);
-	}
-
-
 /**
  * Set the match fields of all the nodes in the graph to the given value.
  */
@@ -183,7 +173,7 @@ public class Graph implements Serializable {
 /**
  * Set the match fields of the given node collection to the given value.
  */
-	public void setNodesMatches(Collection<Node> inNodes, Object inMatch) {
+	private void setNodesMatches(Collection<Node> inNodes, Object inMatch) {
 		for(Node n : inNodes) {
 			n.setMatch(inMatch);
 		}
@@ -196,7 +186,7 @@ public class Graph implements Serializable {
  * this should be called before using the
  * visited flags of nodes.
  */
-	public void setEdgesVisited() {
+	private void setEdgesVisited() {
 		setEdgesVisited(getEdges(),false);
 	}
 
@@ -212,7 +202,7 @@ public class Graph implements Serializable {
 /**
  * Set the visited values of the given edges to the argument.
  */
-	public void setEdgesVisited(Collection<Edge> inEdges, boolean inVisited) {
+	private void setEdgesVisited(Collection<Edge> inEdges, boolean inVisited) {
 		for(Edge e : inEdges) {
 			e.setVisited(inVisited);
 		}
@@ -250,18 +240,10 @@ public class Graph implements Serializable {
 /**
  * Set the weight fields of the given edges with the argument.
  */
-	public void setEdgesWeights(Collection<Edge> inEdges, double inWeight) {
+	private void setEdgesWeights(Collection<Edge> inEdges, double inWeight) {
 		for(Edge e : inEdges) {
 			e.setWeight(inWeight);
 		}
-	}
-
-
-/**
- * Set the match fields of all the edges in the graph to null.
- */
-	public void setEdgesMatches() {
-		setEdgesMatches(edges,null);
 	}
 
 
@@ -276,7 +258,7 @@ public class Graph implements Serializable {
 /**
  * Set the match fields of the given edge collection to the given value.
  */
-	public void setEdgesMatches(Collection<Edge> inEdges, Object inMatch) {
+	private void setEdgesMatches(Collection<Edge> inEdges, Object inMatch) {
 		for(Edge e : inEdges) {
 			e.setMatch(inMatch);
 		}
@@ -304,36 +286,6 @@ public class Graph implements Serializable {
 
 		for(Node n : getNodes()) {
 			if(n.getVisited() != false) {
-				ret.add(n);
-			}
-		}
-
-		return(ret);
-	}
-
-
-
-
-/** Gives the nodes that dont have matches. */
-	public HashSet<Node> unmatchedNodes() {
-		HashSet<Node> ret = new HashSet<Node>();
-
-		for(Node n : getNodes()) {
-			if(n.getMatch() == null) {
-				ret.add(n);
-			}
-		}
-
-		return(ret);
-	}
-
-
-/** Gives the nodes that have matches. */
-	public HashSet<Node> matchedNodes() {
-		HashSet<Node> ret = new HashSet<Node>();
-
-		for(Node n : getNodes()) {
-			if(n.getMatch() != null) {
 				ret.add(n);
 			}
 		}
@@ -371,40 +323,10 @@ public class Graph implements Serializable {
 	}
 
 
-/** Gives the edges that dont have matches. */
-	public HashSet<Edge> unmatchedEdges() {
-		HashSet<Edge> ret = new HashSet<Edge>();
-
-		for(Edge e : getEdges()) {
-			if(e.getMatch() == null) {
-				ret.add(e);
-			}
-		}
-
-		return(ret);
-	}
-
-
-
-/** Gives the edges that have matches. */
-	public HashSet<Edge> matchedEdges() {
-		HashSet<Edge> ret = new HashSet<Edge>();
-
-		for(Edge e : getEdges()) {
-			if(e.getMatch() != null) {
-				ret.add(e);
-			}
-		}
-
-		return(ret);
-	}
-
-
-
 /**
  * Sum all the edge weights in the graph.
  */
-	public double sumEdgeWeights() {
+	private double sumEdgeWeights() {
 		return(sumEdgeWeights(getEdges()));
 	}
 
@@ -413,7 +335,7 @@ public class Graph implements Serializable {
 /**
  * Finds if the node is already present in the graph.
  */
-	public boolean containsNode(Node n) {
+	private boolean containsNode(Node n) {
 		for(Node next : getNodes()) {
 			if(n == next) {
 				return(true);
@@ -427,7 +349,7 @@ public class Graph implements Serializable {
 /**
  * Finds if the edge is already present in the graph.
  */
-	public boolean containsEdge(Edge e) {
+	private boolean containsEdge(Edge e) {
 		for(Edge next : getEdges()) {
 			if(e == next) {
 				return(true);
@@ -466,7 +388,7 @@ public class Graph implements Serializable {
 		setNodesVisited();
 		int totalNodeNumber = getNodes().size();
 
-		Iterator ni = getNodes().iterator();
+		Iterator<Node> ni = getNodes().iterator();
 		if(!ni.hasNext()) {
 			return(true);
 		}
@@ -477,7 +399,7 @@ public class Graph implements Serializable {
 		int numberTested = 0;
 		while(!queue.isEmpty()) {
 
-			Node head = (Node)queue.get(0);
+			Node head = queue.get(0);
 			queue.remove(0);
 
 			numberTested++;
@@ -494,43 +416,6 @@ public class Graph implements Serializable {
 		}
 
 		return(false);
-	}
-
-
-	/**
-	 * Gets the set of nodes attached to the parameter.
-	 */
-	public ArrayList<Node> connectedSet(Node n) {
-
-		ArrayList<Node> ret = new ArrayList<Node>();
-
-		setNodesVisited();
-
-		Iterator<Node> ni = getNodes().iterator();
-		if(!ni.hasNext()) {
-			return(ret);
-		}
-		ArrayList<Node> queue = new ArrayList<Node>();
-		queue.add(n);
-		ret.add(n);
-		n.setVisited(true);
-		int numberTested = 0;
-		while(!queue.isEmpty()) {
-
-			Node head = (Node)queue.get(0);
-			queue.remove(0);
-
-			numberTested++;
-
-			HashSet<Node> neighbours = head.unvisitedConnectingNodes();
-			setNodesVisited(neighbours,true);
-			queue.addAll(neighbours);
-			ret.addAll(neighbours);
-		}
-
-		setNodesVisited();
-
-		return(ret);
 	}
 
 
@@ -615,9 +500,9 @@ public class Graph implements Serializable {
 		boolean delete = true;
 		while(delete) {
 			delete = false;
-			Iterator ni = nodes.iterator();
+			Iterator<Node> ni = nodes.iterator();
 			while (ni.hasNext() && !delete) {
-				Node n = (Node)ni.next();
+				Node n = ni.next();
 				if (removeString.equals(n.getLabel())) {
 					removeNode(n);
 					delete = true;
@@ -657,7 +542,7 @@ public class Graph implements Serializable {
  * @return true if all nodes have an even number of connecting edges,
  * false if any are odd.
  */
-	public boolean nodesHaveEvenDegree() {
+	private boolean nodesHaveEvenDegree() {
 
 		for(Node n : getNodes()) {
 			if(n.degree()%2 != 0) {
@@ -729,9 +614,9 @@ public class Graph implements Serializable {
  * loosing their edge connections.
  */
 	public void clear() {
-		Iterator ni = nodes.iterator();
+		Iterator<Node> ni = nodes.iterator();
 		while(ni.hasNext()) {
-			Node n = (Node)ni.next();
+			Node n = ni.next();
 			removeNode(n);
 			ni = nodes.iterator();
 		}
@@ -830,7 +715,7 @@ public class Graph implements Serializable {
 			ArrayList<Node> nodeList  = new ArrayList<Node>(getNodes());
 			int index = 0;
 			while (index < nodeList.size()){
-				Node n = (Node)nodeList.get(index);
+				Node n = nodeList.get(index);
 				n.setMatch(new Integer(index));
 
 				StringBuffer outNode = new StringBuffer("");
@@ -876,7 +761,7 @@ public class Graph implements Serializable {
 				outEdge.append(e.getScore());
 
 				outEdge.append(FILESEPARATOR);
-				Iterator bi = e.getBends().iterator();
+				Iterator<Point> bi = e.getBends().iterator();
 				while(bi.hasNext()) {
 					Point point = (Point)bi.next();
 					outEdge.append(point.x);
@@ -1267,7 +1152,7 @@ public class Graph implements Serializable {
 					Integer i2 = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
 					parseLine.delete(0,separatorInd+1);
 
-					Edge e = new Edge((Node)nodeList.get(i1.intValue()),(Node)nodeList.get(i2.intValue()));
+					Edge e = new Edge(nodeList.get(i1.intValue()),nodeList.get(i2.intValue()));
 
 // get edge label
 					separatorInd = parseLine.indexOf(separatorString);
@@ -1467,76 +1352,6 @@ public class Graph implements Serializable {
 
 
 /**
- * This loads the given adjacency list graph file into the graph, deleting any
- * current nodes and edges. The file is in the form of a simple adjacency list, each line
- * of the file is an edge, two nodes and a weight, separated by the {@link #ADJACENCYSEPARATOR}
- * character. Any empty line is ignored.
- * Any non empty line without a colon is
- * considered to be a node with no connecting edges.
- * Any line with only one colon is considered to represent an edge with 0 weight
- * Nodes are assumed to have unique labels for the purpose of this loader.
- * @return the first Node found or null if empty.
- */
-	public Node loadWeightedAdjacencyFile(String fileName) {
-
-		Node firstNode = null;
-		clear();
-		try {
-			BufferedReader b = new BufferedReader(new FileReader(fileName));
-			String line = b.readLine();
-			while(line != null) {
-				if(line.equals("")) {
-					line = b.readLine();
-					continue;
-				}
-
-				int separatorInd = line.indexOf(WEIGHTEDSEPARATOR);
-
-				if(separatorInd >= 0) {
-					String n1 = line.substring(0,separatorInd);
-					String remainder = line.substring(separatorInd+1);
-					separatorInd = remainder.indexOf(WEIGHTEDSEPARATOR);
-
-					String n2 = remainder;
-					double weight = 0.0;
-					String weightString = "";
-					if(separatorInd != -1) {
-						n2 = remainder.substring(0,separatorInd);
-						weightString = remainder.substring(separatorInd+1);
-						try {
-							weight = Double.parseDouble(weightString);
-						} catch(NumberFormatException e) {
-							weight = 0;
-						}
-					}
-
-					Edge e = addAdjacencyEdge(n1,n2,weightString, weight);
-					if(firstNode == null) {
-						firstNode = e.getFrom();
-					}
-				} else {
-// no separator, so just add a singleton node
-					Node n = addAdjacencyNode(line);
-					if(firstNode == null) {
-						firstNode = n;
-					}
-				}
-				line = b.readLine();
-			}
-
-			b.close();
-
-		} catch(IOException e){
-			System.out.println("An IO exception occured when executing loadWeightedAdjacencyFile("+fileName+") in Graph.java: "+e+"\n");
-			System.exit(1);
-		}
-
-		return(firstNode);
-	}
-
-
-
-/**
  * Creates an edge between the nodes with the given labels. This is the unweighted
  * unlabelled edge version of the method.
  * @return the created edge, or null if was not created.
@@ -1557,16 +1372,6 @@ public class Graph implements Serializable {
 		return(addAdjacencyEdge(fromLabel, toLabel, "", edgeWeight));
 	}
 
-
-/**
- * Creates an edge between the nodes with the given labels. This is the unweighted version
- * of the method.
- * @return the created edge, or null if was not created.
- */
-	public Edge addAdjacencyEdge(String fromLabel, String toLabel, String edgeLabel) {
-
-		return addAdjacencyEdge(fromLabel, toLabel, edgeLabel, 0.0);
-	}
 
 
 /**
@@ -1641,7 +1446,6 @@ public class Graph implements Serializable {
 		return(ret);
 	}
 
-
 /**
  * Finds the list of Nodes with the given label.
  */
@@ -1655,8 +1459,7 @@ public class Graph implements Serializable {
 		}
 		return(ret);
 	}
-
-
+	
 /**
  * Generates a complete graph of the size of the number of nodes passed.
  * The old graph gets deleted. The nodes are labeled 1 to the size of the
@@ -1685,7 +1488,7 @@ public class Graph implements Serializable {
 	 * Check to see if two nodes with the given labels are already connected in
 	 * the graph.
 	 */
-	boolean nodeLabelsAlreadyConnected(String label1, String label2) {
+	private boolean nodeLabelsAlreadyConnected(String label1, String label2) {
 		Node n1 = null;
 		for(Node n : getNodes()) {
 			if(label1.equals(n.getLabel())) {
@@ -1867,7 +1670,7 @@ public class Graph implements Serializable {
 		Node returnNode = null;
 		boolean found = false;
 
-		Iterator ni = getNodes().iterator();
+		Iterator<Node> ni = getNodes().iterator();
 		while(ni.hasNext() && !found) {
 			Node n = (Node)ni.next();
 			if(nodeLabel.equals(n.getLabel())) {
@@ -2001,7 +1804,7 @@ public class Graph implements Serializable {
 		Node returnNode = null;
 		boolean found = false;
 
-		Iterator ni = getNodes().iterator();
+		Iterator<Node> ni = getNodes().iterator();
 		while(ni.hasNext() && !found) {
 			Node n = (Node)ni.next();
 			if(contour.equals(n.getContour())) {
@@ -2093,7 +1896,7 @@ public class Graph implements Serializable {
 
 // get any node
 		Node n;
-		Iterator ni = getNodes().iterator();
+		Iterator<Node> ni = getNodes().iterator();
 		if(ni.hasNext()) {
 			n = (Node)ni.next();
 			if(!ni.hasNext() && getEdges().size() == 0) {
@@ -2110,7 +1913,7 @@ public class Graph implements Serializable {
 		int currentIndex = 0;
 		while (currentIndex < K.size()) {
 
-			Node currentNode = (Node)K.get(currentIndex);
+			Node currentNode = K.get(currentIndex);
 			if(currentNode.unvisitedConnectingEdges().size() > 0) {
 				ArrayList<Node> C = trace(currentNode);
 				K.remove(currentIndex);
@@ -2145,7 +1948,7 @@ public class Graph implements Serializable {
 		Node startVertex;
 		Iterator<Node> ni = getNodes().iterator();
 		if(ni.hasNext()) {
-			startVertex = (Node)ni.next();
+			startVertex = ni.next();
 			if(!ni.hasNext() && getEdges().size() == 0) {
 				return(new ArrayList<Node>());
 			}
@@ -2279,7 +2082,7 @@ System.out.println("node list "+ret);
 		C.add(currentNode);
 		boolean moreEdges = true;
 		while(moreEdges) {
-			Iterator ei = currentNode.unvisitedConnectingEdges().iterator();
+			Iterator<Edge> ei = currentNode.unvisitedConnectingEdges().iterator();
 			if(!ei.hasNext()) {
 				moreEdges = false;
 			} else {
@@ -2334,9 +2137,6 @@ System.out.println("node list "+ret);
 				line = b.readLine();
 			}
 
-			if(line !=null && !line.equals("")) {
-				tourString = line;
-			}
 			b.close();
 			StringTokenizer st = new StringTokenizer(tourString,"	 ,[]");
 
@@ -2375,7 +2175,7 @@ System.out.println("node list "+ret);
 /**
  * Saves the given tour in the List string format.
  */
-	public void saveTour(String fileName, AbstractList tour) {
+	public void saveTour(String fileName, AbstractList<Node> tour) {
 		saveTour(fileName, tour, true);
 	}
 
@@ -2384,7 +2184,7 @@ System.out.println("node list "+ret);
  * Saves the given tour in the List string format, if the boolean is false
  * only the string "Fail" is written.
  */
-	public void saveTour(String fileName, AbstractList tour, boolean succeed) {
+	public void saveTour(String fileName, AbstractList<Node> tour, boolean succeed) {
 
 		try {
 			String outString;
@@ -2415,7 +2215,7 @@ System.out.println("node list "+ret);
  *
  * @return true if the tour if it is in the graph, false if it is not.
  */
-	public boolean eulerTourInGraph(ArrayList tour) {
+	public boolean eulerTourInGraph(ArrayList<Node> tour) {
 
 		if (!eulerian()) {
 // not a eulerian graph
@@ -2439,7 +2239,7 @@ System.out.println("node list "+ret);
 
 		HashSet<Edge> edgeSet;
 
-		Iterator ti = tour.iterator();
+		Iterator<Node> ti = tour.iterator();
 		if(!ti.hasNext() && (getNodes().size() > 1)) {
 // Tour is empty, but the graph has a node
 			return(false);
@@ -2544,18 +2344,18 @@ System.out.println("node list "+ret);
 
 		while(!connected) {
 			while(!queue.isEmpty()) {
-				head = (Node)queue.remove(0);
+				head = queue.remove(0);
 				head.setVisited(true);
 				HashSet<Node> neighbours = head.unvisitedConnectingNodes();
 				queue.addAll(neighbours);
 			}
 
-			HashSet unvisited = unvisitedNodes();
+			HashSet<Node> unvisited = unvisitedNodes();
 			if (unvisited.size() == 0) {
 				connected = true;
 			} else {
-				Iterator ni = unvisited.iterator();
-				Node n = (Node)ni.next();
+				Iterator<Node> ni = unvisited.iterator();
+				Node n = ni.next();
 				addEdge(new Edge(head,n));
 				queue.add(n);
 			}
@@ -2593,212 +2393,6 @@ System.out.println("node list "+ret);
 		}
 	}
 
-
-/**
- * Equality of graphs. Returns a mapping if this graph is equal
- * to the given graph.
- *
- * @return true if there is an equality with the
- * given graph, null if is not.
- */
-	public boolean isomorphic(Graph g) {
-
-// ensure that the same graph returns true
-		if(g == this) {
-			return(true);
-		}
-
-		ArrayList<Node> nodes1 = new ArrayList<Node>(getNodes());
-		ArrayList<Node> nodes2 = new ArrayList<Node>(g.getNodes());
-		ArrayList<Edge> edges1 = new ArrayList<Edge>(getEdges());
-		ArrayList<Edge> edges2 = new ArrayList<Edge>(g.getEdges());
-
-		int node1Size = nodes1.size();
-		int node2Size = nodes2.size();
-		int edge1Size = edges1.size();
-		int edge2Size = edges2.size();
-
-
-		if(node1Size != node2Size) {
-System.out.println("Not isomorphic: node collections are different sizes");
-			return(false);
-		}
-		if(edge1Size != edge2Size) {
-System.out.println("Not isomorphic: edge collections are different sizes");
-			return(false);
-		}
-		if(node1Size == 0 && node2Size == 0) {
-System.out.println("Isomorphic: empty graphs");
-			return(true);
-		}
-
-		int maxDegree2 = 0;
-		ArrayList<ArrayList<Node>> degrees2 = new ArrayList<ArrayList<Node>>();
-
-		for(Node n: nodes2) {
-			int degree = n.degree();
-// if the list is not as big as the degree, there cant
-// already be a degree of that size
-			if(degrees2.size() <= degree) {
-				while(degrees2.size() <= degree) {
-					degrees2.add(null);
-				}
-				ArrayList<Node> newL = new ArrayList<Node>();
-				newL.add(n);
-				degrees2.ensureCapacity(degree+1);
-				degrees2.set(degree, newL);
-			} else if(degrees2.get(degree) == null) {
-				ArrayList<Node> newL = new ArrayList<Node>();
-				newL.add(n);
-				degrees2.set(degree, newL);
-			} else {
-				ArrayList<Node> oldL = degrees2.get(degree);
-				oldL.add(n);
-			}
-			if(degree > maxDegree2) {
-				maxDegree2 = degree;
-			}
-		}
-
-		int[] degreeCheck = new int[maxDegree2+1];
-		Arrays.fill(degreeCheck,0);
-
-		for(Node n : nodes1) {
-			int degree = n.degree();
-			if(degree > maxDegree2) {
-System.out.println("Not isomorphic: bigger degree in second graph");
-				return(false);
-			}
-			degreeCheck[degree]++;
-		}
-
-
-//check degrees
-		for (int i = 0; i < degreeCheck.length; i++) {
-
-			if (degrees2.size() <= i) {
-				if (degreeCheck[i] == 0) {
-					continue;
-				} else {
-System.out.println("Not isomorphic: graphs have different number of nodes with degree " + i);
-					return(false);
-				}
-			}
-
-			ArrayList list2 = (ArrayList)degrees2.get(i);
-			if(list2 == null) {
-				if(degreeCheck[i] != 0) {
-System.out.println("Not isomorphic: graphs have different number of nodes with degree " + i);
-					return(false);
-				}
-			} else {
-				if(degreeCheck[i] != list2.size()) {
-System.out.println("Not isomorphic: graphs have different number of nodes with degree " + i);
-					return(false);
-				}
-			}
-		}
-
-
-// do the backtracking search
-
-		setNodesMatches(nodes1,null);
-		setNodesMatches(nodes2,null);
-
-// get the possible matches for each node
-// each array member is a list of possible matchs in graph2
-// for the corresponding node in graph1
-
-		ArrayList<BacktrackIso> state = new ArrayList<BacktrackIso>(node1Size);
-
-		for(Node n1 : nodes1) {
-			ArrayList<Node> equalDegrees = new ArrayList<Node>();
-
-			for(Node n2 : nodes2) {
-				if(n1.connectingNodes().size() == n2.connectingNodes().size()) {
-					equalDegrees.add(n2);
-				}
-			}
-			state.add(new BacktrackIso(equalDegrees,0));
-		}
-
-		int currentProgress = 0;
-
-		while((currentProgress < node1Size) && (currentProgress != -1)) {
-			Node currentNode= (Node)nodes1.get(currentProgress);
-			BacktrackIso currentState = (BacktrackIso)state.get(currentProgress);
-
-			ArrayList allPossibles = currentState.possibles;
-			java.util.List currentPossibles = allPossibles.subList(currentState.pos,allPossibles.size());
-
-			boolean foundMatch = false;
-			Iterator matchi = currentPossibles.iterator();
-			while(!foundMatch && matchi.hasNext()) {
-
-				Node tryNode = (Node)matchi.next();
-				currentState.pos++;
-
-//A				currentNode.setMatch(tryNode);
-//A				tryNode.setMatch(currentNode);
-
-				if (isAnUndirectedMatch(currentNode,tryNode)) {
-// set up matched attributes and return true
-					foundMatch = true;
-					currentProgress++;
-//***A replaced this
-					currentNode.setMatch(tryNode);
-					tryNode.setMatch(currentNode);
-				}
-//*** to here
-//A				} else {
-//A					currentNode.setMatch(null);
-//A					tryNode.setMatch(null);
-//A				}
-// problem seems to be in matching, cant check self sourcing properly due
-// to not being flagged as matched, so not checked. not clear what
-// the answer is - check self sourcing sepearately in isAnUndirectedMatch?
-			}
-
-// backtracking here
-			if (!foundMatch) {
-				currentProgress--;
-				if(currentProgress != -1) {
-					Node unMatchedNode = (Node)nodes1.get(currentProgress);
-					Node oppositeNode = (Node)unMatchedNode.getMatch();
-					unMatchedNode.setMatch(null);
-					oppositeNode.setMatch(null);
-					currentState.pos = 0;
-				}
-
-			}
-
-		}
-
-System.out.println("This match " +nodeMatchesToString());
-System.out.println("Argument g "+g.nodeMatchesToString());
-
-		if (currentProgress != node1Size) {
-System.out.println("Not isomorphic: backtracking search failed ");
-			return(false);
-		}
-System.out.println("Isomorphic");
-		return(true);
-	}
-
-
-
-/** used to store the state of backtracking in the isomorphism algorithm */
-	protected class BacktrackIso {
-		public ArrayList<Node> possibles;
-		public int pos = 0;
-		public BacktrackIso() {}
-		public BacktrackIso(ArrayList<Node> list, int inPos) {
-			possibles = list;
-			pos = inPos;
-		}
-
-
-	}
 
 
 /**
@@ -2890,10 +2484,10 @@ System.out.println("Isomorphic");
 
 		String ret = new String("[");
 
-		Iterator ni = nodes.iterator();
+		Iterator<Node> ni = nodes.iterator();
 		while(ni.hasNext()) {
 
-			Node n = (Node)ni.next();
+			Node n = ni.next();
 			ret = ret+"<"+n.toString()+","+n.getMatch()+">";
 
 			if(ni.hasNext()) {
@@ -2939,9 +2533,9 @@ System.out.println("Isomorphic");
 
 		UnionFind uf = new UnionFind(ns.size());
 
-		Iterator ei = es.iterator();
+		Iterator<Edge> ei = es.iterator();
 		while((mst.size() < ns.size()-1) && ei.hasNext()) {
-			Edge e = (Edge)ei.next();
+			Edge e = ei.next();
 			int nFrom = ns.indexOf(e.getFrom());
 			int nTo = ns.indexOf(e.getTo());
 			if(!uf.find(nFrom,nTo)) {
@@ -2985,9 +2579,9 @@ System.out.println("Isomorphic");
 
 // get any node to start from
 		Node startNode = null;
-		Iterator niStart = getNodes().iterator();
+		Iterator<Node> niStart = getNodes().iterator();
 		if(niStart.hasNext()) {
-			startNode = (Node)niStart.next();
+			startNode = niStart.next();
 		}
 		startNode.setScore(0.0);
 
@@ -3080,9 +2674,9 @@ private Node start = null;
 		bestCount = sumEdgeWeights()*2;
 		bestPath = new ArrayList<Edge>();
 
-		Iterator ni = nodes.iterator();
+		Iterator<Node> ni = nodes.iterator();
 		if(ni.hasNext()) {
-			start = (Node)ni.next();
+			start = ni.next();
 		} else {
 			return(bestPath);
 		}
@@ -3302,21 +2896,6 @@ private Node start = null;
 		}
 		return ret;
 	}
-
-
-	/** returns the list of nodes with degree equal to or less than the given parameter */
-	public ArrayList getNodesWithFewEdges(int edgeNumber) {
-
-		ArrayList<Node> ret = new ArrayList<Node>();
-
-		for(Node n : getNodes()) {
-			if(n.connectingEdges().size() <= edgeNumber) {
-				ret.add(n);
-			}
-		}
-		return ret;
-	}
-
 
 	/** returns the list of nodes with degree equal to or less than the given parameter */
 	public int edgeIntersections() {

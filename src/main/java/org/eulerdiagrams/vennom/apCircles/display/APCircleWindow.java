@@ -95,33 +95,15 @@ public class APCircleWindow extends JFrame implements ActionListener {
 
 	private void initUtility() {
 
-		gp.addGraphUtility(new CircleUtilityTest());
-//		gp.addGraphUtility(new CreateRandomSpecificationByGraph());
-		gp.addGraphUtility(new CreateRandomPiercedSpecificationByAbstractDescription());
-		gp.addGraphUtility(new RectifyLengths());
 		gp.addGraphUtility(new ReportPassingEdges());
 		gp.addGraphUtility(new ReportAreaProportions());
-		gp.addGraphUtility(new EnterPiercedSpecification());
 		gp.addGraphUtility(new EnterGeneralSpecification());
-		gp.addGraphUtility(new TestRandomPierced());
 		gp.addGraphUtility(new TestExactGeneral());
-		gp.addGraphUtility(new GeneralParameterFinder());
 		
 	}
 
 
 	private void initLayout() {
-
-		PiercedAPForceModel fm = new PiercedAPForceModel(KeyEvent.VK_Q,"Pierced area-proportional",true);
-		fm.setRandomize(false);
-		fm.setAnimateFlag(true);
-		gp.addGraphDrawer(fm);
-		
-		PiercedAPForceModel fm1 = new PiercedAPForceModel(KeyEvent.VK_W,"Pierced area-proportional single iteration",true);
-		fm1.setIterations(1);
-		fm1.setRandomize(false);
-		fm1.setAnimateFlag(true);
-		gp.addGraphDrawer(fm1);
 		
 		GeneralAPForceModel fm2 = new GeneralAPForceModel(KeyEvent.VK_D,"General area-proportional",true);
 		fm2.setRandomize(false);
@@ -345,18 +327,6 @@ public class APCircleWindow extends JFrame implements ActionListener {
 			menuItem.setAccelerator(KeyStroke.getKeyStroke(v.getAcceleratorKey(),0));
 			menuItem.addActionListener(this);
 			viewMenu.add(menuItem);
-		}
-
-// Experiment Menu
-		JMenu experimentsMenu = new JMenu("Experiments");
-        experimentsMenu.setMnemonic(KeyEvent.VK_E);
-		menuBar.add(experimentsMenu);
-
-		for(GraphExperiment ge : gp.getGraphExperimentList()) {
-	        JMenuItem menuItem = new JMenuItem(ge.getMenuText(),ge.getMnemonicKey());
-			menuItem.setAccelerator(KeyStroke.getKeyStroke(ge.getAcceleratorKey(),0));
-			menuItem.addActionListener(this);
-			experimentsMenu.add(menuItem);
 		}
 
 

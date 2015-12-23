@@ -6,10 +6,7 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
 
-import org.eulerdiagrams.vennom.apCircles.APCirclePanel;
-import org.eulerdiagrams.vennom.apCircles.AbstractDiagram;
 import org.eulerdiagrams.vennom.apCircles.Util;
-import org.eulerdiagrams.vennom.apCircles.display.APCircleDisplay;
 import org.eulerdiagrams.vennom.graph.*;
 import org.eulerdiagrams.vennom.graph.drawers.GraphDrawer;
 
