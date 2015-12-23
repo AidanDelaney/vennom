@@ -2782,31 +2782,6 @@ private Node start = null;
 
 
 /**
- * Finds an edge close to the passed point, or returns null
- * if the argument point is not over an edge. The padding
- * refers to the distance the point can be from the
- * edge, and must be greater than 0. If there is more
- * than one edge, it finds the
- * last one in the collection, which hopefully should
- * be the one on top of the display.
- * TBD DEAL WITH EDGE BENDS.
- */
-	public Edge getEdgeNearPoint(Point p, int padding) {
-
-		Edge returnEdge = null;
-
-		for(Edge e : getEdges()) {
-			Shape edgeShape = e.shape();
-			Rectangle r = new Rectangle(p.x-padding,p.y-padding,padding*2,padding*2);
-			if(edgeShape.intersects(r)) {
-				returnEdge = e;
-			}
-		}
-		return(returnEdge);
-	}
-
-
-/**
 * Finds the closest node to the point, or returns null
 * if there are no nodes in the graph.
 */

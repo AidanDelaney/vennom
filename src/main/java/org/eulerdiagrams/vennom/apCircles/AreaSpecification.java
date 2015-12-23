@@ -10,8 +10,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-
-import org.eulerdiagrams.vennom.apCircles.display.APCircleDisplay;
 import org.eulerdiagrams.vennom.graph.*;
 
 public class AreaSpecification {
@@ -195,7 +193,7 @@ public class AreaSpecification {
 				if(containment) {
 					Edge containing = new Edge(n1,n2);
 					double maxSeparation = findMaxContainmentDistance(n1,n2);
-					containing.setType(APCircleDisplay.CONTAINMENT);
+					containing.setContainmentType();
 					containing.setLabel(Double.toString(maxSeparation));
 					containing.setScore(maxSeparation);
 					graph.addEdge(containing);
@@ -203,7 +201,7 @@ public class AreaSpecification {
 				} else if(intersect) {
 					Edge ideal = new Edge(n1,n2);
 					double idealLength = findIdealNodeSeparation(graph,ideal);
-					ideal.setType(APCircleDisplay.IDEAL);
+					ideal.setIdealType();
 					ideal.setLabel(Double.toString(idealLength));
 					ideal.setScore(idealLength);
 					graph.addEdge(ideal);
@@ -211,7 +209,7 @@ public class AreaSpecification {
 				} else {
 					Edge separator = new Edge(n1,n2);
 					double minSeparation = findMinimumSeparation(separator);
-					separator.setType(APCircleDisplay.SEPARATOR);
+					separator.setSeparatorType();
 					separator.setLabel(Double.toString(minSeparation));
 					separator.setScore(minSeparation);
 					graph.addEdge(separator);

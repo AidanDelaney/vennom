@@ -14,8 +14,6 @@ import org.eulerdiagrams.vennom.graph.Graph;
 public class Util {
 	
 	public static final double NEARLY_ZERO = 0.00001;
-    public static int debug_level = 1; 
-	// 1 = test framework, 2 = method in/out, 3 = detail, 4 = desperation
 	
 	
 	/**
@@ -50,18 +48,6 @@ public class Util {
        		angle = 2*Math.PI + angle;
        	}
        	return angle;
-	}
-
-	/**
-	 * Returns the angle formed by p2 between p1 and p3
-	 * @return a value between 0 and PI radians
-	 */
-	public static double angle(Point p1, Point p2, Point p3) {
-		Point2D.Double pd1 = new Point2D.Double(p1.x,p1.y);
-		Point2D.Double pd2 = new Point2D.Double(p2.x,p2.y);
-		Point2D.Double pd3 = new Point2D.Double(p3.x,p3.y);
-		double ret = angle(pd1,pd2,pd3);
-		return ret;
 	}
 
 	/**
@@ -115,53 +101,13 @@ public class Util {
 	public static Point betweenPoints(Point p1, Point p2, double fraction) {
 		return new Point(convertToInteger(p1.x+(p2.x-p1.x)*fraction),convertToInteger(p1.y+(p2.y-p1.y)*fraction));
 	}
-
-	/** Get a point that is the given fraction between the given points */
-	public static Point2D.Double betweenPoints(Point2D p1, Point2D p2, double fraction) {
-		return new Point2D.Double(p1.getX()+(p2.getX()-p1.getX())*fraction,p1.getY()+(p2.getY()-p1.getY())*fraction);
-	}
-
 	
 	/**
 	 * Intersection point of two lines, first line given by p1 and
 	 * p2, second line given by p3 and p4.
 	 * @return the intersection point, or null if the lines are parallel.
 	 */
-	public static Point2D.Double intersectionPointOfTwoLines(Point2D.Double p1, Point2D.Double p2, Point2D.Double p3, Point2D.Double p4) {
 
-		double x1 = p1.x;
-		double y1 = p1.y;
-		double x2 = p2.x;
-		double y2 = p2.y;
-		double x3 = p3.x;
-		double y3 = p3.y;
-		double x4 = p4.x;
-		double y4 = p4.y;
-
-		double x = x1+ (x2-x1)*(((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/((y4-y3)*(x2-x1)-(x4-x3)*(y2-y1)));
-		double y = y1+ (y2-y1)*(((y4-y3)*(x1-x3)-(x4-x3)*(y1-y3))/((x4-x3)*(y2-y1)-(y4-y3)*(x2-x1)));
-		
-		if(Double.isNaN(x)) {return null;}
-		if(Double.isNaN(y)) {return null;}
-		if(Double.isInfinite(x)) {return null;}
-		if(Double.isInfinite(y)) {return null;}
-
-		return new Point2D.Double(x,y);
-	}
-	
-	/**
-	 * Get the point on the line between p1 and p2 formed by the
-	 * perpendicular from p0.
-	 */
-	public static Point perpendicularPoint(Point p0, Point p1, Point p2) {
-		Point2D.Double pd0 = new Point2D.Double(p0.x,p0.y);
-		Point2D.Double pd1 = new Point2D.Double(p1.x,p1.y);
-		Point2D.Double pd2 = new Point2D.Double(p2.x,p2.y);
-		Point2D.Double retd = perpendicularPoint(pd0,pd1,pd2);
-		Point ret = new Point((int)retd.x,(int)retd.y);
-		return ret;
-	}
-	
 	/**
 	 * Get the point on the line between p1 and p2 formed by the
 	 * perpendicular from p0.
@@ -186,136 +132,6 @@ public class Util {
 		Point2D.Double result = new Point2D.Double(result_x, result_y);
 		return result;
 	}
-
-	/**
-	 * given a current value, a centre to scale from and a scale multiplier
-	 * this method calculates the new value.
-	 */
-	public static double scaleCoordinate(double value, double centre, double multiplier) {
-
-		double ret = value;
-		ret = ret - centre;
-		ret = ret * multiplier;
-		ret = ret + centre;
-		return ret;
-
-	}
-	
-	/** takes the point and returns a new one moved by the distance and angle. */
-	public static Point2D.Double movePointOnScreen(Point2D.Double startPoint, double distance, double degrees) {
-		double newX = startPoint.getX() + distance * Math.cos(Math.toRadians(degrees));
-		double newY = startPoint.getY() - distance * Math.sin(Math.toRadians(degrees));
-		return new Point2D.Double(newX, newY);
-	}
-
-
-
-	/**
-	 * Checks to see if the p is within the rectangle given
-	 * by p1 and p2. Can be used to see if a point is on a line
-	 */
-	public static boolean pointIsWithinBounds(Point p, Point p1, Point p2) {
-		int left = p1.x;
-		int right = p2.x;
-		if(p1.x > p2.x) {
-			left = p2.x;
-			right = p1.x;
-		}
-		int top = p1.y;
-		int bottom = p2.y;
-		if(p1.y > p2.y) {
-			top = p2.y;
-			bottom = p1.y;
-		}
-		
-		if(p.x < left) {return false;}
-		if(p.x > right) {return false;}
-		if(p.y < top) {return false;}
-		if(p.y > bottom) {return false;}
-		
-		return true;
-
-	}
-	
-	public static boolean pointIsWithinBounds(Point2D.Double p, Point2D.Double p1, Point2D.Double p2) {
-		double left = p1.x;
-		double right = p2.x;
-		if(p1.x > p2.x) {
-			left = p2.x;
-			right = p1.x;
-		}
-		double top = p1.y;
-		double bottom = p2.y;
-		if(p1.y > p2.y) {
-			top = p2.y;
-			bottom = p1.y;
-		}
-		
-		if(p.x < left) {return false;}
-		if(p.x > right) {return false;}
-		if(p.y < top) {return false;}
-		if(p.y > bottom) {return false;}
-		
-		return true;
-
-	}
-
-
-	
-	public static boolean linesParallel(Point2D.Double p1, Point2D.Double p2, Point2D.Double q1, Point2D.Double q2) {
-		
-		final int DECIMAL_PLACES = 6;
-		
-		double angleP = round(lineAngle(p1, p2),DECIMAL_PLACES);
-		double angleQ = round(lineAngle(q1, q2),DECIMAL_PLACES);
-		if(angleP == angleQ) {
-			return true;
-		}
-		if(angleP == round(lineAngle(q1, q2)-Math.PI,DECIMAL_PLACES)) {
-			return true;
-		}
-		if(round(lineAngle(p1, p2)-Math.PI,DECIMAL_PLACES) == angleQ) {
-			return true;
-		}
-		return false;
-	}
-
-	
-	/**
-	 * Finds out if the lines p1 to p2 and q1 to q2 are close to parallel.
-	 */
-	public static boolean linesNearlyParallel(Point2D.Double p1, Point.Double p2, Point.Double q1, Point.Double q2, double fudgeDegrees) {
-		
-		final double fudgeAngle = Math.toRadians(fudgeDegrees);
-		
-		final int DECIMAL_PLACES = 6;
-		
-		double angleP = round(lineAngle(p1, p2),DECIMAL_PLACES);
-		double angleQ = round(lineAngle(q1, q2),DECIMAL_PLACES);
-		if(Math.abs(angleP-angleQ) < fudgeAngle) {
-			return true;
-		}
-		
-		if(Math.abs(angleP-round(lineAngle(q1, q2)-Math.PI,DECIMAL_PLACES)) < fudgeAngle) {
-			return true;
-		}
-		
-		if(Math.abs(angleQ-round(lineAngle(p1, p2)-Math.PI,DECIMAL_PLACES)) < fudgeAngle) {
-			return true;
-		}
-
-		
-		return false;
-	}
-
-
-
-	public static double det(double a, double b, double c, double d)
-	{
-		return a * d - b * c;
-	}
-
-	
 	
 	public static double computePolygonArea (Polygon p) {
 
@@ -352,69 +168,6 @@ public class Util {
 
 		return area;
 	}
-
-	public static double computePolygonArea(Point2D.Double[] ps) {
-		double area = 0.0;
-		for (int i = 0; i < ps.length - 1; i++) {
-			area += (ps[i].x * ps[i+1].y) - (ps[i+1].x * ps[i].y);
-		}
-		area += (ps[ps.length-1].x * ps[0].y) - (ps[0].x * ps[ps.length-1].y);  
-
-		area *= 0.5;
-		
-		if(area<0) {
-			area =-area;
-		}
-
-		return area;
-	}
-
-
-	
-
-	
-	
-	public static Polygon squarePolygonAroundPoint(Point p, int width) {
-		Polygon ret = new Polygon();
-		int d = width/2;
-		ret.addPoint(p.x-d, p.y-d);
-		ret.addPoint(p.x-d, p.y+d);
-		ret.addPoint(p.x+d, p.y+d);
-		ret.addPoint(p.x+d, p.y-d);
-		return ret;
-	}
-
-	
-	public static double equilateralSideFromArea(double area) {
-		return Math.sqrt(area*4/Math.sqrt(3));
-	}
-	
-	public static double equilateralAreaFromSide(double side) {
-		return Math.sqrt(side*side*Math.sqrt(3)/4);
-	}
-	
-	public static double equilateralHeightFromSide(double side) {
-		return side*Math.sqrt(3)/2;
-	}
-	
-	public static double equilateralSideFromHeight(double height) {
-		return height*2/Math.sqrt(3);
-	}
-
-	
-	public static Polygon diamondPolygonAroundPoint(Point p, int width) {
-		Polygon ret = new Polygon();
-		int d = width/2;
-		ret.addPoint(p.x-d, p.y);
-		ret.addPoint(p.x, p.y+d);
-		ret.addPoint(p.x+d, p.y);
-		ret.addPoint(p.x, p.y-d);
-		return ret;
-	}
-
-
-
-
 
 		
 	public static void findErrors(AreaSpecification as, 

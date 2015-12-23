@@ -5,9 +5,7 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 
 import org.eulerdiagrams.vennom.apCircles.Util;
-import org.eulerdiagrams.vennom.apCircles.display.APCircleDisplay;
 import org.eulerdiagrams.vennom.graph.Edge;
-import org.eulerdiagrams.vennom.graph.EdgeType;
 import org.eulerdiagrams.vennom.graph.Graph;
 import org.eulerdiagrams.vennom.graph.Node;
 
@@ -225,10 +223,8 @@ public class GeneralAPForceModelSolver {
 					xForceShare = 1;
 					yForceShare = 0;
 				}
-				
-				EdgeType et = e.getType();
-				
-				if(et.equals(APCircleDisplay.CONTAINMENT)) {
+								
+				if(e.isContainmentType()) {
 					
 					double separation = centreDistance;
 					if(separation == 0) {
@@ -260,7 +256,7 @@ public class GeneralAPForceModelSolver {
 					yContainment += yForce;
 				}
 
-				if(et.equals(APCircleDisplay.SEPARATOR)) {
+				if(e.isSeparatorType()) {
 					
 					double separation = centreDistance;
 					if(separation == 0) {
@@ -293,7 +289,7 @@ public class GeneralAPForceModelSolver {
 				}
 
 				
-				if(et.equals(APCircleDisplay.IDEAL)) {
+				if(e.isIdealType()) {
 
 					double distanceFromIdeal = Math.abs(centreDistance-e.getScore());
 					

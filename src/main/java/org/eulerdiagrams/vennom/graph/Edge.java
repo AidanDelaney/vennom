@@ -5,7 +5,8 @@ import java.io.*;
 import java.awt.*;
 import java.awt.geom.*;
 
-import org.eulerdiagrams.vennom.apCircles.APCirclePanel;
+import org.eulerdiagrams.display.apCircles.APCircleDisplay;
+//import org.eulerdiagrams.display.apCircles.APCirclePanel;
 
 /**
  * This is a simple edge, connecting two nodes together in a graph.
@@ -32,7 +33,6 @@ public class Edge implements Serializable {
         long temp;
         temp = Double.doubleToLongBits(score);
         result = prime * result + (int) (temp ^ (temp >>> 32));
-        result = prime * result + ((shape == null) ? 0 : shape.hashCode());
         result = prime * result + ((to == null) ? 0 : to.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + (visited ? 1231 : 1237);
@@ -73,11 +73,6 @@ public class Edge implements Serializable {
         if (Double.doubleToLongBits(score) != Double
                 .doubleToLongBits(other.score))
             return false;
-        if (shape == null) {
-            if (other.shape != null)
-                return false;
-        } else if (!shape.equals(other.shape))
-            return false;
         if (to == null) {
             if (other.to != null)
                 return false;
@@ -116,8 +111,7 @@ public class Edge implements Serializable {
  * pointing at nodes in matching algorithms.
  */
 	protected Object match = null;
-/** The last generated shape object for this edge */
-	Shape shape = null;
+
 /** The location of edge bends. This is a list of Points.*/
 	protected ArrayList<Point> bends = new ArrayList<Point>();
 
@@ -189,6 +183,14 @@ public class Edge implements Serializable {
 	public double getWeight() {return weight;}
 /** Trival accessor. */
 	public EdgeType getType() {return type;}
+	public boolean isContainmentType() {return type==APCircleDisplay.CONTAINMENT;}
+	public boolean isSeparatorType() {return type==APCircleDisplay.SEPARATOR;}
+	public boolean isIdealType() {return type==APCircleDisplay.IDEAL;}
+	public boolean isAttractorType() {return type==APCircleDisplay.ATTRACTOR;}
+	public boolean isRepulsorType() {return type==APCircleDisplay.REPULSOR;}
+	public void setContainmentType() { type=APCircleDisplay.CONTAINMENT;}
+	public void setSeparatorType() { type=APCircleDisplay.SEPARATOR;}
+	public void setIdealType() { type=APCircleDisplay.IDEAL;}
 /** Trival accessor. */
 	public boolean getVisited() {return visited;}
 /** Trival accessor. */
@@ -345,52 +347,6 @@ public class Edge implements Serializable {
 
 		return Line2D.linesIntersect(x1,y1,x2,y2,x3,y3,x4,y4);
 	}
-
-
-/**
- * Gives a new shape object representing the edge. At the moment
- * only undirected straight lines are supported.
- */
-	public Shape generateShape(Point offset) {
-
-		Point fromPoint = new Point(from.getCentre());
-		Point toPoint = new Point(to.getCentre());
-
-		fromPoint.x += offset.x;
-		fromPoint.y += offset.y;
-		toPoint.x += offset.x;
-		toPoint.y += offset.y;
-
-		GeneralPath path = new GeneralPath();
-		path.moveTo(fromPoint.x+offset.x, fromPoint.y+offset.y);
-
-		for(Point p : bends) {
-			path.lineTo(p.x+offset.x, p.y+offset.y);
-		}
-
-		path.lineTo(toPoint.x+offset.x, toPoint.y+offset.y);
-
-		shape = path;
-
-		return(shape);
-	}
-
-
-/**
- * Returns the shape object representing the edge, or if
- * there is none, generate a new shape. The generation is
- * performed using a zero offset, which may cause difficulties
- * if parallel edges are being separated, however generation
- * due to the call of this method will be extremely rare, and
- * no known situation where generation is performed is known.
- */
-	public Shape shape() {
-		if(shape == null) {
-			generateShape(APCirclePanel.ZEROOFFSET);
-		}
-		return(shape);
-	}
-
 
 
 /**
