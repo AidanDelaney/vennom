@@ -122,29 +122,8 @@ public class APPiercedEntry extends Frame implements ActionListener {
 
 
 	public void okButton(ActionEvent event) {
-		if((event.getModifiers() & InputEvent.BUTTON1_MASK) == 0) {
-    
-// if the button has been initiated by a non button press, and the
-// cancel button has the focus, redirect to the cancel 
-			if(cancelButton.isFocusOwner()) {
-				cancelButton(event);
-				return;
-			}
-		}
+		throw new UnsupportedOperationException();
 
-		AreaSpecification as = new AreaSpecification(new AbstractDiagram(""));
-		as.fromString(textArea.getText());
-		Graph g = as.generatePiercedAugmentedIntersectionGraph();
-		if(g != null) {
-			circlePanel.setGraph(g);
-			circlePanel.setSpecification(as);
-			circlePanel.update(circlePanel.getGraphics());
-			circlePanel.requestFocus();
-
-		} else {
-			JOptionPane.showMessageDialog(circlePanel, "Zones do not form an atomic pierced diagram");
-		}
-		
 	}
 
 	public void cancelButton(ActionEvent event) {

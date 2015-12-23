@@ -9,7 +9,7 @@ import org.eulerdiagrams.vennom.apCircles.APCirclePanel;
 
 /**
  * This is a simple edge, connecting two nodes together in a graph.
- * It can be treateded as a directed or undirected edge.
+ * It can be treated as a directed or undirected edge.
  * <p>
  * It contains an additional field for helping when writing algorithms, the
  * boolean {@link #visited}, a flag for indicating that an edge has been traversed

@@ -210,6 +210,187 @@ public class TestAbstractDiagram {
     	expected_sorted_zones.add(0, "a");
     	assertEquals(zones, expected_sorted_zones);
     }
+    
+    @Test
+    public void test_isomorphicTo(){
+    	AbstractDiagram ad1 = new AbstractDiagram("a b");
+    	AbstractDiagram ad2 = new AbstractDiagram("c d");
+    	AbstractDiagram ad3 = new AbstractDiagram("a ab");
+
+    	assertEquals(ad1.isomorphicTo(ad2), true);
+    	assertEquals(ad1.isomorphicTo(ad3), false);
+
+    	ad1.addZone("");
+    	assertEquals(ad1.isomorphicTo(ad2), false);
+    	
+    	// ad4 and ad5 have same numbers of zones but different numbers of contours 
+    	AbstractDiagram ad4 = new AbstractDiagram("a b c");
+    	AbstractDiagram ad5 = new AbstractDiagram("a b ab");
+    	assertEquals(ad4.isomorphicTo(ad5), false);
+
+    	// ad6 and ad7 have equal numbers of zones and contours
+    	AbstractDiagram ad6 = new AbstractDiagram("a b d ab ac abd");
+    	AbstractDiagram ad7 = new AbstractDiagram("a b d bc ac abc");
+    	assertEquals(ad6.isomorphicTo(ad7), false);
+    	
+    	
+    }
+    
+    @Test
+    public void test_findIntersectionGroups(){
+    	AbstractDiagram ad1 = new AbstractDiagram("a b bc bcd bd");
+    	ArrayList<String> gps = ad1.findIntersectionGroups();
+    	ArrayList<String> expectedgps = new ArrayList<String>();
+    	expectedgps.add("a");
+    	expectedgps.add("b");
+    	expectedgps.add("cd");
+    	
+    	assertEquals(gps.equals(expectedgps), true);    	
+    }
+    @Test
+    public void test_normalise(){
+    	AbstractDiagram ad1 = new AbstractDiagram("a b bc bcd bd");
+    	AbstractDiagram ad2 = new AbstractDiagram("x b byv bv by");
+
+    	ad1.normalize();
+    	ad2.normalize();
+    	assertEquals(ad1.compareTo(ad2) == 0, true);    	
+    }
+    
+    @Test
+    public void test_zoneIntersection()
+    {
+    	String result = AbstractDiagram.zoneIntersection("abc", "def");
+    	assertEquals(result.equals(""), true);
+
+        result = AbstractDiagram.zoneIntersection("abc", "daf");
+    	assertEquals(result.equals("a"), true);
+
+        result = AbstractDiagram.zoneIntersection("", "daf");
+     	assertEquals(result.equals(""), true);
+
+        result = AbstractDiagram.zoneIntersection("a", "");
+     	assertEquals(result.equals(""), true);
+
+     	result = AbstractDiagram.zoneIntersection("abc", "cba");
+     	assertEquals(result.equals("abc"), true);
+    }
+    @Test
+    public void test_zoneUnion()
+    {
+    	String result = AbstractDiagram.zoneUnion("abc", "def");
+    	assertEquals(result.equals("abcdef"), true);
+
+        result = AbstractDiagram.zoneUnion("abc", "daf");
+    	assertEquals(result.equals("abcdf"), true);
+
+        result = AbstractDiagram.zoneUnion("", "daf");
+     	assertEquals(result.equals("adf"), true);
+
+        result = AbstractDiagram.zoneUnion("a", "");
+     	assertEquals(result.equals("a"), true);
+
+     	result = AbstractDiagram.zoneUnion("abc", "cba");
+     	assertEquals(result.equals("abc"), true);
+    }
+    @Test
+    public void test_zoneMinus()
+    {
+    	String result = AbstractDiagram.zoneMinus("abc", "def");
+    	assertEquals(result.equals("abc"), true);
+
+        result = AbstractDiagram.zoneMinus("abc", "daf");
+    	assertEquals(result.equals("bc"), true);
+
+        result = AbstractDiagram.zoneMinus("", "daf");
+     	assertEquals(result.equals(""), true);
+
+        result = AbstractDiagram.zoneMinus("a", "");
+     	assertEquals(result.equals("a"), true);
+
+     	result = AbstractDiagram.zoneMinus("abc", "cba");
+     	assertEquals(result.equals(""), true);
+    }    @Test
+    public void test_findConcurrentContours(){
+    	AbstractDiagram ad1 = new AbstractDiagram("a b ");
+    	ArrayList<String> concconts = ad1.findConcurrentContours();
+    	
+    	assertEquals(concconts.size() == 0, true);
+    	
+    	AbstractDiagram ad2 = new AbstractDiagram("ab");
+    	concconts = ad2.findConcurrentContours();
+    	
+    	assertEquals(concconts.size() == 1, true);
+    	assertEquals(concconts.get(0).equals("ab"), true);
+    }
+    @Test
+    public void test_zoneContainment(){ 
+    	assertEquals(new AbstractDiagram("a b").zoneContainment("a", "a"), false); // TODO I don't understand this
+    	assertEquals(new AbstractDiagram("ab b").zoneContainment("a", "ab"), true);    	
+    }
+    
+    @Test
+    public void test_toString(){
+    	AbstractDiagram ad1 = new AbstractDiagram("a b");
+    	String result = ad1.toString();
+    	assertEquals(result.equals("a b"), true);
+    	
+    	ad1.addZone("");
+    	result = ad1.toString();
+    	assertEquals(result.equals(" a b"), true); // TODO is this right?
+
+    	AbstractDiagram ad2 = new AbstractDiagram(" a b");
+    	result = ad2.toString();
+    	assertEquals(result.equals("a b"), true); // TODO is this right?	
+    }
+    
+    @Test
+    public void test_isomorphism_complex(){
+		System.out.print("isomorphims found:");
+
+    	final int numberOfContours = 3;
+		final int numberOfIterations = 10000; // was 100000
+		
+		AbstractDiagram adLongest1 = null;
+		AbstractDiagram adLongest2 = null;
+		
+		long longestTime = 0;
+		
+		for(int i =0; i < numberOfIterations; i++) {
+		
+			if(i%100 == 0){
+				System.out.println("");
+			}
+			AbstractDiagram.resetIsomorphismCounts();
+			
+			AbstractDiagram ad1 = AbstractDiagram.randomDiagramFactory(numberOfContours);
+			AbstractDiagram ad2 = AbstractDiagram.randomDiagramFactory(numberOfContours);
+	
+			long startMillis = System.currentTimeMillis();
+			long bruteForceCountTotal = 0;
+	
+			if(ad1.isomorphicTo(ad2)) {
+				//System.out.println("\n"+ad1+" isomorphic to "+ad2);
+				System.out.print(".");
+			}
+			bruteForceCountTotal += ad1.getBruteForceCount();
+			long totalMillis = System.currentTimeMillis()-startMillis;
+			if(totalMillis > longestTime) {
+				longestTime = totalMillis;
+				adLongest1 = ad1;
+				adLongest2 = ad2;
+				boolean print_times = false;
+				if(print_times){
+					System.out.println("\ncurrent longest for "+numberOfContours+ " contours ");
+					System.out.println(adLongest1+" | "+adLongest2);
+					System.out.println("brute force count: "+bruteForceCountTotal);
+					System.out.println("time taken (millis): "+longestTime);
+				}
+			}
+		}
+    	
+		System.out.print("\n");
+    }
 }
     
  	//	AbstractDiagram ad1,ad2;

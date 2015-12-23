@@ -2,7 +2,6 @@ package org.eulerdiagrams.vennom.apCircles;
 
 import java.util.*;
 
-import org.eulerdiagrams.vennom.graph.*;
 import org.eulerdiagrams.vennom.apCircles.comparators.*;
 import org.eulerdiagrams.vennom.apCircles.enumerate.*;
 
@@ -16,12 +15,9 @@ public class AbstractDiagram implements Comparable<AbstractDiagram>, Cloneable {
 
 
 	protected ArrayList<String> zoneList = null;
-//	protected String diagramString = null;
+
 	public static Random random = new Random(System.currentTimeMillis());
 	
-	/** for reporting the atomic diagrams */
-	protected ArrayList<AtomicAbstractDiagram> atomicAbstractDiagrams = null;
-
 
 	/** measures the usage of the brute force part of the isomorphism test */
 	public long bruteForceCount = 0;	
@@ -39,7 +35,6 @@ private static long timer4 = 0;
 	public long getBruteForceCount() {return bruteForceCount;}
 	public long getBruteForceTime() {return bruteForceTime;}
 	public boolean getBruteForceApplied() {return bruteForceApplied;}
-	public ArrayList<AtomicAbstractDiagram> getAtomicAbstractDiagrams() {return atomicAbstractDiagrams;}
 	
 	
 	/**
@@ -71,17 +66,8 @@ private static long timer4 = 0;
 	
 	
 	public ArrayList<String> getZoneList() {return zoneList;}
-	public void setZoneList(ArrayList<String> zoneList) {this.zoneList = zoneList;}
 	
-	public String getAbstractDescription(){
-		String ret = "";
-		for(String s: zoneList){
-			ret+=s;
-		//	System.out.println(" " + s);
-		}	
-		return ret;
-	}
-
+	public void setZoneList(ArrayList<String> zoneList) {this.zoneList = zoneList;}
 	
 	private static AbstractDiagram VennFactory(int numberOfContours) {
 		ArrayList<String> zones = Enumerate.findAllZones(numberOfContours);
@@ -164,7 +150,7 @@ private static long timer4 = 0;
 	/**
 	 * return a sorted list. Sort each element lexographically, then sort the list of strings.
 	 */
-	public ArrayList<String> constructZoneList(ArrayList<String> zones) {
+	private ArrayList<String> constructZoneList(ArrayList<String> zones) {
 		
 		ArrayList<String> ret = new ArrayList<String>(zones.size());
 		
@@ -190,25 +176,6 @@ private static long timer4 = 0;
 	}
 	
 	
-	/**
-	 * Takes a space delimited string and produces an sorted arraylist
-	 * of strings. "0" is treated as the empty zone, "". Sorts each string
-	 * lexographically. Returns null if a contour is specified more than once
-	 * in any single zone or if there are duplicate zones.
-	 */
-	public String findCopyDiagramString(String diagramString) {		
-		String ret = new String();
-		String[] splitString = diagramString.split(" ");
-		
-		for(int i = 0; i< splitString.length; i++) {
-			String zoneString = splitString[i];
-			zoneString += "-";
-		    ret += zoneString;
-		    ret += " ";
-		}
-		return ret;
-	}	
-	
 	/** 
 	 * Orders the zone string and detects duplicates. Returns null on duplicate.
 	 */
@@ -228,36 +195,6 @@ private static long timer4 = 0;
 
 		return sortedZoneStringBuffer.toString();
 	}	
-	/**
-	 * Finds the duplicates in the String.
-	 */
-	private static ArrayList<String> findDuplicateContours(String contours) {
-		
-		ArrayList<String> contourList = AbstractDiagram.findContourList(contours);
-		Collections.sort(contourList);
-		
-		ArrayList<String> ret = new ArrayList<String>();
-		String last = null;
-		ListIterator<String> li = contourList.listIterator();
-		while(li.hasNext()) {
-			String s = li.next();
-			if(last == null) {
-				// first iteration
-				last = s;
-			} else {
-				String current = s;
-				if(last.equals(current)) {
-					ret.add(current);
-				}
-				last = current;
-			}
-		}		
-		removeDuplicatesFromSortedList(ret);
-		
-		return ret;
-	}
-
-	
 	
 	/**
 	 * Gets the contours in the diagram. This returns a sorted list.
@@ -283,187 +220,12 @@ private static long timer4 = 0;
 	}
 	
 	
-	
-	/**
-	 * Takes a list of zones and returns a sorted list of contours
-	 * appearing in the zones.
-	 */
-	private static ArrayList<String> findSortedContoursFromZones(ArrayList<String> zones) {
-		
-		ArrayList<String> contours = findContoursFromZones(zones);
-		
-		int [] levels = new int[contours.size()];
-		for(int i = 0; i< contours.size(); i++){
-			String s = contours.get(i);
-			int level = contours.size();
-			for(String z : zones){
-				if(z.contains(s)&& z.length()<level)
-					level = z.length();
-			}		
-			levels[i] = level;
-		}
-		ArrayList<String> temp = new ArrayList<String>();
-		for(int j = 0 ; j < contours.size(); j++){
-			for(int k = 0; k < contours.size(); k++){
-				if(levels[j] == k)
-				temp.add(contours.get(j));
-			}		
-		}
-		contours = new ArrayList<String>();
-		for(int l = 0 ; l < temp.size(); l++){			
-			contours.add(temp.get(temp.size()-l-1));			
-		}
-		return contours;
-	}
-	
 	/** Takes a string and returns the list of characters in the string */
 	public static ArrayList<String> findContourList(String zoneLabel) {
 		String[] zones = zoneLabel.split("");
 		ArrayList<String> zoneList = new ArrayList<String>(Arrays.asList(zones));
 		zoneList.remove(""); // split adds a blank entry in index 0
 		return zoneList;
-	}
-
-	/**
-	 * Generate the containment graph with only contours linking to
-	 * its immediate parents. Each contour is a node,
-	 * and an edge goes from a contour to another contour if
-	 * the contour is inside it, without intersecting it. Concurrent
-	 * contours are inside each other. 
-	 */
-	public Graph generateImmediateContainmentGraph() {
-		Graph ret = generateContainmentGraph();
-		
-		ArrayList<Edge> deleteEdges = new ArrayList<Edge>();
-		
-		for(Edge e : ret.getEdges()) {
-			if(alternativePath(ret, e)) {
-				deleteEdges.add(e);
-			}
-		}
-		
-		ret.removeEdges(deleteEdges);
-		
-		return ret;
-		
-	}
-	
-	
-	/**
-	 * Find out if there is an alternative path from source to target
-	 * without using e or any edges where there is another edge going
-	 * in the opposite direction.
-	 */
-	private static boolean alternativePath(Graph g, Edge e) {
-		
-		Node source = e.getFrom();
-		Node target = e.getTo();
-
-		g.setEdgesVisited(false);
-		e.setVisited(true);
-		
-
-		ArrayList<Edge> queue = new ArrayList<Edge>();
-		queue.addAll(source.getEdgesFrom());
-		
-		queue.remove(e); // just in case e is in the from list of source
-		
-		// dont use edges that have a parallel in the opposite direction
-		for(Edge e1 : g.getEdges()) {
-			Node from1 = e1.getFrom();
-			Node to1 = e1.getTo();
-			for(Edge e2 : g.getEdges()) {
-				Node from2 = e2.getFrom();
-				Node to2 = e2.getTo();
-				if(from1 == to2 && to1 == from2) {
-					e1.setVisited(true);
-					e2.setVisited(true);
-					queue.remove(e1); // in case the edges are currently in the queue
-					queue.remove(e2);
-				}
-			}
-		}
-
-
-		g.setEdgesVisited(source.getEdgesFrom(),true);
-		Edge current = null;
-		while(!queue.isEmpty()) {
-
-			current = queue.get(0);
-			queue.remove(0);
-			
-			
-			if(current.getTo() == target) {
-				return true;
-			}
-
-			for(Edge fromEdge : current.getTo().getEdgesFrom()) {
-				if(!fromEdge.getVisited()) {
-					queue.add(fromEdge);
-					fromEdge.setVisited(true);
-				}
-			}
-		}
-
-		return false;
-	}
-
-
-
-	/**
-	 * Generate the containment graph, here each contour is a node,
-	 * and an edge goes from a contour to another contour if
-	 * the contour is inside it, without intersecting it. Concurrent
-	 * contours are inside each other. 
-	 */
-	public Graph generateContainmentGraph() {
-		Graph ret = new Graph();
-		
-		// first create all the nodes
-		for(String c : getContours()) {
-			Node n = new Node(c);
-			ret.addNode(n);
-		}
-
-		// now add appropriate edges
-		for(String zone : zoneList) {
-			ArrayList<String> contours = AbstractDiagram.findContourList(zone);
-			for(int i = 0; i< contours.size(); i++) {
-				String ci = contours.get(i);
-				for(int j = i+1; j< contours.size(); j++) {
-					String cj = contours.get(j);
-					if(contourContainment(ci, cj)) {
-						addUniqueEdge(ret, cj, ci);
-					}
-					if(contourContainment(cj, ci)) {
-						addUniqueEdge(ret, ci, cj);
-					}
-				}
-			}
-		}
-		return ret;
-	}
-	
-
-	/**
-	 * Add an edge from node with label1 to node with label2 if one
-	 * does not already exist.
-	 * @return true if an edge is added.
-	 */
-	private static boolean addUniqueEdge(Graph graph, String label1, String label2) {
-		Node n1 = graph.firstNodeWithLabel(label1);
-		Node n2 = graph.firstNodeWithLabel(label2);
-		
-		ArrayList<Edge> out1 = n1.getEdgesFrom();
-		for(Edge e : out1) {
-			if(e.getTo() == n2) {
-				return false;
-			}
-		}
-		
-		Edge newEdge = new Edge(n1,n2);
-
-		return graph.addEdge(newEdge);
 	}
 
 
@@ -560,280 +322,7 @@ private static long timer4 = 0;
 		
 		return ret;
 	}
-	
-	
-	public AtomicAbstractDiagram generateAtomicDiagrams() {
-		
-		// find the containments and intersections
-		ArrayList<String> intersections = findIntersectionGroups();
-		Graph immediateContainmentGraph = generateImmediateContainmentGraph();
-		Graph fullContainmentGraph = generateContainmentGraph();
-		
-		// first find any parallel edges that go in opposite
-		// directions, indicating concurrent contours, and
-		// merge the intersections
-		ArrayList<Edge> deleteEdges = new ArrayList<Edge>();
-		for(Edge e1 : immediateContainmentGraph.getEdges()) {
-			Node from1 = e1.getFrom();
-			Node to1 = e1.getTo();
-			for(Edge e2 : immediateContainmentGraph.getEdges()) {
-				Node from2 = e2.getFrom();
-				Node to2 = e2.getTo();
-				if(from1 == to2 && to1 == from2) {
-					mergeIntersectionGroups(intersections, from1.getLabel(), to1.getLabel());
-					deleteEdges.add(e1);
-					deleteEdges.add(e2);
-				}
-			}
-			
-		}
-		// remove the parallel edges, leaving a DAG
-		immediateContainmentGraph.removeEdges(deleteEdges);
-		
-		// For each node, find the total containment
-		// for it, if that zone exists merge node with
-		// immediate parents and remove the containment edge
-		ArrayList<String> completeZoneList = getZoneList();
-		deleteEdges.clear();
-		for(Node n : immediateContainmentGraph.getNodes()) {
-			String contour = n.getLabel();
-			String containment = findAllParents(immediateContainmentGraph, n);
-			if(!completeZoneList.contains(containment)) {
-				for(Edge e : n.getEdgesFrom()) {
-					Node parent = e.getTo();
-					String parentC = parent.getLabel();
-					mergeIntersectionGroups(intersections, contour, parentC);
 
-					deleteEdges.add(e);
-				}
-			}
-		}
-		// remove the edges of merged nodes
-		immediateContainmentGraph.removeEdges(deleteEdges);
-		
-		// build the intersection containment tree
-		// nodes are intersections, edges are those derived from the
-		// containment graph
-		Graph intersectionTree = new Graph();
-		for(String intersection : intersections) {
-			intersectionTree.addNode(new Node(intersection));
-			for(Edge e : immediateContainmentGraph.getEdges()) {
-				Node from = intersectionTree.firstNodeContainingLabel(e.getFrom().getLabel());
-				Node to = intersectionTree.firstNodeContainingLabel(e.getTo().getLabel());
-				if(from == to) {
-					// dont add self sourcing edge
-					continue;
-				}
-				// add an edge if there is not one in the tree
-				intersectionTree.addUniqueEdge(from,to);
-			}
-		}
-		
-		// Build the atomic diagram
-
-		// top level is the empty diagram
-		String addedContours = "";
-		AtomicAbstractDiagram root = new AtomicAbstractDiagram(new AbstractDiagram("0"),null,null);
-		ArrayList<AtomicAbstractDiagram> queue = new ArrayList<AtomicAbstractDiagram>();
-		for(Node n : intersectionTree.getNodes()) {
-			String atomicContours = n.getLabel();
-			if(n.getEdgesFrom().size() == 0) {
-				// if the diagram is a top level diagram
-				
-				AbstractDiagram ad = findAtomicDiagram(atomicContours);
-				AtomicAbstractDiagram aad = new AtomicAbstractDiagram(ad,root,"0");
-				queue.add(aad);
-				addedContours += atomicContours;
-			}
-		}
-		
-		atomicAbstractDiagrams = new ArrayList<AtomicAbstractDiagram>(queue);
-		
-		while(queue.size() != 0) {
-			AtomicAbstractDiagram parentDiagram = queue.get(0);
-			ArrayList<String> parentContours = parentDiagram.getAtomicDiagram().getContours();
-			queue.remove(0);
-			
-			for(String parentContour : parentContours) {
-				Node parentNode = intersectionTree.firstNodeContainingLabel(parentContour);
-				for(Edge e : parentNode.getEdgesTo()) {
-					Node childNode = e.getFrom();
-					String childAtomicContours = childNode.getLabel();
-					ArrayList<String> childContourList = AbstractDiagram.findContourList(childAtomicContours);
-					if(!addedContours.contains(childContourList.get(0))) {
-						// child is not yet in the tree
-						AbstractDiagram ad = findAtomicDiagram(childAtomicContours);
-						// use the fullContainmentGraph to find the parent diagram zone containing the child contour
-						// we need to find the containment nodes from the node that are
-						// in the parent diagram
-						String parentZone = "";
-						for(String childContour : childContourList) {
-							Node fullChildNode = fullContainmentGraph.firstNodeWithLabel(childContour);
-							for(Edge parentE : fullChildNode.getEdgesFrom()) {
-								Node parentZoneNode = parentE.getTo();
-								for(String parentTestContour : parentDiagram.getAtomicDiagram().getContours()) {
-									if(parentTestContour.equals(parentZoneNode.getLabel()) && !parentZone.contains(parentZoneNode.getLabel())) {
-										// if the a parent zone contains the child diagram, add it to the zone that contains the child
-										parentZone += parentZoneNode.getLabel();
-										break;
-									}
-								}
-							}
-						}
-						parentZone = AbstractDiagram.orderZone(parentZone);
-						AtomicAbstractDiagram aad = new AtomicAbstractDiagram(ad,parentDiagram, parentZone);
-						
-						atomicAbstractDiagrams.add(aad);
-
-						queue.add(aad);
-						addedContours += childAtomicContours;
-					}
-					
-				}
-			}
-			
-		}
-
-		return root;
-	}
-	
-
-	/**
-	 * This returns zones containing the contours, and
-	 * strips the zones of contours not in the argument, so
-	 * the argument must consist of contours in an atomic diagram.
-	 */
-	public AbstractDiagram findAtomicDiagram(String atomicContours) {
-		
-		ArrayList<String> zones = findZonesContainingContours(atomicContours);
-		ArrayList<String> contours =  AbstractDiagram.findContourList(atomicContours);
-		Collections.sort(contours);
-		
-		ArrayList<String> zoneList = new ArrayList<String>();
-		zoneList.add("0");
-		
-		for(String zone : zones) {
-			StringBuffer strippedZone = new StringBuffer();
-			for(String contour : contours) {
-				if(zone.contains(contour)) {
-					strippedZone.append(contour);
-				}
-			}
-			if(strippedZone.length() > 0) {
-				zoneList.add(strippedZone.toString());
-			}
-		}
-		
-		sortZoneList(zoneList);
-		removeDuplicatesFromSortedList(zoneList);
-		
-		StringBuffer zoneBuff = new StringBuffer("");
-		for(String zone : zoneList) {
-			zoneBuff.append(zone);
-			zoneBuff.append(" ");
-		}
-		
-		AbstractDiagram ret = new AbstractDiagram(zoneBuff.toString());
-		return ret;
-
-	}
-
-
-	/**
-	 * Return the zones contain that any of the contours in the argument.
-	 */
-	public ArrayList<String> findZonesContainingContours(String contours) {
-		
-		ArrayList<String> ret = new ArrayList<String>();
-		ArrayList<String> splitContourList = AbstractDiagram.findContourList(contours);
-		
-		for(String zone : getZoneList()) {
-			for(String contour : splitContourList) {
-				if(zone.contains(contour)) {
-					ret.add(zone);
-				}
-			}
-		}
-		
-		sortZoneList(ret);
-		removeDuplicatesFromSortedList(ret);
-		
-		return ret;
-
-	}
-
-
-	/**
-	 * Find the two groups with c1 and c2 in and merge them if they are
-	 * different.
-	 */
-	private void mergeIntersectionGroups(ArrayList<String> groups, String c1, String c2) {
-
-		int group1 = -1;
-		int group2 = -1;
-		for(int i = 0; i < groups.size(); i++) {
-			String group = groups.get(i);
-			if(group.contains(c1)) {
-				group1 = i;
-			}
-			if(group.contains(c2)) {
-				group2 = i;
-			}
-		}
-		
-		if(group1 == -1) {
-			// should never get here
-			return;
-		}
-		if(group2 == -1) {
-			// should never get here
-			return;
-		}
-		
-		if(group1 == group2) {
-			// groups are same, so do nothing, but return true as the nodes should be merged
-			return;
-		}
-
-		String g1s = groups.get(group1);
-		String g2s = groups.get(group2);
-		String mergedGroup = g1s+g2s;
-		
-		mergedGroup = AbstractDiagram.orderZone(mergedGroup);
-		
-		groups.remove(g1s);
-		groups.remove(g2s);
-		groups.add(mergedGroup);
-		
-		sortZoneList(groups);
-		
-		return;
-	}
-	
-	
-	/** Merge the labels in all parents of the given node, assumes a DAG. */
-	private static String findAllParents(Graph g, Node n) {
-		
-		String ret = "";
-		
-		ArrayList<Edge> queue = new ArrayList<Edge>();
-		queue.addAll(n.getEdgesFrom());
-		
-		while(queue.size() > 0) {
-			Edge currentE = queue.get(0);
-			queue.remove(0);
-			Node currentN = currentE.getTo();
-			if(!ret.contains(currentN.getLabel())) {
-				ret = ret+currentN.getLabel();
-			}
-			queue.addAll(currentN.getEdgesFrom());
-		}
-		
-		ret = AbstractDiagram.orderZone(ret);
-		
-		return ret;
-		
-	}
 
 
 	/**
@@ -878,24 +367,7 @@ private static long timer4 = 0;
 		return foundInZ;
 	}
 
-	
-	/**
-	 * See if c1 is in exactly the same zones as c2.
-	 * c1 and c2 must be in the diagram.
-	 */
-	public boolean contoursConcurrent(String c1, String c2) {
-		for(String zone : zoneList) {
-			if(zone.contains(c1) && !zone.contains(c2)) {
-				return false;
-			}
-			if(!zone.contains(c1) && zone.contains(c2)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	
+		
 	/**
 	 * See if c1 shares a zone with c2.
 	 * c1 and c2 must be in the diagram.
@@ -936,7 +408,7 @@ private static long timer4 = 0;
 
 
 	/**
-	 * Get the contours in both z1 and z2.
+	 * Get the contours in either z1 or z2.
 	 */
 	public static String zoneUnion(String z1, String z2) {
 		
@@ -1201,10 +673,12 @@ private static long timer4 = 0;
 		//long startTime = System.currentTimeMillis();
 		bruteForceCount = 0;
 		bruteForceTime = 0;
+
 timer1 = 0;
 timer2 = 0;
 timer3 = 0;
 timer4 = 0;
+
 		bruteForceApplied = false;
 		
 		AbstractDiagram ad1 = new AbstractDiagram(this);
@@ -1514,59 +988,6 @@ timer2 = System.currentTimeMillis()-startTimer2;
 	
 	
 	/**
-	 * returns, for each contour and each zone size, the neighbouring contours.
-	 * That is, the other contours that appear in the same zone as the contour.
-	 * The contours are sorted by label in the sublists.
-	 * NOT USED AT THE MOMENT
- 	 */
-	public HashMap<String, HashMap<Integer, ArrayList<String>>> findContourNeighboursByZoneSize() {
-		
-		HashMap<String,HashMap<Integer,ArrayList<String>>> ret = new HashMap<String,HashMap<Integer,ArrayList<String>>>();
-		
-		ArrayList<String> contours = getContours();
-
-		// iterate through the zones, collecting zones of the same size
-		HashMap<Integer,ArrayList<String>> zoneSizeToZones = new HashMap<Integer,ArrayList<String>>();
-		for(String zone: zoneList) {
-			int zoneSize = zone.length();
-			
-			ArrayList<String> zoneList = zoneSizeToZones.get(zoneSize);
-			if(zoneList == null) {
-				zoneList = new ArrayList<String>();
-				zoneList.add(zone);
-				zoneSizeToZones.put(zoneSize,zoneList);
-			} else {
-				zoneList.add(zone);
-				Collections.sort(zoneList);
-			}
-		}
-		
-		for(String contour:contours) {
-			Set<Integer> sizeSet = zoneSizeToZones.keySet();
-			
-			HashMap<Integer,ArrayList<String>> neighboursAtSize = new HashMap<Integer,ArrayList<String>>();
-			for(Integer size:sizeSet) {
-				ArrayList<String> zonesAtSize = zoneSizeToZones.get(size);
-				ArrayList<String> zonesContainingContour = new ArrayList<String>();
-				for(String zoneAtSize:zonesAtSize) {
-					if(zoneAtSize.indexOf(contour) != -1) {
-						zonesContainingContour.add(zoneAtSize);
-					}
-				}
-				ArrayList<String> neighbours = findContoursFromZones(zonesContainingContour);
-				neighbours.remove(contour);
-				if(neighbours.size() != 0) {
-					neighboursAtSize.put(size,neighbours);
-				}
-			}
-			ret.put(contour,neighboursAtSize);
-		}
-		
-		return ret;
-	}
-	
-	
-	/**
 	 * Returns an ordered list of lists of contours, based on
 	 * the ordering in the HashMap, with contours having the
 	 * same order in the same list. The list must be sorted on the hashmap values.
@@ -1647,9 +1068,9 @@ timer2 = System.currentTimeMillis()-startTimer2;
 		 * the next and so on. The effect is that many
 		 * isomorphic diagrams will have the same label ordering.
 		 * The labels are compared by checking each zone size.
-		 * A label occuring in a smaller size zone size gets
+		 * A label occurring in a smaller size zone size gets
 		 * higher priority. Where there is no difference in this
-		 * then a label occuring adjacent to a higher ordered
+		 * then a label occurring adjacent to a higher ordered
 		 * label gets highest priority.
 		 */
 		public void normalize() {
@@ -1669,12 +1090,12 @@ timer2 = System.currentTimeMillis()-startTimer2;
 			} else {
 				contourList.addAll(splitZoneList);
 				Collections.sort(contourList);
-//				removeDuplicatesFromSortedList(contourList); // cant do this here because we need the duplicates later for a count
+//				removeDuplicatesFromSortedList(contourList); // can't do this here because we need the duplicates later for a count
 			}
 		}
 		
 
-		// find the number of contour occurences at each zone size
+		// find the number of contour occurrences at each zone size
 		// test if there are different numbers of contours at
 		// different zone sizes.
 		// We can iterate over just one of the sets and pull out
@@ -1729,7 +1150,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 
 		// TODO
 		// try iterating through the contourOrderList, attempting to disambiguate
-		// members of each list by seeing if any neighbours at each size
+		// members of each list by seeing if any neighbors at each size
 		// have a different value. Keep propagating changes until no
 		// more changes found.
 		// HashMap<String,HashMap<Integer,ArrayList<String>>> neighbourMap = findContourNeighboursByZoneSize();
@@ -1762,38 +1183,7 @@ timer2 = System.currentTimeMillis()-startTimer2;
 		return contourLabelMap;
 	}
 	
-	/**
-	 * Finds the contours a particular contour is
-	 * entirely contained in
-	 */
-	public String containingZones(String contour) {
-	
-		ArrayList<String> cZoneList = new ArrayList<String>();
-		ArrayList<String> contours = getContours();
-		String zones = "";
-		for(String zone : zoneList){	
-			if(zone.contains(contour)){				
-				cZoneList.add(zone);
-			}
-		}
-		for(String con: contours){
-				if(!con.equals(contour)&& contains(cZoneList, con))
-					zones += con;			
-		}
-		return zones;
-	}
-	/**
-	 * Finds the contours a particular contour is
-	 * entirely contained in
-	 */	
-	public boolean contains(ArrayList<String> zoneList, String contour){
-		
-		for(String s: zoneList){
-			if(!s.contains(contour))
-				return false;
-		}
-		return true;
-	}	
+
 	
 	public boolean addZone(String z) {
 		String zoneString = z;
@@ -1849,49 +1239,6 @@ timer2 = System.currentTimeMillis()-startTimer2;
 			}
 		}
 		return new AbstractDiagram(temp);		
-	}
-	
-	
-	private AbstractDiagram removePiercing() {
-		for(String s : this.getContours()) {
-			ArrayList<String> zones = new ArrayList<String>();
-			for(String s1: this.getZoneList()){
-				if(s1.contains(s)){
-					zones.add(s1);
-				}
-			}
-			if(zones.size()==2){
-				String s2 = zones.get(0);
-				String s3 = zones.get(1);
-				String diff = Graph.findLabelDifferences(s2,s3);
-				if(diff.length() == 1){	
-					AbstractDiagram temp = this.removeCurve(s);
-					System.out.println("curvec " + s +" is curve " + diff + "'s piercing");
-					System.out.println("curve " + s +" removed");
-					return temp;
-					
-				}
-			}
-		}		
-		return null;
-	}
-	
-	private void checkInductivePiercingDiagram(){		
-		boolean stop = false;
-		AbstractDiagram newDiagram = this.clone();
-		
-		while(!stop){
-			newDiagram = newDiagram.removePiercing();
-			if(newDiagram == null){
-				stop = true;
-			//	System.out.println("not IPD");
-				return;
-			}
-			if(newDiagram.getContours().size()==1){
-				stop = true;
-			//	System.out.println("is IPD");
-			}
-		}	
 	}
 	
 	
