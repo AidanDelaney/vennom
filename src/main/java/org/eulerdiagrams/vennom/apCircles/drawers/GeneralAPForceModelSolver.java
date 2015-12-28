@@ -129,14 +129,18 @@ public class GeneralAPForceModelSolver {
 			i++;
 
 			//set up the node centres storage
+			//System.out.println("nodes "+g.getNodes());
+
 			oldNodeCentres().clear();
 			for(Node n : g.getNodes()) {
 				Point2D.Double currentCentre = currentNodeCentre(n);
+				//System.out.println("n "+n.hashCode()+" pos "+currentCentre);
 				oldNodeCentres().put(n, new Point2D.Double(currentCentre.x,currentCentre.y));
 			}
 
 			for(Node n : g.getNodes()) {
 				Point2D.Double newPos = findForceOnNode(g, n);
+				//System.out.println("n "+n.hashCode()+" new pos "+newPos);
 				currentNodeCentres.put(n,newPos);
 			}
 			
@@ -144,18 +148,19 @@ public class GeneralAPForceModelSolver {
 				forUpdates.update();
 
 			maxMovement = findMaximumMovement(g);
+			//System.out.println("i = "+i+", max movement = "+maxMovement);
 			
 			if(i >= maxIterations) {
-//				System.out.println("General AP - Exit due to iterations limit "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+				//System.out.println("General AP - Exit due to iterations limit "+i+" iterations");
 				break;
 			}
 		}
 		
 		if(maxMovement-movementThreshold <= 0) {
-//			System.out.println("General AP - Exit due to under movement threshold "+(System.currentTimeMillis() - startTime)+" milliseconds and "+i+" iterations");
+			//System.out.println("General AP - Exit due to under movement threshold "+i+" iterations");
 		
 		}
-//		System.out.println("General AP - Iterations: "+i+", max movement: "+maxMovement+", seconds: "+((System.currentTimeMillis() - startTime)/1000.0));
+		//System.out.println("General AP - Iterations: "+i+", max movement: "+maxMovement);
 
 		
 		for(Node n : g.getNodes()) {
@@ -171,11 +176,12 @@ public class GeneralAPForceModelSolver {
 	private double findMaximumMovement( Graph g ) {
 		
 		double max = 0;
-		
 		for(Node n : g.getNodes()) {
+			//System.out.println("find positions for "+n.hashCode());
 			Point2D.Double oldP = oldNodeCentres().get(n);
 			Point2D.Double currentP = currentNodeCentre(n);
 			
+			//System.out.println("old pos "+oldP+" new pos "+currentP);
 			double distance = Util.distance(oldP, currentP);
 			if(distance > max) {
 				max = distance;
@@ -207,6 +213,8 @@ public class GeneralAPForceModelSolver {
 
 			Edge e = g.findEdgeBetween(n,nextN);
 			
+			//System.out.println("edge is "+e);
+			
 			if(e != null) {
 				
 				double centreDistance = Util.distance(p,nextP);
@@ -226,6 +234,8 @@ public class GeneralAPForceModelSolver {
 								
 				if(e.isContainmentType()) {
 					
+					//System.out.println("edge is containment");
+
 					double separation = centreDistance;
 					if(separation == 0) {
 						separation = 0.1;
@@ -258,10 +268,13 @@ public class GeneralAPForceModelSolver {
 
 				if(e.isSeparatorType()) {
 					
+					//System.out.println("edge is separator");
+
 					double separation = centreDistance;
 					if(separation == 0) {
 						separation = 0.1;
 					}
+
 					double separatorForce = separatorMultiplier/(separation*separation);
 					
 					if(centreDistance >= e.getScore()+separatorPadding) {
@@ -290,6 +303,8 @@ public class GeneralAPForceModelSolver {
 
 				
 				if(e.isIdealType()) {
+
+					//System.out.println("edge is ideal");
 
 					double distanceFromIdeal = Math.abs(centreDistance-e.getScore());
 					

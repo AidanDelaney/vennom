@@ -70,12 +70,10 @@ public class VennomLayout {
 			return null;			
 		} else {
 	        Graph g = diagramSpec.generateGeneralAugmentedIntersectionGraph();
-			for(Edge e : g.getEdges()) {
-				e.setType(Graph.DEFAULT_EDGE_TYPE); //TODO what does this mean?
-			}
 	        GeneralAPForceModelSolver solver = new GeneralAPForceModelSolver();
 	        solver.layout(g);
 	        return g;
 		}		
 	}
 }
+
