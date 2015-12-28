@@ -250,7 +250,7 @@ public class TestVennomLayout {
         VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
         Graph g = vl.layout();
 
-        assertThat(g.getNodes().size(), is(2));
+        assertThat(g.getNodes().size(), is(3));
 
         Node n0 = g.getNodes().get(0);
         Node n1 = g.getNodes().get(1);
