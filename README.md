@@ -1,5 +1,7 @@
 # VenNom
 
+[![Build Status](https://travis-ci.org/AidanDelaney/vennom.svg)](https://travis-ci.org/AidanDelaney/vennom)
+
 VenNom eats your data and draws an area-proportional Euler diagram.  The area-proportional diagram is drawn using novel techniques developed by
 
 * [Peter Rodgers](http://www.cs.kent.ac.uk/people/staff/pjr/) at Kent
