@@ -12,8 +12,6 @@ import javax.swing.filechooser.*;
 import org.eulerdiagrams.display.graph.GraphDrawerEdgeLength;
 import org.eulerdiagrams.display.graph.GraphUtilityDistanceStats;
 import org.eulerdiagrams.vennom.graph.*;
-import org.eulerdiagrams.vennom.graph.drawers.*;
-import org.eulerdiagrams.vennom.graph.utilities.*;
 
 /**
  *

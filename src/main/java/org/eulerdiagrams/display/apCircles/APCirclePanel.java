@@ -15,11 +15,6 @@ import org.eulerdiagrams.display.graph.MoveGraphFrame;
 import org.eulerdiagrams.vennom.apCircles.AreaSpecification;
 import org.eulerdiagrams.vennom.apCircles.Util;
 import org.eulerdiagrams.vennom.graph.*;
-import org.eulerdiagrams.vennom.graph.dialogs.*;
-import org.eulerdiagrams.vennom.graph.drawers.*;
-import org.eulerdiagrams.vennom.graph.experiments.*;
-import org.eulerdiagrams.vennom.graph.utilities.*;
-import org.eulerdiagrams.vennom.graph.views.*;
 
 import java.util.*;
 import java.applet.*;

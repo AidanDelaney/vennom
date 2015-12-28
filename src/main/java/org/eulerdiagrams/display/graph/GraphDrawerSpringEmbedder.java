@@ -7,7 +7,6 @@ import java.awt.geom.*;
 import java.awt.event.*;
 
 import org.eulerdiagrams.vennom.graph.*;
-import org.eulerdiagrams.vennom.graph.drawers.*;
 
 /**
  * A version of Eades spring embedder for laying out graphs

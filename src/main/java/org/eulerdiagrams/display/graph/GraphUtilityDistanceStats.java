@@ -7,7 +7,6 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import org.eulerdiagrams.vennom.graph.*;
-import org.eulerdiagrams.vennom.graph.drawers.*;
 
 /**
  * Outputs statistics on node and edge distances

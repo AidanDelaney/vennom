@@ -16,10 +16,6 @@ import org.eulerdiagrams.display.graph.GraphView;
 import org.eulerdiagrams.display.graph.GraphViewShowEdgeLabel;
 import org.eulerdiagrams.display.graph.GraphViewShowNodeLabel;
 import org.eulerdiagrams.vennom.graph.*;
-import org.eulerdiagrams.vennom.graph.views.*;
-import org.eulerdiagrams.vennom.apCircles.drawers.*;
-import org.eulerdiagrams.vennom.apCircles.utilities.*;
-import org.eulerdiagrams.vennom.apCircles.views.*;
 
 
 /** Graph layout window using GraphPanel */

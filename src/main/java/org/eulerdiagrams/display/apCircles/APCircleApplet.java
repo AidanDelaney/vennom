@@ -6,7 +6,6 @@ import javax.swing.border.*;
 import org.eulerdiagrams.display.graph.BasicSpringEmbedder;
 import org.eulerdiagrams.display.graph.GraphDrawerEdgeLength;
 import org.eulerdiagrams.vennom.graph.*;
-import org.eulerdiagrams.vennom.graph.drawers.*;
 
 import java.applet.*;
 import java.awt.*;
