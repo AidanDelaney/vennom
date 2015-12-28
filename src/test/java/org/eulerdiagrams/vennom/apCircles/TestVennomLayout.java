@@ -39,7 +39,7 @@ public class TestVennomLayout {
     }
 
     @Test
-    // Same specifications produce equal graphs
+    // Same specifications do not produce equal graphs
     public void test_03() {
         AreaSpecification as1 = new AreaSpecification("A 100\nB 100\n");
         VennomLayout vl1 = new VennomLayout(VennomLayout.FORCE_LAYOUT, as1);
@@ -49,7 +49,7 @@ public class TestVennomLayout {
         VennomLayout vl2 = new VennomLayout(VennomLayout.FORCE_LAYOUT, as2);
         Graph graph2 = vl2.layout();
 
-        assertThat(graph1, is(equalTo(graph2)));
+        assertThat(graph1, is(not(equalTo(graph2))));
     }
 
     @Test
