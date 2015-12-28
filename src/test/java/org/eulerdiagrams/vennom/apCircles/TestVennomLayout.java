@@ -1,6 +1,6 @@
 package org.eulerdiagrams.vennom.apCircles;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.awt.Point;
@@ -191,34 +191,37 @@ public class TestVennomLayout {
         
         // TODO write a function which takes the String task
         // and the graph and an error tolerance and validates the result.
-        // Does this code already exist?        
+        // Does this code already exist?
+
+        // assert that there is an overlap between contours
+        assertThat(n0.getPreciseCentre().distance(n1.getPreciseCentre()), is(lessThan(new Double(n0.getPreciseRadius() + n1.getPreciseRadius()))));
     }
     
     @Test
     // Assert the layout of a non-symmetric Venn2
     public void testVenn2_002() {
         // Venn2 area spec
-    	String task = "a 100.0\nb 200.0\nab 500";
+        String task = "a 100.0\nb 200.0\nab 500";
         AreaSpecification as = new AreaSpecification(task);
         VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
         Graph g = vl.layout();
 
-        System.out.println("task is\n"+task);
-        for(Node n: g.getNodes()) {
+        System.out.println("task is\n" + task);
+        for (Node n : g.getNodes()) {
             assertThat(n, is(not(nullValue())));
-            System.out.println(n.getContour() + ", " + n.getPreciseRadius() + ", " 
-                             + n.getCentre().x + ", " + n.getCentre().y);
+            System.out.println(n.getContour() + ", " + n.getPreciseRadius() + ", "
+                    + n.getCentre().x + ", " + n.getCentre().y);
         }
-        
+
         // generate test code by switching this on
         // then we see code we can put into the test
         // TODO this is only a manageable system for a handful of tests
         // we we expect to be pretty geometrically stable
         boolean regenerate_geometry_checks = false;
-        if(regenerate_geometry_checks){
-        	generateTestCode(g);
+        if (regenerate_geometry_checks) {
+            generateTestCode(g);
         }
-            
+
         ArrayList<Node> nodes = g.getNodes();
         assertEquals(nodes.size(), 2);
         Node n0 = nodes.get(0);
@@ -234,6 +237,29 @@ public class TestVennomLayout {
         assertEquals(p1.x, 297);
         assertEquals(p1.y, 363);
         double r1 = n1.getPreciseRadius();
-        assertEquals(r1, 14.927053303604616, 0.1);        
+        assertEquals(r1, 14.927053303604616, 0.1);
+
+        // assert that there is an overlap between contours
+        assertThat(n0.getPreciseCentre().distance(n1.getPreciseCentre()), is(lessThan(new Double(n0.getPreciseRadius() + n1.getPreciseRadius()))));
+    }
+
+    @Test
+    public void testVenn3_001() {
+        String task = "a 100.0\nb 100.0\nc 100.0\nab 20.0\nac 20.0\nbc 20.0\nabc 10.0";
+        AreaSpecification as = new AreaSpecification(task);
+        VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
+        Graph g = vl.layout();
+
+        assertThat(g.getNodes().size(), is(2));
+
+        Node n0 = g.getNodes().get(0);
+        Node n1 = g.getNodes().get(1);
+        Node n2 = g.getNodes().get(2);
+
+        // quick check, There must me an overlap between two nodes, so their centre distance must be less than the sum
+        // of the radii.
+        assertThat(n0.getPreciseCentre().distance(n1.getPreciseCentre()), is(lessThan(new Double(n0.getPreciseRadius() + n1.getPreciseRadius()))));
+        assertThat(n0.getPreciseCentre().distance(n2.getPreciseCentre()), is(lessThan(new Double(n0.getPreciseRadius() + n2.getPreciseRadius()))));
+        assertThat(n1.getPreciseCentre().distance(n2.getPreciseCentre()), is(lessThan(new Double(n1.getPreciseRadius() + n2.getPreciseRadius()))));
     }
 }
