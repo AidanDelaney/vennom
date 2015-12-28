@@ -150,7 +150,9 @@ public class TestVennomLayout {
     	Graph g = generateForceLayout( task );
     	
     	// this next line is the purpose of this test
+    	System.out.println("START Testing test code generation...");
     	generateTestCode(g);   
+    	System.out.println("END Testing test code generation.");
     }
     
 
@@ -172,17 +174,18 @@ public class TestVennomLayout {
         Node n0 = nodes.get(0);
         assertTrue(n0.getContour().equals("a")); // will break if the graph nodes get reordered
         Point p0 = n0.getCentre();
-        assertEquals(p0.x, 235);
-        assertEquals(p0.y, 238);
+        assertEquals(p0.x, 265);
+        assertEquals(p0.y, 299);
         double r0 = n0.getPreciseRadius();
         assertEquals(r0, 13.81976597885342, 0.1);
         Node n1 = nodes.get(1);
         assertTrue(n1.getContour().equals("b")); // will break if the graph nodes get reordered
         Point p1 = n1.getCentre();
-        assertEquals(p1.x, 297);
-        assertEquals(p1.y, 363);
+        assertEquals(p1.x, 267);
+        assertEquals(p1.y, 302);
         double r1 = n1.getPreciseRadius();
         assertEquals(r1, 13.81976597885342, 0.1);
+
         
         // TODO either make this checking code easy to auto-generate
         // when an example changes, or don't check for actual geometry
@@ -227,15 +230,15 @@ public class TestVennomLayout {
         Node n0 = nodes.get(0);
         assertTrue(n0.getContour().equals("a")); // will break if the graph nodes get reordered
         Point p0 = n0.getCentre();
-        assertEquals(p0.x, 235);
-        assertEquals(p0.y, 238);
+        assertEquals(p0.x, 265);
+        assertEquals(p0.y, 298);
         double r0 = n0.getPreciseRadius();
         assertEquals(r0, 13.81976597885342, 0.1);
         Node n1 = nodes.get(1);
         assertTrue(n1.getContour().equals("b")); // will break if the graph nodes get reordered
         Point p1 = n1.getCentre();
-        assertEquals(p1.x, 297);
-        assertEquals(p1.y, 363);
+        assertEquals(p1.x, 267);
+        assertEquals(p1.y, 303);
         double r1 = n1.getPreciseRadius();
         assertEquals(r1, 14.927053303604616, 0.1);
 
