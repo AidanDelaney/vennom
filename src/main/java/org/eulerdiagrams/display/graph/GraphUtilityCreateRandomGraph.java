@@ -126,7 +126,8 @@ public class GraphUtilityCreateRandomGraph extends GraphUtility implements Seria
 
 		int maxCount =100;
 		int count =1;
-		graph.generateRandomGraph(numberOfNodes,numberOfEdges,false,false);
+		long seed = System.currentTimeMillis();
+		graph.generateRandomGraph(numberOfNodes,numberOfEdges,seed,false,false);
 		while(!graph.connected()) {
 			if (count >= maxCount) {
 				System.out.println("Failed to create a connected graph after "+count+ " attempts");

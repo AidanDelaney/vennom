@@ -1515,10 +1515,14 @@ public class Graph implements Serializable {
  * created, so that the number of nodes may be less than that passed.
  * The old graph gets deleted.
  */
-	public void generateRandomGraph(int nodeNumber, int edgeNumber, boolean selfSourcing, boolean parallel) {
+	public void generateRandomGraph( int nodeNumber, 
+			                         int edgeNumber, 
+			                         long seed,
+			                         boolean selfSourcing, 
+			                         boolean parallel) {
 
 		clear();
-		Random r = new Random();
+		Random r = new Random(seed);
 		for(int i = 0; i < edgeNumber; i++) {
 			Integer node1 = new Integer(r.nextInt(nodeNumber));
 			Integer node2 = new Integer(r.nextInt(nodeNumber));
@@ -1533,8 +1537,8 @@ public class Graph implements Serializable {
 		}
 	}
 
-	public void generateRandomGraph(int nodeNumber, int edgeNumber) {
-		generateRandomGraph(nodeNumber,edgeNumber,false,true);
+	public void generateRandomGraph(int nodeNumber, int edgeNumber, long seed) {
+		generateRandomGraph(nodeNumber,edgeNumber, seed, false,true);
 	}
 
 /**

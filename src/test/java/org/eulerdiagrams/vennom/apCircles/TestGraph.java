@@ -224,7 +224,7 @@ public class TestGraph {
 		}
 
 		if(!g1.consistent()) {
-			//fail("Test1.1.24 Fail");  TODO this fails
+			//fail("Test1.1.24 Fail");  //TODO has been known to fail for some seed value e.g. 12345
 		}
 
 
@@ -264,7 +264,7 @@ public class TestGraph {
 		}
 		testN.remove(n2);
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
-			//fail("Test1.3.3 Fail"); TODO this fails
+			fail("Test1.3.3 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		g1.setNodesVisited(true);
@@ -371,11 +371,11 @@ public class TestGraph {
 		testEdgeAL = new ArrayList<Edge>();
 		testEdgeAL.add(ed5);
 		if(!g2.getEdges().equals(testEdgeAL)) {
-			//fail("Test2.1 Fail"); TODO
+			//fail("Test2.1 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		g2.addNode(nd3);
 		if(!g2.getEdges().equals(testEdgeAL)) {
-			//fail("Test2.2 Fail"); TODO
+			//fail("Test2.2 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		g2.removeNode(nd2);
 		testEdgeAL = new ArrayList<Edge>();
@@ -419,16 +419,16 @@ public class TestGraph {
 		HashSet dyTest = new HashSet();
 
 		if(dyNode1.getEdgesFrom().equals(dyTest) == false) {
-			//fail("Test2.5.3 Fail"); TODO
+			//fail("Test2.5.3 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(dyNode1.getEdgesTo().equals(dyTest) == false) {
-			//fail("Test2.5.4 Fail"); TODO
+			//fail("Test2.5.4 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(dyNode2.getEdgesFrom().equals(dyTest) == false) {
-			//fail("Test2.5.5 Fail"); TODO
+			//fail("Test2.5.5 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(dyNode2.getEdgesTo().equals(dyTest) == false) {
-			//fail("Test2.5.6 Fail");  TODO
+			//fail("Test2.5.6 Fail");  //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(!g2.consistent()) {
 			fail("Test2.5.7 Fail");
@@ -713,7 +713,7 @@ public class TestGraph {
 		path.add(n4);
 		path.add(n1);
 		if(!g1.unweightedShortest(n5,n1).equals(path)) {
-			//fail("Test3.1 Fail"); TODO
+			//fail("Test3.1 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		path = new ArrayList<Node>();
 		path.add(n3);
@@ -760,7 +760,7 @@ public class TestGraph {
 		g1.removeNode(nDuplicate);
 
 		if(!g1.consistent()) {
-			//fail("Test4.4.0 Fail"); TODO
+			//fail("Test4.4.0 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 
 //adding an adjacency edge
@@ -773,7 +773,7 @@ public class TestGraph {
 			fail("Test4.5 Fail");
 		}
 		if(!g1.getNodes().equals(testNodeAL)) {
-			//fail("Test4.6 Fail"); TODO
+			fail("Test4.6 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		g1.addAdjacencyEdge("nB","");
@@ -817,11 +817,11 @@ public class TestGraph {
 		g1.addAdjacencyEdge("nA","nD");
 		g1.addAdjacencyEdge("nA","n4");
 		if(!g1.connected()) {
-			//fail("Test5.3 Fail"); TODO
+			fail("Test5.3 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		if(!g1.consistent()) {
-			//fail("Test5.3.0 Fail"); TODO
+			//fail("Test5.3.0 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 
 		Graph g4 = new Graph("g4");
@@ -966,7 +966,8 @@ public class TestGraph {
 
 		println(" | Test 7 START: Adjacency file - needs to read and write test.adj");
 
-		g4.generateRandomGraph(10,15);
+		long seed = 12345;
+		g4.generateRandomGraph(10,15, seed);
 		g4.saveAdjacencyFile("test.adj");
 		Graph g5 = new Graph("g5");
 		g5.loadAdjacencyFile("test.adj");
@@ -986,26 +987,26 @@ public class TestGraph {
 		g4.clear();
 		g4.saveAdjacencyFile("test.adj");
 		g5.clear();
-		g5.generateRandomGraph(10,15);
+		g5.generateRandomGraph(10,15, seed);
 		g4.loadAdjacencyFile("test.adj");
 		if(g4.equalsByNodeLabel(g5)) {
 			fail("Test7.2 Fail");
 		}
-		g4.generateRandomGraph(20,30);
+		g4.generateRandomGraph(20,30, seed);
 		g4.addNode(n1);
 		g4.saveAdjacencyFile("test.adj");
-		g5.generateRandomGraph(10,15);
+		g5.generateRandomGraph(10,15, seed);
 		g5.loadAdjacencyFile("test.adj");
 		g4.loadAdjacencyFile("test.adj");
 		if(!g5.equalsByNodeLabel(g4)) {
-			//fail("Test7.3 Fail"); TODO
+			fail("Test7.3 Fail"); //TODO has been known to fail for some seed value
 		}
 		g4.clear();
 		g4.saveAdjacencyFile("test.adj");
 		g4.addNode(n1);
 		g4.loadAdjacencyFile("test.adj");
 		if(!g4.equalsByNodeLabel(new Graph())) {
-			//fail("Test7.4 Fail"); TODO
+			fail("Test7.4 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		if(!g4.consistent()) {
@@ -1045,10 +1046,10 @@ public class TestGraph {
 		testa.add(n4);
 
 		if(!g.unvisitedNodes().equals(testa)) {
-			//fail("Test8.5 Fail"); TODO
+			fail("Test8.5 Fail"); //TODO has been known to fail for some seed value
 		}
 		if(!g.visitedNodes().equals(testb)) {
-			//fail("Test8.6 Fail"); TODO
+			fail("Test8.6 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		n1.setVisited(true);
@@ -1061,7 +1062,7 @@ public class TestGraph {
 		testb.add(n2);
 
 		if(!g.unvisitedNodes().equals(testa)) {
-			//fail("Test8.9 Fail"); TODO
+			fail("Test8.9 Fail"); //TODO has been known to fail for some seed value
 		}
 		if(!g.visitedNodes().equals(testb)) {
 			fail("Test8.10 Fail");
@@ -1105,7 +1106,7 @@ public class TestGraph {
 			fail("Test8.17 Fail");
 		}
 		if(!g.visitedEdges().equals(teste2)) {
-			//fail("Test8.18 Fail"); TODO
+			// fail("Test8.18 Fail"); //TODO has been known to fail for some seed value e.g. 12345, 12346
 		}
 
 		System.out.print("Test 8 END");
@@ -1166,14 +1167,14 @@ public class TestGraph {
 		tour1 = eg.euler();
 		tour2 = new ArrayList<Node>();
 		if (!eg.eulerTourInGraph(tour2)) {
-			//fail("Test 9.6.1 Failed with tour "+tour2 +"\nand graph\n"+eg); TODO
+			fail("Test 9.6.1 Failed with tour "+tour2 +"\nand graph\n"+eg); //TODO has been known to fail for some seed value
 		}
 		eg.generateRandomEulerGraph(2,4);
 		tour1 = eg.euler();
 		eg.saveTour("test.euler",tour1);
 		tour2 = eg.loadTour("test.euler");
 		if (!eg.eulerTourInGraph(tour2)) {
-			//fail("Test 9.7 Failed");// with tour "+tour2 +"\nand graph\n"+eg); TODO
+			fail("Test 9.7 Failed");// with tour "+tour2 +"\nand graph\n"+eg); //TODO has been known to fail for some seed value
 		}
 		tour2 = eg.eulerSMK(false);
 		if (!eg.eulerTourInGraph(tour2)) {
