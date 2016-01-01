@@ -2304,7 +2304,11 @@ System.out.println("node list "+ret);
  * parallel edges are required. However, it must be noted that to make the graph
  * Eulerian, some parallel edges may be added.
  */
-	public void generateRandomEulerGraph(int nodeNumber, int edgeNumber, boolean selfSourcing, boolean parallel) {
+	public void generateRandomEulerGraph(int nodeNumber, 
+			                             int edgeNumber, 
+			                             long seed, 
+			                             boolean selfSourcing, 
+			                             boolean parallel) {
 
 		clear();
 
@@ -2317,7 +2321,7 @@ System.out.println("node list "+ret);
 			addNode(newNode);
 		}
 
-		Random r = new Random();
+		Random r = new Random(seed);
 		for(int j = 0; j < edgeNumber; j++) {
 			Integer node1 = new Integer(r.nextInt(nodeNumber));
 			Integer node2 = new Integer(r.nextInt(nodeNumber));
@@ -2381,9 +2385,9 @@ System.out.println("node list "+ret);
 		}
 	}
 
-	public void generateRandomEulerGraph(int nodeNumber, int edgeNumber) {
-		generateRandomEulerGraph(nodeNumber, edgeNumber, false, true);
-	}
+    public void generateRandomEulerGraph(int nodeNumber, int edgeNumber, long seed) {
+	    generateRandomEulerGraph(nodeNumber, edgeNumber, seed, false, true);
+    }
 
 /**
  * Adds random weights to the edges of a graph, value is between

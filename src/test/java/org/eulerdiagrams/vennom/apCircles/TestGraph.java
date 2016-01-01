@@ -1132,7 +1132,7 @@ public class TestGraph {
 		}
 
 		eg = new Graph();
-		eg.generateRandomEulerGraph(5,7);
+		eg.generateRandomEulerGraph(5,7, seed);
 		tour1 = eg.euler();
 		eg.saveTour("test.euler",tour1);
 		tour2 = eg.loadTour("test.euler");
@@ -1169,7 +1169,7 @@ public class TestGraph {
 		if (!eg.eulerTourInGraph(tour2)) {
 			fail("Test 9.6.1 Failed with tour "+tour2 +"\nand graph\n"+eg); //TODO has been known to fail for some seed value
 		}
-		eg.generateRandomEulerGraph(2,4);
+		eg.generateRandomEulerGraph(2,4, seed);
 		tour1 = eg.euler();
 		eg.saveTour("test.euler",tour1);
 		tour2 = eg.loadTour("test.euler");
@@ -1200,7 +1200,7 @@ public class TestGraph {
 		}
 
 		eg = new Graph();
-		eg.generateRandomEulerGraph(20,30);
+		eg.generateRandomEulerGraph(20,30, seed);
 		tour2 = eg.euler();
 		if (!eg.eulerTourInGraph(tour2)) {
 			fail("Test 9.10 Failed");// with tour "+tour2 +"\nand graph\n"+eg);
