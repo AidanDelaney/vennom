@@ -482,7 +482,7 @@ g2.draw(p);
 	        g2.setStroke(ndt.getSelectedStroke());
 		}
 
-		Shape nodeShape = n.generateShape();
+		Shape nodeShape = NodeDisplayType.generateShape(n);
 		g2.fill(nodeShape);
 
 		if(!selection.contains(n)) {
@@ -610,7 +610,7 @@ g2.draw(p);
 			return;
 		}
 
-		selectNode = graph.getNodeNearPoint(event.getPoint(),1);
+		selectNode = NodeDisplayType.getNodeNearPoint(graph,event.getPoint(),1);
 		if (selectNode == null) {
 
 			selectEdge = EdgeDisplayed.getEdgeNearPoint(graph, event.getPoint(),2);
@@ -687,7 +687,7 @@ g2.draw(p);
 		lastPoint = event.getPoint();
 		addMouseMotionListener(this);
 		if (!spaceDown && SwingUtilities.isLeftMouseButton(event)) {
-			Node chosenNode = graph.getNodeNearPoint(pressedPoint,1);
+			Node chosenNode = NodeDisplayType.getNodeNearPoint(graph, pressedPoint,1);
 			if(chosenNode != null) {
 				if(selection.contains(chosenNode)) {
 // if its a selected node then we are dragging a selection
