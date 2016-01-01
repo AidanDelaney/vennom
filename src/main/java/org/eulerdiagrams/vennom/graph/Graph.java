@@ -418,53 +418,6 @@ public class Graph implements Serializable {
 		return(false);
 	}
 
-
-	/**
-	 * Tree test by breadth first search.
-	 * @return true if the graph is a tree, false if it is unconnected.
-	 */
-	public boolean isTree() {
-
-		if(nodes.size() == 0) {
-			return true;
-		}
-
-		if(!connected()) {
-			return false;
-		}
-
-		setNodesVisited(false);
-		setEdgesVisited(false);
-
-		Node n = nodes.get(0);
-		n.setVisited(true);
-
-		ArrayList<Node> queue = new ArrayList<Node>();
-
-		queue.add(n);
-
-		while(queue.size() != 0) {
-			Node head = queue.get(0);
-			queue.remove(head);
-			HashSet<Edge> connectingEdges = head.connectingEdges();
-			for(Edge e : connectingEdges) {
-				if(e.getVisited() == false) {
-					e.setVisited(true);
-					Node neighbour = e.getOppositeEnd(head);
-					if(neighbour.getVisited() == true) {
-						return false;
-					}
-					neighbour.setVisited(true);
-					queue.add(neighbour);
-				}
-			}
-
-		}
-
-		return true;
-	}
-
-
 /**
  * Removes the node from the graph and deletes any connecting edges. Accounts
  * for redundant data connecting nodes.
@@ -2142,86 +2095,6 @@ System.out.println("node list "+ret);
 
 
 
-/**
- * If the passed node2 is a match for node1, taking into account
- * the current matched state of neighbouring nodes.
- * then this method returns true, false if it is not a possible match.
- * Accounts for current connections to matched nodes, both must have
- * the same number of self sourcing edges. This method takes
- * no account of node or edge lables or edge direction.
- */
-	protected boolean isAnUndirectedMatch(Node node1, Node node2) {
-
-		if (node1.getMatch() != null) {
-			return(false);
-		}
-		if (node2.getMatch() != null) {
-			return(false);
-		}
-
-// this should not be needed given a reasonably efficient
-// filtering before the backtracking
-		if(node1.connectingNodes().size() != node2.connectingNodes().size()) {
-			return(false);
-		}
-
-		HashSet<Node> matched1 = setNodesNeighboursScoresForIsomorphism(node1);
-		HashSet<Node> matched2 = setNodesNeighboursScoresForIsomorphism(node2);
-
-// check current matches are valid, i.e. same number and connect to non
-// conflicting nodes compare the scores of the two sets
-// this deals with self sourcing edges as well as
-// normal matches
-
-		boolean ret = true;
-		for(Node matchedNode : matched1) {
-			Node oppositeNode = (Node)matchedNode.getMatch();
-
-			if (matchedNode.getScore() != oppositeNode.getScore()) {
-				ret = false;
-			}
-
-		}
-
-		setNodesScores(matched1, 0.0);
-		setNodesScores(matched2, 0.0);
-
-		return(ret);
-	}
-
-
-/**
- * This method uses the score attribute to find the number of connecting
- * edges to each matched node. It returns a set of the nodes which have
- * had scores set (the matched nodes). This collects a repeated bit of
- * code used within the isomorphism algorithm.
- */
-	protected HashSet<Node> setNodesNeighboursScoresForIsomorphism(Node node) {
-
-		HashSet<Node> neighbours = node.connectingNodes();
-		HashSet<Edge> edgeCollection = node.connectingEdges();
-
-// cope with self sourcing edges
-		neighbours.add(node);
-
-		setNodesScores(neighbours,0.0);
-
-		HashSet<Node> matched = new HashSet<Node>();
-		for(Edge theEdge : edgeCollection) {
-			Node theNode = theEdge.getOppositeEnd(node);
-
-			if(theNode.getMatch() != null) {
-// set up matched attributes and return true
-				double score = theNode.getScore();
-				theNode.setScore(score+1);
-// add the node to the collection of matched nodes
-				matched.add(theNode);
-			}
-		}
-
-		return(matched);
-	}
-
 
 /**
  * Prints the match pairs for nodes
@@ -2720,64 +2593,6 @@ private Node start = null;
 		addEdge(newEdge);
 		return newEdge;
 	}
-
-
-	/**
-	 * Returns the difference in characters between the two labels, the
-	 * returned String is ordered.
-	 */
-	public static String findLabelDifferences(String label1, String label2) {
-
-		ArrayList<String> labelList1 = AbstractDiagram.findContourList(label1);
-		ArrayList<String> labelList2 = AbstractDiagram.findContourList(label2);
-
-		ArrayList<String> oldList1 = new ArrayList<String>(labelList1);
-		for(String contour1: oldList1) {
-			if(labelList2.contains(contour1)) {
-				labelList1.remove(contour1);
-				labelList2.remove(contour1);
-			}
-		}
-
-		labelList1.addAll(labelList2);
-
-		Collections.sort(labelList1);
-		StringBuffer ret = new StringBuffer();
-		for(String l: labelList1) {
-			ret.append(l);
-		}
-
-		return ret.toString();
-	}
-
-
-	/**
-	 * Returns the intersection in characters between the two labels, the
-	 * returned String is ordered.
-	 */
-	public static String findLabelIntersection(String label1, String label2) {
-
-		ArrayList<String> labelList1 = AbstractDiagram.findContourList(label1);
-		ArrayList<String> labelList2 = AbstractDiagram.findContourList(label2);
-
-		ArrayList<String> retList = new ArrayList<String>();
-
-		for(String contour: labelList1) {
-			if(labelList2.contains(contour)) {
-				retList.add(contour);
-			}
-		}
-
-		Collections.sort(retList);
-		StringBuffer ret = new StringBuffer();
-		for(String l: retList) {
-			ret.append(l);
-		}
-
-		return ret.toString();
-	}
-
-
 
 
 /**

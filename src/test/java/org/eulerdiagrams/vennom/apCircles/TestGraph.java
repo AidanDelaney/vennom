@@ -1782,5 +1782,64 @@ tests fail at line mstGraph.prim()
 
 		println("End Graph Tests");		
 	}
-} 
+	@Test
+	public void test_NodeConstruction(){
+		Node n0 = new Node(new NodeType("myType"));
+		Node n1 = new Node(new NodeType("myType"), new Point(1, 2));
+		Node n2 = new Node(new Point(0, 2));
+		Node n3 = new Node("myNode");
+		Node n4 = new Node("myNode", new NodeType("myType"));
+		Node n5 = new Node("myNode", new NodeType("myType"), new Point(3, 4));
+		Graph g = new Graph();
+		g.addNode(n0);
+		g.addNode(n1);
+		g.addNode(n2);
+		g.addNode(n3);
+		g.addNode(n4);
+		g.addNode(n5);
+		assertEquals(g.getNodes().size(), 6);
+		
+		Point p0 = n0.getCentre();
+		assertEquals(p0.x, 0);
+		assertEquals(p0.y, 0);
+		n0.setX(17);
+		n0.setY(16);
+		p0 = n0.getCentre();
+		assertEquals(p0.x, 17);
+		assertEquals(p0.y, 16);
+	}
+	@Test
+	public void test_GraphCentre(){
+		Node n0 = new Node(new Point(0, 2));
+		Node n1 = new Node(new Point(0, 4));
+		Graph g = new Graph();
+		g.addNode(n0);
+		g.addNode(n1);
+		g.centreOnPoint(1, 3);
+		assertEquals(g.getNodes().size(), 2);
+		
+		Point p0 = g.getNodes().get(0).getCentre();
+		Point p1 = g.getNodes().get(1).getCentre();
+		assertEquals(p0.x, 1);
+		assertEquals(p0.y, 2);
+		assertEquals(p1.x, 1);
+		assertEquals(p1.y, 4);
+	}
+	@Test
+	public void test_GraphGrid(){
+		Node n0 = new Node(new Point(-4, 5));
+		Node n1 = new Node(new Point(4, 0));
+		Graph g = new Graph();
+		g.addNode(n0);
+		g.addNode(n1);
+		g.snapToGrid(10, 10);
+		assertEquals(g.getNodes().size(), 2);
+		
+		Point p0 = g.getNodes().get(0).getCentre();
+		Point p1 = g.getNodes().get(1).getCentre();
+		assertEquals(p0.x, 0);
+		assertEquals(p0.y, 0);
+		assertEquals(p1.x, 0);
+		assertEquals(p1.y, 0);
+	}} 
 

@@ -18,8 +18,7 @@ public class TestConcreteContour {
 		
 		ccs = new ArrayList<ConcreteContour>();
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		assertEquals(zones.length() == 1, true);
-		//System.out.println("Should be '0': "+ zones);	//TODO better assertion	
+		assertEquals(zones, "0");
 		
 		p1 = new Polygon();
 		p1.addPoint(0,0);
@@ -29,8 +28,7 @@ public class TestConcreteContour {
 		c1 = new ConcreteContour("a",p1);
 		ccs.add(c1);
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		assertEquals(zones.length(), 3); // TODO is this really the expectation? Or a bug?
-		//System.out.println("Should be '0 a': "+ zones);	//TODO better assertion	
+		assertEquals(zones, "0 a");
 
 		p2 = new Polygon();
 		p2.addPoint(200,200);
@@ -42,8 +40,7 @@ public class TestConcreteContour {
 		ccs.add(c2);
 		ccs.add(c1);
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		assertEquals(zones.length(), 5); // TODO is this really the expectation? Or a bug?
-		//System.out.println("Should be '0 a b': "+ zones);		//TODO better assertion
+		assertEquals(zones, "0 a b");
 		
 		p3 = new Polygon();
 		p3.addPoint(20,20);
@@ -57,8 +54,7 @@ public class TestConcreteContour {
 		ccs.add(c3);
 		ccs.add(c1);
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		assertEquals(zones.length(), 13);// TODO is this really the expectation? Or a bug?
-		//System.out.println("Should be '0 a b c ac bc': "+ zones);	//TODO better assertion		
+		assertEquals(zones, "0 a b c ac bc");
 		
 	}
 }
