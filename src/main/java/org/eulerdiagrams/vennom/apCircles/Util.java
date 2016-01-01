@@ -1,8 +1,13 @@
 package org.eulerdiagrams.vennom.apCircles;
 
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
+
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.geom.Area;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.eulerdiagrams.vennom.graph.Graph;
 

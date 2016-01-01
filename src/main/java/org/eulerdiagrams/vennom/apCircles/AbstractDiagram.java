@@ -1,9 +1,20 @@
 package org.eulerdiagrams.vennom.apCircles;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Random;
+import java.util.Set;
 
-import org.eulerdiagrams.vennom.apCircles.comparators.*;
-import org.eulerdiagrams.vennom.apCircles.enumerate.*;
+import org.eulerdiagrams.vennom.apCircles.comparators.ContourValueMapComparator;
+import org.eulerdiagrams.vennom.apCircles.comparators.ZoneStringComparator;
+import org.eulerdiagrams.vennom.apCircles.enumerate.Enumerate;
+import org.eulerdiagrams.vennom.apCircles.enumerate.IsomorphismInvariants;
+
 
 /**
  * 

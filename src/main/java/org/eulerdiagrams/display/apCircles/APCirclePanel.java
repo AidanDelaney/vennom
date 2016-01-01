@@ -9,6 +9,7 @@ import org.eulerdiagrams.display.graph.GraphDrawer;
 import org.eulerdiagrams.display.graph.GraphUtility;
 import org.eulerdiagrams.display.graph.GraphView;
 import org.eulerdiagrams.display.graph.MoveGraphFrame;
+import org.eulerdiagrams.display.graph.NodeDisplayType;
 import org.eulerdiagrams.vennom.apCircles.AreaSpecification;
 import org.eulerdiagrams.vennom.apCircles.Util;
 import org.eulerdiagrams.vennom.graph.*;
@@ -466,35 +467,37 @@ g2.draw(p);
 	public void paintNode(Graphics2D g2, Node n) {
 
 		NodeType nt = n.getType();
+		NodeDisplayType ndt = NodeDisplayType.getDisplay(nt);
+		
 		Point centre = n.getCentre();
 
 		if(!selection.contains(n)) {
-			g2.setColor(nt.getFillColor());
+			g2.setColor(ndt.getFillColor());
 		} else {
-			g2.setColor(nt.getSelectedFillColor());
+			g2.setColor(ndt.getSelectedFillColor());
 		}
 		if(!selection.contains(n)) {
-	        g2.setStroke(nt.getStroke());
+	        g2.setStroke(ndt.getStroke());
 		} else {
-	        g2.setStroke(nt.getSelectedStroke());
+	        g2.setStroke(ndt.getSelectedStroke());
 		}
 
 		Shape nodeShape = n.generateShape();
 		g2.fill(nodeShape);
 
 		if(!selection.contains(n)) {
-			g2.setColor(nt.getBorderColor());
+			g2.setColor(ndt.getBorderColor());
 		} else {
-			g2.setColor(nt.getSelectedBorderColor());
+			g2.setColor(ndt.getSelectedBorderColor());
 		}
 
 		g2.draw(nodeShape);
 
 		if(!n.getLabel().equals("") && showNodeLabel) {
 			if(!selection.contains(n)) {
-				g2.setColor(nt.getTextColor());
+				g2.setColor(ndt.getTextColor());
 			} else {
-				g2.setColor(nt.getSelectedTextColor());
+				g2.setColor(ndt.getSelectedTextColor());
 			}
 			
 			Font font = new Font(LABELFONTNAME,LABELFONTSTYLE,LABELFONTSIZE);

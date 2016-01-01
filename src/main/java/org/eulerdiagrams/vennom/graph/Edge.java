@@ -1,9 +1,9 @@
 package org.eulerdiagrams.vennom.graph;
 
-import java.util.*;
-import java.io.*;
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Point;
+import java.awt.geom.Line2D;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 
 /**

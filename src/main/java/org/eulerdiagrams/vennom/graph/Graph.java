@@ -646,28 +646,6 @@ public class Graph implements Serializable {
 				if(nt.getParent() != null) {
 					outNodeType.append(nt.getParent().getLabel());
 				}
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getWidth());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getHeight());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getShapeString());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getFillColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getBorderColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getTextColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getStroke().getLineWidth());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedFillColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedBorderColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedTextColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedStroke().getLineWidth());
 
 				b.write(outNodeType.toString());
 				b.newLine();
@@ -881,75 +859,6 @@ public class Graph implements Serializable {
 						}
 						nt.setParent(pt);
 					}
-
-					Integer rgb = null;
-					Integer size = null;
-					Float width = null;
-
-// get node type width
-					separatorInd = parseLine.indexOf(separatorString);
-					size = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setWidth(size.intValue());
-					parseLine.delete(0,separatorInd+1);
-
-// get node type height
-					separatorInd = parseLine.indexOf(separatorString);
-					size = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setHeight(size.intValue());
-					parseLine.delete(0,separatorInd+1);
-
-// get node type shape
-					separatorInd = parseLine.indexOf(separatorString);
-					String shapeString = parseLine.substring(0,separatorInd);
-					nt.setShapeString(shapeString);
-					parseLine.delete(0,separatorInd+1);
-
-// get node type fill color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setFillColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type border color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setBorderColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type text color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setTextColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type stroke
-					separatorInd = parseLine.indexOf(separatorString);
-					width = new Float(Float.parseFloat(parseLine.substring(0,separatorInd)));
-					nt.setStroke(new BasicStroke(width.floatValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected fill color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setSelectedFillColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected border color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setSelectedBorderColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected text color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setSelectedTextColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected stroke, the last attribute
-					width = new Float(Float.parseFloat(parseLine.toString()));
-					nt.setSelectedStroke(new BasicStroke(width.floatValue()));
-
 
 				}
 
@@ -2729,8 +2638,7 @@ private Node start = null;
 		}
 		return(returnNode);
 	}
-
-
+		
 /**
 * Finds the closest node to the point, or returns null
 * if there are no nodes in the graph.

@@ -17,10 +17,15 @@ import org.junit.Test;
 
 public class TestGraph {
 
+	private boolean printme = true;
+	
 	private void println(String m){
-		boolean printme = false;
 		if(printme)
 			System.out.println(m);
+	}
+	private void print(String m){
+		if(printme)
+			System.out.print(m);
 	}
 	
 	@Test
@@ -34,65 +39,81 @@ public class TestGraph {
 		Graph g1 = new Graph();
 		Node nX = new Node("nY");
 		Node nY = new Node("nX");
+		
+		print("1.0.1");
 		if(!g1.addNode(nX)) {
 			fail("Test1.0.1 Fail");
 		}
+		print("2");
 		if(!g1.addNode(nY)) {
 			fail("Test1.0.2 Fail");
 		}
+		print("3");
 		if(g1.addNode(nY)) {
 			fail("Test1.0.3 Fail");
 		}
 		Edge eX = new Edge(nX,nY);
+		print("4");
 		if(!g1.addEdge(eX)) {
 			fail("Test1.0.4 Fail");
 		}
+		print("5");
 		if(g1.addEdge(eX)) {
 			fail("Test1.0.5 Fail");
 		}
 
 // test the consistency checker
+		print("6");
 		if(!g1.consistent()) {
 			fail("Test1.0.6 Fail");
 		}
 
 		ArrayList<Edge> nYTo = nY.getEdgesTo();
 		nYTo.remove(eX);
+		print("7");
 		if(g1.consistent()) {
 			fail("Test1.0.7 Fail");
 		}
 		nYTo.add(eX);
+		print("8");
 		if(!g1.consistent()) {
 			fail("Test1.0.8 Fail");
 		}
 		ArrayList<Edge> g1Edges = g1.getEdges();
 		g1Edges.remove(eX);
+		print("9");
 		if(g1.consistent()) {
 			fail("Test1.0.9 Fail");
 		}
 		g1Edges.add(eX);
+		print("10");
 		if(!g1.consistent()) {
 			fail("Test1.0.10 Fail");
 		}
 
 		Node nOutside = new Node();
 		eX.setFrom(nOutside);
+		print("11");
 		if(g1.consistent()) {
 			fail("Test1.0.11 Fail");
 		}
 		eX.setFrom(nX);
+		print("12");
 		if(!g1.consistent()) {
 			fail("Test1.0.12 Fail");
 		}
 
 		g1 = new Graph("G");
+		print("13");
 		if(!g1.getLabel().equals("G")) {
 			fail("Test1.0.13 Fail");
 		}
 		g1.setLabel("H");
+		print("14");
 		if(!g1.getLabel().equals("H")) {
 			fail("Test1.0.14 Fail");
 		}
+		print("15");
 		if(!g1.consistent()) {
 			fail("Test1.0.15 Fail");
 		}
@@ -110,78 +131,97 @@ public class TestGraph {
 
 		g1.clear();
 		Node n1 = new Node("n1");
+		print("\n1.1.1");
 		if(!g1.addNode(n1)) {
 			fail("Test1.1.1 Fail");
 		}
 		Node n2 = new Node("n2");
+		print("2");
 		if(!g1.addNode(n2)) {
 			fail("Test1.1.2 Fail");
 		}
 		Node n3 = new Node();
+		print("3");
 		if(!g1.addNode(n3)) {
 			fail("Test1.1.3 Fail");
 		}
 		Node n4 = new Node("n4");
+		print("4");
 		if(!g1.addNode(n4)) {
 			fail("Test1.1.4 Fail");
 		}
 		Node n5 = new Node("test");
+		print("5");
 		if(!g1.addNode(n5)) {
 			fail("Test1.1.5 Fail");
 		}
 		Node n6 = new Node("n6");
+		print("6");
 		if(!g1.addNode(n6)) {
 			fail("Test1.1.6 Fail");
 		}
 
 		Edge e1 = new Edge(n6,n6);
+		print("7");
 		if(!g1.addEdge(e1)) {
 			fail("Test1.1.7 Fail");
 		}
 		Edge e2 = new Edge(n2,n3);
+		print("8");
 		if(!g1.addEdge(e2)) {
 			fail("Test1.1.8 Fail");
 		}
 		Edge e3 = new Edge(n1,n4);
+		print("9");
 		if(!g1.addEdge(e3)) {
 			fail("Test1.1.9 Fail");
 		}
 		Edge e4 = new Edge(n4,n2);
+		print("10");
 		if(!g1.addEdge(e4)) {
 			fail("Test1.1.10 Fail");
 		}
 		Edge e5 = new Edge(n3,n5);
+		print("11");
 		if(!g1.addEdge(e5)) {
 			fail("Test1.1.11 Fail");
 		}
 		Edge e6 = new Edge(n3,n5);
+		print("12");
 		if(!g1.addEdge(e6)) {
 			fail("Test1.1.12 Fail");
 		}
 		Edge e7 = new Edge(n3,n5);
+		print("13");
 		if(!g1.addEdge(e7)) {
 			fail("Test1.1.13 Fail");
 		}
 		Edge e8 = new Edge(n1,n1);
+		print("14");
 		if(!g1.addEdge(e8)) {
 			fail("Test1.1.14 Fail");
 		}
 		Edge e9 = new Edge(n3,n3);
+		print("15");
 		if(!g1.addEdge(e9)) {
 			fail("Test1.1.15 Fail");
 		}
 
 
 // oposite end test
+		print("16");
 		if (e1.getOppositeEnd(n6) != n6) {
 			fail("Test1.1.16 Fail");
 		}
+		print("17");
 		if (e2.getOppositeEnd(n2) != n3) {
 			fail("Test1.1.17 Fail");
 		}
+		print("18");
 		if (e2.getOppositeEnd(n3) != n2) {
  			fail("Test1.1.18 Fail");
 		}
+		print("19");		
 		if (e2.getOppositeEnd(n6) != null) {
 			fail("Test1.1.19 Fail");
 		}
@@ -205,24 +245,29 @@ public class TestGraph {
 		Node tempFrom = e1.getFrom();
 
 		e1.reverse();
+		print("20");
 		if(e1.getTo() != tempFrom) {
 			fail("Test1.1.20 Fail");
 		}
 
+		print("21");
 		if(e1.getFrom() != tempTo) {
 			fail("Test1.1.21 Fail");
 		}
 
 		e1.reverse();
 
+		print("22");
 		if(e1.getTo() != tempTo) {
 			fail("Test1.1.22 Fail");
 		}
 
+		print("23");
 		if(e1.getFrom() != tempFrom) {
 			fail("Test1.1.23 Fail");
 		}
 
+		print("24COMMENTEDOUT");
 		if(!g1.consistent()) {
 			//fail("Test1.1.24 Fail");  //TODO has been known to fail for some seed value e.g. 12345
 		}
@@ -231,12 +276,15 @@ public class TestGraph {
 // Node connectivity testing
 		HashSet<Node> testN = new HashSet<Node>();
 
+		print("\n1.2.1");
 		if(!n6.connectingNodes().equals(testN)) {
 			fail("Test1.2.1 Fail");
 		}
+		print("2");
 		if(!n6.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.2.2 Fail");
 		}
+		print("4");
 		if(!n6.connectingEdges().equals(testN)) {
 			fail("Test1.2.4 Fail");
 		}
@@ -246,10 +294,12 @@ public class TestGraph {
 		testN.add(n3);
 		testN.add(n2);
 
+		print("5");
 		if(!n3.connectingNodes().equals(testN)) {
 			fail("Test1.2.5 Fail");
 		}
 
+		print("7");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.2.7 Fail");
 		}
@@ -259,10 +309,12 @@ public class TestGraph {
 
 		n2.setVisited(true);
 
+		print("\n1.3.1");
 		if(!n3.connectingNodes().equals(testN)) {
 			fail("Test1.3.1 Fail");
 		}
 		testN.remove(n2);
+		print("3");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.3.3 Fail"); //TODO has been known to fail for some seed value
 		}
@@ -270,6 +322,7 @@ public class TestGraph {
 		g1.setNodesVisited(true);
 		testN = new HashSet<Node>();
 
+		print("4");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.3.4 Fail");
 		}
@@ -277,6 +330,7 @@ public class TestGraph {
 		n2.setVisited(false);
 		testN.add(n2);
 
+		print("5");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.3.5 Fail");
 		}
@@ -285,6 +339,7 @@ public class TestGraph {
 
 		n2.setVisited(true);
 		testN = new HashSet<Node>();
+		print("6");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.3.6 Fail");
 		}
@@ -293,6 +348,7 @@ public class TestGraph {
 		testN.add(n5);
 		testN.add(n3);
 		testN.add(n2);
+		print("7");
 		if(!n3.connectingNodes().equals(testN)) {
 			fail("Test1.3.7 Fail");
 		}
@@ -306,15 +362,18 @@ public class TestGraph {
 		testE = new HashSet<Edge>();
 		testE.add(e3);
 		testE.add(e1);
+		print("\n1.5.1");
 		if(!n1.connectingEdges().equals(testE)) {
 			fail("Test1.5.1 Fail");
 		}
+		print("2");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.2 Fail");
 		}
 
 		testE.remove(e1);
 		e1.setVisited(true);
+		print("3");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.3 Fail");
 		}
@@ -323,6 +382,7 @@ public class TestGraph {
 
 		g1.setEdgesVisited(true);
 		testE = new HashSet<Edge>();
+		print("4");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.4 Fail");
 		}
@@ -332,14 +392,16 @@ public class TestGraph {
 		testE = new HashSet<Edge>();
 		testE.add(e3);
 		testE.add(e1);
+		print("5");
 		if(!n1.connectingEdges().equals(testE)) {
 			fail("Test1.5.5 Fail");
 		}
+		print("6");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.6 Fail");
 		}
 
-		System.out.print("Test 1 END");
+		print("Test 1 END");
 
 
 // test dynamic graph stuff
@@ -703,7 +765,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 2 END");
+		print("Test 2 END");
 
 
 		println(" | Test 3 START: Shortest path");
@@ -724,7 +786,7 @@ public class TestGraph {
 			fail("Test3.3 Fail");
 		}
 
-		System.out.print("Test 3 END");
+		print("Test 3 END");
 
 
 //Adjacency Edge Graph creation stuff
@@ -803,7 +865,7 @@ public class TestGraph {
 			fail("Test4.10 Fail");
 		}
 
-		System.out.print("Test 4 END");
+		print("Test 4 END");
 
 		println(" | Test 5 START: Connected");
 
@@ -850,7 +912,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 5 END");
+		print("Test 5 END");
 
 
 		println(" | Test 6 START: Equality by label testing");
@@ -958,7 +1020,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 6 END");
+		print("Test 6 END");
 
 
 //Adjacency file testing. This test creates a file called test.adj
@@ -1013,7 +1075,7 @@ public class TestGraph {
 			fail("Test7.4.0 Fail");
 		}
 
-		System.out.print("Test 7 END");
+		print("Test 7 END");
 
 
 //partial node and edge access
@@ -1109,7 +1171,7 @@ public class TestGraph {
 			// fail("Test8.18 Fail"); //TODO has been known to fail for some seed value e.g. 12345, 12346
 		}
 
-		System.out.print("Test 8 END");
+		print("Test 8 END");
 
 //euler tour tests
 		println(" | Test 9 START: Euler Tour - needs to read and write test.euler");
@@ -1250,7 +1312,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 9 END");
+		print("Test 9 END");
 
 
 // test the brute force tsp
@@ -1347,7 +1409,7 @@ public class TestGraph {
 			fail("Test 10.9 Failed");
 		}
 
-		System.out.print("Test 10 END");
+		print("Test 10 END");
 
 		println(" | Test 11 START: Union Find");
 
@@ -1406,7 +1468,7 @@ public class TestGraph {
 		if(uf.find(7,10)) {
 			fail("Test 11.12 Fail");
 		}
-		System.out.print("Test 11 END");
+		print("Test 11 END");
 
 		println(" | Test 12 START: mst");
 
@@ -1591,38 +1653,47 @@ tests fail at line mstGraph.prim()
 		nt22.removeParent();
 		NodeType ntmove = (NodeType)nt33.getParent();
 		nt32.setParent(ntmove);
-
+		print("\n13.3.1");
 		if(nt11.setParent(nt31)) {
 				fail("Test 13.3.1 FAIL");
 		}
+		print("2");
 		if(!nt11.setParent(nt43)) {
 				fail("Test 13.3.2 FAIL");
 		}
 
+		print("3");
 		if(nt43.setParent(nt43)) {
 				fail("Test 13.3.3 FAIL");
 		}
 
+		print("4");
 		if(nt43.setParent(nt43)) {
 				fail("Test 13.3.4 FAIL");
 		}
 
+		print("5");
 		if(!nt43.ancestor(nt32)) {
 				fail("Test 13.3.5 FAIL");
 		}
+		print("6");
 		if(nt41.ancestor(nt41)) {
 				fail("Test 13.3.6 FAIL");
 		}
+		print("7");
 		if(!nt33.ancestor(nt22)) {
 				fail("Test 13.3.7 FAIL");
 		}
+		print("8");
 		if(nt41.ancestor(nt42)) {
 				fail("Test 13.3.8 FAIL");
 		}
 
+		print("9");
 		if(nt41.root() != nt22) {
 				fail("Test 13.3.9 FAIL");
 		}
+		print("10");
 		if(nt22.root() != nt22) {
 				fail("Test 13.3.10 FAIL");
 		}
@@ -1637,15 +1708,19 @@ tests fail at line mstGraph.prim()
 		et22.setParent(et11);
 		et21.setDirected(true);
 
+		print("\n13.4.1");
 		if(!et31.ancestor(et11)) {
 				fail("Test 13.4.1 FAIL");
 		}
+		print("2");
 		if(et11.ancestor(et21)) {
 				fail("Test 13.4.2 FAIL");
 		}
+		print("3");
 		if(et21.root() != et11) {
 				fail("Test 13.4.3 FAIL");
 		}
+		print("4");
 		if(et11.root() != et11) {
 				fail("Test 13.4.4 FAIL");
 		}
@@ -1667,6 +1742,7 @@ tests fail at line mstGraph.prim()
 		gt.addEdge(et2);
 		gt.addEdge(et3);
 
+		print("\n13.5.1");
 		if(nt1.getType() != Graph.DEFAULT_NODE_TYPE) {
 				fail("Test 13.5.1 FAIL");
 		}

@@ -3,14 +3,13 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.HashMap;
 
-import org.eulerdiagrams.vennom.graph.Edge;
 import org.eulerdiagrams.vennom.graph.EdgeType;
 
 public class EdgeDisplayType {
 
 	public EdgeType edgeType;
 
-	static HashMap<EdgeType, EdgeDisplayType> displayMap = new HashMap<EdgeType, EdgeDisplayType>();
+	private static HashMap<EdgeType, EdgeDisplayType> displayMap = new HashMap<EdgeType, EdgeDisplayType>();
 	public static EdgeDisplayType getDisplay(EdgeType et) {
 		return displayMap.get(et);
 	}

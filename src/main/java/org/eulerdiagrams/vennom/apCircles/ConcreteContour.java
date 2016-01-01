@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.swing.JOptionPane;
-
 
 public class ConcreteContour {
 
@@ -33,7 +31,7 @@ public class ConcreteContour {
 		
 		ccs = new ArrayList<ConcreteContour>();
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		JOptionPane.showMessageDialog(null,"Should be '0': "+ zones);		
+		System.out.println("Should be '0': "+ zones);		
 		
 		p1 = new Polygon();
 		p1.addPoint(0,0);
@@ -43,7 +41,7 @@ public class ConcreteContour {
 		c1 = new ConcreteContour("a",p1);
 		ccs.add(c1);
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		JOptionPane.showMessageDialog(null,"Should be '0 a': "+ zones);		
+		System.out.println("Should be '0 a': "+ zones);		
 
 		p2 = new Polygon();
 		p2.addPoint(200,200);
@@ -55,7 +53,7 @@ public class ConcreteContour {
 		ccs.add(c2);
 		ccs.add(c1);
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		JOptionPane.showMessageDialog(null,"Should be '0 a b': "+ zones);		
+		System.out.println("Should be '0 a b': "+ zones);		
 		
 		p3 = new Polygon();
 		p3.addPoint(20,20);
@@ -69,7 +67,7 @@ public class ConcreteContour {
 		ccs.add(c3);
 		ccs.add(c1);
 		zones = ConcreteContour.generateAbstractDiagramFromList(ccs);
-		JOptionPane.showMessageDialog(null,"Should be '0 a b c ac bc': "+ zones);		
+		System.out.println("Should be '0 a b c ac bc': "+ zones);		
 	}
 	
 	public ConcreteContour() {
