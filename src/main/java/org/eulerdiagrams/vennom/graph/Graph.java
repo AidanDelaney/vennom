@@ -689,18 +689,6 @@ public class Graph implements Serializable {
 				outEdgeType.append(FILESEPARATOR);
 				outEdgeType.append(et.getDirected());
 				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getLineColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getStroke().getLineWidth());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getSelectedLineColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getSelectedStroke().getLineWidth());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getTextColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getSelectedTextColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
 				outEdgeType.append(et.getPriority());
 
 				b.write(outEdgeType.toString());
@@ -1008,52 +996,6 @@ public class Graph implements Serializable {
 						et.setDirected(false);
 					}
 					parseLine.delete(0,separatorInd+1);
-
-// get edge type line color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					et.setLineColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get edge type stroke
-					separatorInd = parseLine.indexOf(separatorString);
-					width = new Float(Float.parseFloat(parseLine.substring(0,separatorInd)));
-					et.setStroke(new BasicStroke(width.floatValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get edge type selected line color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					et.setSelectedLineColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get edge type selected stroke
-					separatorInd = parseLine.indexOf(separatorString);
-					width = new Float(Float.parseFloat(parseLine.substring(0,separatorInd)));
-					et.setSelectedStroke(new BasicStroke(width.floatValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// edge type text color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					et.setTextColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// edge type selected text color
-					separatorInd = parseLine.indexOf(separatorString);
-					if(separatorInd == -1) {
-						rgb = new Integer(Integer.parseInt(parseLine.toString()));
-						et.setSelectedTextColor(new Color(rgb.intValue()));
-					} else {
-						rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-						et.setSelectedTextColor(new Color(rgb.intValue()));
-						parseLine.delete(0,separatorInd+1);
-
-						Integer priority = new Integer(Integer.parseInt(parseLine.toString()));
-						if(priority.intValue() != -1) {
-							et.setPriority(priority.intValue());
-						}
-					}
 
 				}
 

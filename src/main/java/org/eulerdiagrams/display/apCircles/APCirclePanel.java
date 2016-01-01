@@ -3,14 +3,11 @@ package org.eulerdiagrams.display.apCircles;
 import javax.swing.*;
 
 import org.eulerdiagrams.display.experiments.GraphExperiment;
+import org.eulerdiagrams.display.graph.EdgeDisplayType;
 import org.eulerdiagrams.display.graph.EdgeDisplayed;
-import org.eulerdiagrams.display.graph.EditEdgeDialog;
-import org.eulerdiagrams.display.graph.EditNodeDialog;
 import org.eulerdiagrams.display.graph.GraphDrawer;
 import org.eulerdiagrams.display.graph.GraphUtility;
 import org.eulerdiagrams.display.graph.GraphView;
-import org.eulerdiagrams.display.graph.ManageEdgeTypesDialog;
-import org.eulerdiagrams.display.graph.ManageNodeTypesDialog;
 import org.eulerdiagrams.display.graph.MoveGraphFrame;
 import org.eulerdiagrams.vennom.apCircles.AreaSpecification;
 import org.eulerdiagrams.vennom.apCircles.Util;
@@ -273,8 +270,8 @@ g2.draw(p);
 
 
 /** This is used when parallel edges are overlaid */
-	protected void paintOverlaidEdges(Graphics2D g2, Graph g) {
-
+	protected void paintOverlaidEdges( Graphics2D g2, 
+			                           Graph g) {
 		for(Edge e : graph.getEdges()) {
 			paintEdge(g2,e,ZEROOFFSET);
 		}
@@ -348,30 +345,34 @@ g2.draw(p);
 
 
 /** Draws an edge on the graphics */
-	public void paintEdge(Graphics2D g2, Edge e, Point offset) {
+	public void paintEdge( Graphics2D g2, 
+						   Edge e, 
+						   Point offset) {
 
 		EdgeType et = e.getType();
+		EdgeDisplayType edt = EdgeDisplayType.getDisplay(et);
 		
 		if(!showMovableEdgesFlag) {
-			if(et.equals(APCircleDisplay.ATTRACTOR) || et.equals(APCircleDisplay.REPULSOR)) {
+			if(et.equals(EdgeDisplayType.ATTRACTORDISPLAY.edgeType) 
+		    || et.equals(EdgeDisplayType.REPULSORDISPLAY.edgeType)) {
 				return;
 			}
 		}
 
 		if(!showFixedEdgesFlag) {
-			if(et.equals(APCircleDisplay.FIXED)) {
+			if(et.equals(EdgeDisplayType.FIXEDDISPLAY.edgeType)) {
 				return;
 			}
 		}
 
 		if(!selection.contains(e)) {
-			g2.setColor(et.getLineColor());
+			g2.setColor(edt.getLineColor());
 		} else {
-			g2.setColor(et.getSelectedLineColor());
+			g2.setColor(edt.getSelectedLineColor());
 		}
 		if(!selection.contains(e)) {
-			Stroke stroke = et.getStroke();
-			if(et.equals(APCircleDisplay.FIXED)) {
+			Stroke stroke = EdgeDisplayType.getDisplay(et).getStroke();
+			if(et.equals(EdgeDisplayType.FIXEDDISPLAY.edgeType)) {
 				double desiredLength = 0;
 				try {
 					desiredLength = Double.parseDouble(e.getLabel());
@@ -384,7 +385,7 @@ g2.draw(p);
 					stroke = new BasicStroke(5);
 				}
 			}
-			if(et.equals(APCircleDisplay.ATTRACTOR)) {
+			if(et.equals(EdgeDisplayType.ATTRACTORDISPLAY.edgeType)) {
 				double maxLength = Double.POSITIVE_INFINITY;
 				try {
 					maxLength = Double.parseDouble(e.getLabel());
@@ -396,7 +397,7 @@ g2.draw(p);
 					stroke = new BasicStroke(5);
 				}
 			}
-			if(et.equals(APCircleDisplay.REPULSOR)) {
+			if(et.equals(EdgeDisplayType.REPULSORDISPLAY.edgeType)) {
 				double minLength = Double.POSITIVE_INFINITY;
 				try {
 					minLength = Double.parseDouble(e.getLabel());
@@ -411,7 +412,7 @@ g2.draw(p);
 			
 	        g2.setStroke(stroke);
 		} else {
-	        g2.setStroke(et.getSelectedStroke());
+	        g2.setStroke(edt.getSelectedStroke());
 		}
 
 		Shape edgeShape = EdgeDisplayed.generateShape(offset, e);
@@ -451,9 +452,9 @@ g2.draw(p);
 			g2.fill(bounds);
 
 			if(!selection.contains(e)) {
-				g2.setColor(et.getTextColor());
+				g2.setColor(edt.getTextColor());
 			} else {
-				g2.setColor(et.getSelectedTextColor());
+				g2.setColor(edt.getSelectedTextColor());
 			}
 			labelLayout.draw(g2,x,y);
 
@@ -630,11 +631,6 @@ g2.draw(p);
 					}
 					selection.addEdge(selectEdge);
 					repaint();
-				} else {
-// edit edge dialog on double click
-					ArrayList<Edge> el = new ArrayList<Edge>();
-					el.add(selectEdge);
-					editEdges(el);
 				}
 			}
 		} else {
@@ -645,11 +641,6 @@ g2.draw(p);
 				}
 				selection.addNode(selectNode);
 				repaint();
-			} else {
-// edit node dialog on double click
-				ArrayList<Node> nl = new ArrayList<Node>();
-				nl.add(selectNode);
-				editNodes(nl);
 			}
 			selectNode = null;
 		}
@@ -657,36 +648,6 @@ g2.draw(p);
 	}
 
 
-
-/** Call this to edit nodes in the graph panel */
-	public void editNodes(ArrayList<Node> nodes) {
-		if(nodes.size() == 0) {
-			return;
-		}
-		new EditNodeDialog(nodes,this);
-	}
-
-
-
-/** Call this to edit edges in the graph panel */
-	public void editEdges(ArrayList<Edge> edges) {
-		if(edges.size() == 0) {
-			return;
-		}
-		new EditEdgeDialog(edges,this);
-	}
-
-/** Call this to edit all edge types */
-	public void editEdgeTypes() {
-		new ManageEdgeTypesDialog(this);
-		repaint();
-	}
-
-/** Call this to edit all node types */
-	public void editNodeTypes() {
-		new ManageNodeTypesDialog(this);
-		repaint();
-	}
 
 
 /** Call this to move the graph around */

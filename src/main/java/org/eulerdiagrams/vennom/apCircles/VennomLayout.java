@@ -1,18 +1,14 @@
 package org.eulerdiagrams.vennom.apCircles;
 
-import org.eulerdiagrams.display.apCircles.APCircleDisplay; // for EdgeTypes - needs splitting into display/non-display
-
 import org.eulerdiagrams.vennom.apCircles.drawers.GeneralAPForceModelSolver;
+import org.eulerdiagrams.vennom.graph.EdgeType;
 import org.eulerdiagrams.vennom.graph.Graph;
-
-import java.awt.*;
 
 public class VennomLayout {
 		
 	static{
-		APCircleDisplay.setupEdgeNodeTypes();
-
-		Graph.DEFAULT_EDGE_TYPE = APCircleDisplay.IDEAL;
+		EdgeType.setupEdgeTypes();
+		Graph.DEFAULT_EDGE_TYPE = EdgeType.IDEAL;
 	}
 
 	private AreaSpecification diagramSpec;

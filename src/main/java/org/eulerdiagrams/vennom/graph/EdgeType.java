@@ -15,24 +15,39 @@ import java.awt.*;
  */
 public class EdgeType extends ItemType implements Serializable {
 
+	public static EdgeType REPULSOR;
+	public static EdgeType ATTRACTOR;
+	public static EdgeType FIXED;
+	public static EdgeType SEPARATOR;
+	public static EdgeType IDEAL;
+	public static EdgeType CONTAINMENT;
+
+	public static void setupEdgeTypes(){
+		FIXED = new EdgeType("fixed");
+		FIXED.setPriority(1020);
+
+		ATTRACTOR = new EdgeType("attractor");
+		ATTRACTOR.setPriority(1019);
+
+		REPULSOR = new EdgeType("repulsor");
+		REPULSOR.setPriority(1018);
+
+		SEPARATOR = new EdgeType("separator");
+		SEPARATOR.setPriority(1017);
+
+		IDEAL = new EdgeType("ideal");
+		IDEAL.setPriority(1016);
+
+		CONTAINMENT = new EdgeType("containment");
+		CONTAINMENT.setPriority(1016);		
+	}
 	
 @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + (directed ? 1231 : 1237);
-        result = prime * result
-                + ((lineColor == null) ? 0 : lineColor.hashCode());
         result = prime * result + priority;
-        result = prime * result + ((selectedLineColor == null) ? 0
-                : selectedLineColor.hashCode());
-        result = prime * result
-                + ((selectedStroke == null) ? 0 : selectedStroke.hashCode());
-        result = prime * result + ((selectedTextColor == null) ? 0
-                : selectedTextColor.hashCode());
-        result = prime * result + ((stroke == null) ? 0 : stroke.hashCode());
-        result = prime * result
-                + ((textColor == null) ? 0 : textColor.hashCode());
         return result;
     }
 
@@ -47,49 +62,13 @@ public class EdgeType extends ItemType implements Serializable {
         EdgeType other = (EdgeType) obj;
         if (directed != other.directed)
             return false;
-        if (lineColor == null) {
-            if (other.lineColor != null)
-                return false;
-        } else if (!lineColor.equals(other.lineColor))
-            return false;
         if (priority != other.priority)
-            return false;
-        if (selectedLineColor == null) {
-            if (other.selectedLineColor != null)
-                return false;
-        } else if (!selectedLineColor.equals(other.selectedLineColor))
-            return false;
-        if (selectedStroke == null) {
-            if (other.selectedStroke != null)
-                return false;
-        } else if (!selectedStroke.equals(other.selectedStroke))
-            return false;
-        if (selectedTextColor == null) {
-            if (other.selectedTextColor != null)
-                return false;
-        } else if (!selectedTextColor.equals(other.selectedTextColor))
-            return false;
-        if (stroke == null) {
-            if (other.stroke != null)
-                return false;
-        } else if (!stroke.equals(other.stroke))
-            return false;
-        if (textColor == null) {
-            if (other.textColor != null)
-                return false;
-        } else if (!textColor.equals(other.textColor))
             return false;
         return true;
     }
 
 /** Indicates if the edge is directed. */
 	protected boolean directed = false;
-	protected Color lineColor = Color.black;
-	protected Color selectedLineColor = Color.blue;
-    protected BasicStroke stroke = new BasicStroke(2.0f);
-    protected BasicStroke selectedStroke = new BasicStroke(2.0f);
-	protected Color textColor = Color.black;
-	protected Color selectedTextColor = Color.blue;
 	protected int priority = -1;
 /** A list of all the edge types */
     protected static ArrayList<EdgeType> existingTypes = new ArrayList<EdgeType>();
@@ -112,36 +91,12 @@ public class EdgeType extends ItemType implements Serializable {
 /** trivial accessor */
 	public boolean getDirected() {return directed;}
 /** trivial accessor */
-	public Color getLineColor() {return lineColor;}
-/** trivial accessor */
-	public Color getSelectedLineColor() {return selectedLineColor;}
-/** trivial accessor */
-	public BasicStroke getStroke() {return stroke;}
-/** trivial accessor */
-	public BasicStroke getSelectedStroke() {return selectedStroke;}
-/** trivial accessor */
-	public Color getTextColor() {return textColor;}
-/** trivial accessor */
-	public Color getSelectedTextColor() {return selectedTextColor;}
-/** trivial accessor */
 	public static ArrayList<EdgeType> getExistingTypes() {return existingTypes;}
 /** trivial accessor */
 	public int getPriority() {return priority;}
-
+	
 /** trivial mutator */
 	public void setDirected(boolean d) {directed = d;}
-/** trivial mutator */
-	public void setLineColor(Color c) {lineColor = c;}
-/** trivial mutator */
-	public void setSelectedLineColor(Color c) {selectedLineColor = c;}
-/** trivial mutator */
-	public void setStroke(BasicStroke s) {stroke = s;}
-/** trivial mutator */
-	public void setSelectedStroke(BasicStroke s) {selectedStroke = s;}
-/** trivial mutator */
-	public void setTextColor(Color c) {textColor = c;}
-/** trivial mutator */
-	public void setSelectedTextColor(Color c) {selectedTextColor = c;}
 /** This mutator may alter the current lowestPriority */
 	public void setPriority(int p) {
 		priority = p;
@@ -180,7 +135,6 @@ public class EdgeType extends ItemType implements Serializable {
 		}
 		return ret;
 	}
-
 /**
 * Outputs the content of the type.
 */

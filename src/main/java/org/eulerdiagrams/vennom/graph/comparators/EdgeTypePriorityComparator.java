@@ -1,6 +1,6 @@
 package org.eulerdiagrams.vennom.graph.comparators;
 
-import java.util.*;
+import java.util.Comparator;
 
 import org.eulerdiagrams.vennom.graph.*;
 

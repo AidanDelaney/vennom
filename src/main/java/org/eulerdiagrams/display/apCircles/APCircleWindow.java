@@ -240,20 +240,6 @@ public class APCircleWindow extends JFrame implements ActionListener {
 		editMenu.setMnemonic(KeyEvent.VK_E);
 		menuBar.add(editMenu);
 	
-		JMenuItem editNodesItem = new JMenuItem("Edit Selected Nodes...",KeyEvent.VK_N);
-		editNodesItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.SHIFT_MASK));
-		editMenu.add(editNodesItem);
-
-		JMenuItem editEdgesItem = new JMenuItem("Edit Selected Edges...",KeyEvent.VK_E);
-		editEdgesItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, ActionEvent.SHIFT_MASK));
-		editMenu.add(editEdgesItem);
-
-		JMenuItem editEdgeTypesItem = new JMenuItem("Edit Edge Types...");
-		editMenu.add(editEdgeTypesItem);
-
-		JMenuItem editNodeTypesItem = new JMenuItem("Edit Node Types...");
-		editMenu.add(editNodeTypesItem);
-
 		JMenuItem editMoveGraphItem = new JMenuItem("Move Graph...");
 		editMenu.add(editMoveGraphItem);
 
@@ -266,30 +252,6 @@ public class APCircleWindow extends JFrame implements ActionListener {
 		JMenuItem editSelectAllItem = new JMenuItem("Select All",KeyEvent.VK_A);
 		editSelectAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 		editMenu.add(editSelectAllItem);
-
-		editNodesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				gp.editNodes(gp.getSelection().getNodes());
-			}
-		});
-		
-		editEdgesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				gp.editEdges(gp.getSelection().getEdges());
-			}
-		});
-
-		editEdgeTypesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				gp.editEdgeTypes();
-			}
-		});
-
-		editNodeTypesItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				gp.editNodeTypes();
-			}
-		});
 
 		editMoveGraphItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {

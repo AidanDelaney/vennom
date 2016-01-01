@@ -21,11 +21,11 @@ public class GraphMap implements Serializable {
  */
 class NodeMap {
 
-	ArrayList nodesFrom;
-	ArrayList nodesTo;
+	ArrayList<Node> nodesFrom;
+	ArrayList<Node> nodesTo;
 
-	ArrayList forwardMap;
-	ArrayList backwardMap;
+	ArrayList<Node> forwardMap;
+	ArrayList<Node> backwardMap;
 
 /**
  * Adds a node to the graph.
