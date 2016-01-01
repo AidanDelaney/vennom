@@ -30,6 +30,7 @@ public class TestAbstractDiagram {
     	assertEquals(ad1.compareTo(ad3), 0);
     	assertEquals(ad1.compareTo(ad4), 0);
 	}
+    @Test
     public void test_construct2(){
     	AbstractDiagram ad1 = new AbstractDiagram("a b ");
     	ad1.addZone("");

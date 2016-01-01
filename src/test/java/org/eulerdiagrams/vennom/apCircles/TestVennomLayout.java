@@ -60,7 +60,8 @@ public class TestVennomLayout {
         Graph graph1 = vl1.layout();
 
         assertTrue(graph1 == null);
-    }    
+    }      
+    
     // generate test code by switching this on
     // then we see code we can paste into the test
     // TODO this is only a manageable system for a handful of tests
@@ -155,7 +156,34 @@ public class TestVennomLayout {
     	System.out.println("END Testing test code generation.");
     }
     
-
+    @Test
+    // Containment
+    public void test_05() {
+    	String task = "A 100\nAB 10\n";
+        Graph g = generateForceLayout(task);
+        
+    	// if this test fails and we want to refresh the checking code below,
+    	boolean regenerate_geometry_checks = false;
+        if(regenerate_geometry_checks){
+        	generateTestCode(g);
+        }
+        ArrayList<Node> nodes = g.getNodes();
+        assertEquals(nodes.size(), 2);
+        Node n0 = nodes.get(0);
+        assertTrue(n0.getContour().equals("A")); // will break if the graph nodes get reordered
+        Point p0 = n0.getCentre();
+        assertEquals(p0.x, 266);
+        assertEquals(p0.y, 300);
+        double r0 = n0.getPreciseRadius();
+        assertEquals(r0, 5.917270272703197, 0.1);
+        Node n1 = nodes.get(1);
+        assertTrue(n1.getContour().equals("B")); // will break if the graph nodes get reordered
+        Point p1 = n1.getCentre();
+        assertEquals(p1.x, 266);
+        assertEquals(p1.y, 301);
+        double r1 = n1.getPreciseRadius();
+        assertEquals(r1, 1.7841241161527712, 0.1);
+    }  
 	@Test
     // Assert the layout of a symmetric Venn2
     public void testVenn2_001() {

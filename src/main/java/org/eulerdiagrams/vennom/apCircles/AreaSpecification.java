@@ -2,16 +2,9 @@ package org.eulerdiagrams.vennom.apCircles;
 
 import java.awt.Point;
 import java.awt.Polygon;
-import java.awt.geom.Area;
-import java.awt.geom.Point2D;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
 
 import org.eulerdiagrams.vennom.graph.*;
 
@@ -21,7 +14,7 @@ public class AreaSpecification {
 	protected AbstractDiagram abstractDiagram;
 	/** Dividing all specifications by this makes the total area 1.0 */
 	protected double normalizationFactor = 0.0;
-	
+    
 	public static float scalingFactor = -1;
 	public static int polygonResolution = 1000;
 	
@@ -60,15 +53,7 @@ public class AreaSpecification {
 		}
 		return totalArea;
 	}
-	
-	
-	public double normalizedArea(String zone) {
-		if(normalizationFactor == 0.0) {
-			normalizationFactor = findNormalizationFactor();
-		}
-		double area = getSpecification().get(zone);
-		return area/normalizationFactor;
-	}
+
 	
 	/**
 	 * Sets all the zone area specifications to the argument.
@@ -401,8 +386,6 @@ public class AreaSpecification {
 		return ret;
 	}
 
-	
-
 	static public ArrayList<ConcreteContour> convertCirclesToCCs(Graph g, int polygonResolution) {
 		
 		ArrayList<ConcreteContour> circleContours = new ArrayList<ConcreteContour>();
@@ -447,126 +430,6 @@ public class AreaSpecification {
 		}
 		
 		return circleContours;
-	}
-
-	public static AreaSpecification exactRandomDiagramFactory(int minX, int minY, int maxX, int maxY, int minRadius, int maxRadius, int circleCount, long seed, String fileName) {
-
-		ArrayList<Integer> xList = new ArrayList<Integer>();
-		ArrayList<Integer> yList = new ArrayList<Integer>();
-		ArrayList<Double> radiusList = new ArrayList<Double>();
-		Random random = new Random(seed);
-		for(int i = 0; i < circleCount; i++) {
-			int x = random.nextInt(1+maxX-minX);
-			x += minX;
-			int y = random.nextInt(1+maxY-minY);
-			y += minY;
-			double radius = random.nextInt(1+maxRadius-minRadius);
-			radius += minRadius;
-			
-			xList.add(x);
-			yList.add(y);
-			radiusList.add(radius);
-		}
-		AreaSpecification as = findAreaSpecificationFromCircles(xList,yList,radiusList);
-		
-		if(fileName != null && fileName.length() > 0) {
-			File file = new File(fileName);
-
-			String svg = "<svg  width=\""+500+"\" height=\""+500+"\">\n";
-			for (int i = 0; i < circleCount; i++) {
-				double x = xList.get(i);
-				double y = yList.get(i);
-				double r = radiusList.get(i);
-				svg += "\t<circle cx=\""+x+"\" cy=\""+y+"\" r=\""+r+"\" fill=\"none\" stroke=\"black\" stroke-width=\"2\" />\n";
-			}
-			
-			svg += "</svg>";
-			try {
-				BufferedWriter b = new BufferedWriter(new FileWriter(file));
-
-		// save the nodes
-				b.write(svg);
-				b.newLine();
-				b.close();
-			}
-			catch(IOException e){
-				System.out.println("An IO exception occured when saving svg in exactRandomDiagramFactory("+file.getName()+"\n"+e+"\n");
-			}
-		}
-		
-		return as;
-	}
-
-
-	private static AreaSpecification findAreaSpecificationFromCircles(ArrayList<Integer> xList, ArrayList<Integer> yList, ArrayList<Double> radiusList) {
-
-		Graph g = new Graph();
-		for(int i = 0; i < radiusList.size(); i++) {
-			Double radius = radiusList.get(i);
-			int x = xList.get(i);
-			int y = yList.get(i);
-			Node n = new Node(radius.toString());
-			n.setX(x);
-			n.setY(y);
-			n.setScore(radius);
-			Character label = (char)('a'+i);
-			n.setContour(label.toString());
-			g.addNode(n);
-//System.out.print(label+" "+x+":"+y+":"+radius+" ");
-		}
-//System.out.println();
-		
-		ArrayList<ConcreteContour> circleConcreteContours = AreaSpecification.convertCirclesToCCs(g,polygonResolution);
-		HashMap<String,Double> currentValuesMap = new HashMap<String,Double>();
-		HashMap<String, Area> zoneAreaMap = ConcreteContour.generateZoneAreas(circleConcreteContours);
-		for (String zone : zoneAreaMap.keySet()) {
-			Area area = zoneAreaMap.get(zone);
-	
-			ArrayList<Polygon> polygons = ConcreteContour.polygonsFromArea(area);
-			if (zone.equals("")) {
-				// outer zone
-				continue;
-			}
-	
-			// remove polygons that surround holes in the zone
-			// we only want polygons where the fill is the zone
-			// eg. diagram "0 a b ab" where a and b go through each other
-			// has two polys filled with the zone for both a and b
-			// the diagram "0 a b" drawn normally has three
-			// polys for 0 (including border), only one of which
-			// is filled with 0.
-			//
-			// What about holes in holes? Does this happen with
-			// simple polygons? I don't think so.
-			ArrayList<Polygon> polysCopy = new ArrayList<Polygon>(polygons);
-			for (Polygon polygon : polysCopy) {
-				Point2D insidePoint = ConcreteContour.findPointInsidePolygon(polygon);
-				if (insidePoint != null && !area.contains(insidePoint)) {
-					polygons.remove(polygon);
-				}
-			}
-	
-			double totalPolygonArea = 0.0;
-			for(Polygon p : polygons) {
-	//graphPanel.polygons.add(p);
-				double scaledPolygonArea = Util.computePolygonArea(p);
-				double polygonArea= scaledPolygonArea/(scalingFactor*scalingFactor);
-				totalPolygonArea += polygonArea;
-			}
-			currentValuesMap.put(zone,totalPolygonArea);
-		}
-		
-		
-		ArrayList<String> zoneList = new ArrayList<String>(currentValuesMap.keySet());
-		AbstractDiagram.sortZoneList(zoneList);
-		AbstractDiagram ad = new AbstractDiagram(zoneList);
-		
-		AreaSpecification ret = new AreaSpecification(ad,currentValuesMap);
-		
-		return ret;
-	}
-
-
-	
+	}	
 }
 
