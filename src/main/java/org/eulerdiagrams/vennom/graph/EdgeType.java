@@ -42,31 +42,6 @@ public class EdgeType extends ItemType implements Serializable {
 		CONTAINMENT.setPriority(1016);		
 	}
 	
-@Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (directed ? 1231 : 1237);
-        result = prime * result + priority;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        EdgeType other = (EdgeType) obj;
-        if (directed != other.directed)
-            return false;
-        if (priority != other.priority)
-            return false;
-        return true;
-    }
-
 /** Indicates if the edge is directed. */
 	protected boolean directed = false;
 	protected int priority = -1;
