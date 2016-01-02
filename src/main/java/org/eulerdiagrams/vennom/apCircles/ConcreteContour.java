@@ -68,23 +68,6 @@ public class ConcreteContour {
 		this.polygon = polygon;		
 		resetArea();
 	}
-	
-	
-	public ConcreteContour clone() {
-		Polygon clonePolygon = new Polygon();
-		
-		Polygon polygon = getPolygon();
-		System.out.println(this.abstractContour);
-		for(int i = 0 ; i < polygon.npoints; i++){
-			Point p = new Point(polygon.xpoints[i],polygon.ypoints[i]);			
-			clonePolygon.addPoint(p.x, p.y);
-			System.out.println(p.x +" " +p.y);
-		}
-		
-		ConcreteContour cc = new ConcreteContour(getAbstractContour(),clonePolygon);
-		
-		return cc;
-	}
 
 	/**
 	 * Generate the areas for each zone
@@ -399,56 +382,6 @@ public class ConcreteContour {
 //		System.out.println("Can't find internal point for polygon");
 
 		return null; // should never get here for simple polygons
-	}
-
-	/**
-	 * Find out if p2 is wholly inside p1. Equality implies containment (ie
-	 * called with the same polygon in both arguments, this will return true).
-	 * Returns true for empty p2.
-	 */
-	public static boolean polygonContainment(Polygon p1, Polygon p2) {
-
-		Area a1 = new Area(p1);
-		Area a2 = new Area(p2);
-		a2.subtract(a1);
-		if (a2.isEmpty()) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * If one polygon surrounds all the rest, this returns it, otherwise null.
-	 * If two polygons on top of each other are outside, null is returned.
-	 * Touching does not count as containment.
-	 */
-	public static Polygon findOuterPolygon(ArrayList<Polygon> polygons) {
-
-		if (polygons.size() == 1) {
-			return polygons.get(0);
-		}
-
-		for (Polygon p1 : polygons) {
-			boolean contains = true;
-			for (Polygon p2 : polygons) {
-				if (p1 == p2) {
-					continue;
-				}
-				if (polygonContainment(p1, p2) && polygonContainment(p2, p1)) {
-					contains = false;
-					break;
-				}
-				if (!polygonContainment(p1, p2)) {
-					contains = false;
-					break;
-				}
-			}
-			if (contains) {
-				return p1;
-			}
-		}
-
-		return null;
 	}
 
 	/**
