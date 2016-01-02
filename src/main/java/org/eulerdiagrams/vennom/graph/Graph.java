@@ -1,11 +1,28 @@
 package org.eulerdiagrams.vennom.graph;
 
-import java.util.*;
-import java.io.*;
-import java.awt.*;
+import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.StringTokenizer;
 
-import org.eulerdiagrams.vennom.apCircles.*;
-import org.eulerdiagrams.vennom.graph.comparators.*;
+import org.eulerdiagrams.vennom.graph.comparators.EdgeWeightComparator;
+import org.eulerdiagrams.vennom.graph.comparators.NodeScoreComparator;
+
+
 
 
 /**
@@ -39,7 +56,7 @@ import org.eulerdiagrams.vennom.graph.comparators.*;
 public class Graph implements Serializable {
 
 /** The default edge type. */
-	public static EdgeType DEFAULT_EDGE_TYPE = new EdgeType("defaultEdgeType",1000);
+	public static EdgeType DEFAULT_EDGE_TYPE = new EdgeType("defaultEdgeType");
 /** The default node type. */
 	public static NodeType DEFAULT_NODE_TYPE = new NodeType("defaultNodeType");
 
@@ -612,8 +629,6 @@ public class Graph implements Serializable {
 				outEdgeType.append(et.getLabel());
 				outEdgeType.append(FILESEPARATOR);
 				outEdgeType.append(et.getDirected());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getPriority());
 
 				b.write(outEdgeType.toString());
 				b.newLine();
@@ -808,11 +823,6 @@ public class Graph implements Serializable {
 // if not already in graph- edge type label can only be set by constructor
 						et = new EdgeType(edgeLabel);
 					}
-
-
-					Integer rgb = null;
-					Float width = null;
-
 
 // get edge type directed value
 					separatorInd = parseLine.indexOf(separatorString);
