@@ -1,7 +1,5 @@
 package org.eulerdiagrams.display.graph;
 
-import org.eulerdiagrams.vennom.graph.comparators.EdgeTypePriorityComparator;
-
 import java.util.Comparator;
 
 /**

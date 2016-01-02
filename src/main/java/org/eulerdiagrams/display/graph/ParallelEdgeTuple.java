@@ -1,8 +1,10 @@
-package org.eulerdiagrams.vennom.graph;
+package org.eulerdiagrams.display.graph;
 
 import java.util.*;
 
-import org.eulerdiagrams.vennom.graph.comparators.EdgeParallelComparator;
+import org.eulerdiagrams.vennom.graph.Edge;
+import org.eulerdiagrams.vennom.graph.Node;
+import org.eulerdiagrams.display.graph.EdgeParallelComparator;
 
 
 /**

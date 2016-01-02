@@ -10,6 +10,8 @@ import org.eulerdiagrams.display.graph.GraphUtility;
 import org.eulerdiagrams.display.graph.GraphView;
 import org.eulerdiagrams.display.graph.MoveGraphFrame;
 import org.eulerdiagrams.display.graph.NodeDisplayType;
+import org.eulerdiagrams.display.graph.ParallelEdgeList;
+import org.eulerdiagrams.display.graph.ParallelEdgeTuple;
 import org.eulerdiagrams.vennom.apCircles.AreaSpecification;
 import org.eulerdiagrams.vennom.apCircles.Util;
 import org.eulerdiagrams.vennom.graph.*;

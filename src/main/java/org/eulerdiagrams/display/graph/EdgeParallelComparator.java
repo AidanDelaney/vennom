@@ -1,4 +1,4 @@
-package org.eulerdiagrams.vennom.graph.comparators;
+package org.eulerdiagrams.display.graph;
 
 import java.util.*;
 

@@ -1,7 +1,11 @@
-package org.eulerdiagrams.vennom.graph;
+package org.eulerdiagrams.display.graph;
 
 import java.util.*;
 import java.io.*;
+
+import org.eulerdiagrams.vennom.graph.Edge;
+import org.eulerdiagrams.vennom.graph.Graph;
+import org.eulerdiagrams.vennom.graph.Node;
 
 
 /**
