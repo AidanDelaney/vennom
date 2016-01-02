@@ -12,11 +12,13 @@ import java.io.*;
  * @see Node
  * @author Peter Rodgers
  */
-public class NodeType extends ItemType implements Serializable {
+public class NodeType implements Serializable {
 
 /** A list of all the node types */
     protected static ArrayList<NodeType> existingTypes = new ArrayList<NodeType>();
 
+    private String label;
+    
 /** Height of a node, top to bottom. */
 	protected int height = 30;
 /** Width of a node, leftmost to rightmost. */
@@ -26,7 +28,7 @@ public class NodeType extends ItemType implements Serializable {
     
 /** Trivial constructor */
 	public NodeType(String inLabel) {
-		super(inLabel);
+		label = inLabel;
 		existingTypes.add(this);
 	}
 
@@ -51,31 +53,21 @@ public class NodeType extends ItemType implements Serializable {
 	public static NodeType withLabel(String label) {
 		NodeType nt = null;
 		for(NodeType nt2 : existingTypes){
-			if(nt2.getLabel().equals(label)) {
+			if(nt2.label.equals(label)) {
 				nt = nt2;
 			}
 		}
 		return nt;
 	}
 
-/** Returns a list of all the roots in the type heirarchy removing duplicates */
-	public static ArrayList<NodeType> allRoots() {
-
-		ArrayList<NodeType> ret = new ArrayList<NodeType>();
-		for(NodeType t : existingTypes){
-			NodeType root = (NodeType)t.root();
-			if(!ret.contains(root)) {
-				ret.add(root);
-			}
-		}
-		return ret;
-	}
-
 /**
 * Outputs the content of the node type for debugging purposes.
 */
 	public String toString() {
-		return(getLabel());
+		return label;
+	}
+	public String getLabel(){
+		return label;
 	}
 
 }

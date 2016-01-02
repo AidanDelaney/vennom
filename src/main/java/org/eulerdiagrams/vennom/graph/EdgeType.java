@@ -13,7 +13,7 @@ import java.awt.*;
  * @see Edge
  * @author Peter Rodgers
  */
-public class EdgeType extends ItemType implements Serializable {
+public class EdgeType implements Serializable {
 
 	public static EdgeType REPULSOR;
 	public static EdgeType ATTRACTOR;
@@ -21,6 +21,8 @@ public class EdgeType extends ItemType implements Serializable {
 	public static EdgeType SEPARATOR;
 	public static EdgeType IDEAL;
 	public static EdgeType CONTAINMENT;
+	
+	private String label;
 
 	public static void setupEdgeTypes(){
 		FIXED = new EdgeType("fixed");
@@ -52,13 +54,13 @@ public class EdgeType extends ItemType implements Serializable {
 
 /** Trivial constructor. */
 	public EdgeType(String inLabel) {
-		super(inLabel);
+		label = inLabel;
 		existingTypes.add(this);
 	}
 
 /** Constructor also setting priority. */
 	public EdgeType(String inLabel, int priority) {
-		super(inLabel);
+		label = inLabel;
 		existingTypes.add(this);
 		setPriority(priority);
 	}
@@ -90,33 +92,23 @@ public class EdgeType extends ItemType implements Serializable {
 	public static EdgeType withLabel(String label) {
 		EdgeType et = null;
 		for(EdgeType et2 : EdgeType.getExistingTypes()) {
-			if(et2.getLabel().equals(label)) {
+			if(et2.label.equals(label)) {
 				et = et2;
 			}
 		}
 		return et;
 	}
 
-
-/** Returns a list of all the roots in the type heirarchy removing duplicates */
-	public static ArrayList<EdgeType> allRoots() {
-
-		ArrayList<EdgeType> ret = new ArrayList<EdgeType>();
-		for(EdgeType t : EdgeType.getExistingTypes()) {
-			EdgeType root = (EdgeType)t.root();
-			if(!ret.contains(root)) {
-				ret.add(root);
-			}
-		}
-		return ret;
-	}
 /**
 * Outputs the content of the type.
 */
 	public String toString() {
-		return(getLabel());
+		return label;
 	}
 
+	public String getLabel(){
+		return label;
+	}
 }
 
 

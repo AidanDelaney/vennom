@@ -596,9 +596,6 @@ public class Graph implements Serializable {
 				StringBuffer outNodeType = new StringBuffer("");
 				outNodeType.append(nt.getLabel());
 				outNodeType.append(FILESEPARATOR);
-				if(nt.getParent() != null) {
-					outNodeType.append(nt.getParent().getLabel());
-				}
 
 				b.write(outNodeType.toString());
 				b.newLine();
@@ -613,10 +610,6 @@ public class Graph implements Serializable {
 
 				StringBuffer outEdgeType = new StringBuffer("");
 				outEdgeType.append(et.getLabel());
-				outEdgeType.append(FILESEPARATOR);
-				if(et.getParent() != null) {
-					outEdgeType.append(et.getParent().getLabel());
-				}
 				outEdgeType.append(FILESEPARATOR);
 				outEdgeType.append(et.getDirected());
 				outEdgeType.append(FILESEPARATOR);
@@ -798,21 +791,6 @@ public class Graph implements Serializable {
 						nt = new NodeType(nodeLabel);
 					}
 
-// get parent
-					separatorInd = parseLine.indexOf(separatorString);
-					String parentLabel = parseLine.substring(0,separatorInd);
-					parseLine.delete(0,separatorInd+1);
-//check if parent exists
-					if(!parentLabel.equals("")) {
-						NodeType pt = NodeType.withLabel(parentLabel);
-						if (pt == null) {
-// if parent is not already in graph- create a new node type, if the type is loaded
-// later then the default settings should be overridden
-							pt = new NodeType(parentLabel);
-						}
-						nt.setParent(pt);
-					}
-
 				}
 
 				if(readingEdgeTypes && !line.equals(FILESTARTNODES)) {
@@ -831,20 +809,6 @@ public class Graph implements Serializable {
 						et = new EdgeType(edgeLabel);
 					}
 
-// get edge type parent
-					separatorInd = parseLine.indexOf(separatorString);
-					String parentLabel = parseLine.substring(0,separatorInd);
-					parseLine.delete(0,separatorInd+1);
-//check if parent exists
-					if(!parentLabel.equals("")) {
-						EdgeType pt = EdgeType.withLabel(parentLabel);
-						if (pt == null) {
-// if parent is not already in graph- create a new edge type, if the type is loaded
-// later then the default settings should be overridden
-							pt = new EdgeType(parentLabel);
-						}
-						et.setParent(pt);
-					}
 
 					Integer rgb = null;
 					Float width = null;
