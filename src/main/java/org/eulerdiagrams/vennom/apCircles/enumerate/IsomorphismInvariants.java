@@ -1,46 +1,15 @@
 package org.eulerdiagrams.vennom.apCircles.enumerate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
-import org.eulerdiagrams.vennom.apCircles.*;
-
+import org.eulerdiagrams.vennom.apCircles.AbstractDiagram;
+import org.eulerdiagrams.vennom.apCircles.ContourZoneOccurrence;
 
 public class IsomorphismInvariants {
 	
 	public static boolean NORMALIZE = true;
-
-	public static void main(String[] args) {
-/*
-		for(int i = 0; i < 5; i++) {
-			
-			outputLabelSizeCombinations(1);
-			outputZoneSizeCombinations(1);
-			outputZonePartitionCombinations(1);
-			outputLabelPartitionCombinations(1);
-			outputlabelZoneSequenceCombinations(1);
-			
-			outputLabelSizeCombinations(2);
-			outputZoneSizeCombinations(2);
-			outputZonePartitionCombinations(2);
-			outputLabelPartitionCombinations(2);
-			outputlabelZoneSequenceCombinations(2);
-			
-			outputLabelSizeCombinations(3);
-			outputZoneSizeCombinations(3);
-			outputZonePartitionCombinations(3);
-			outputLabelPartitionCombinations(3);
-			outputlabelZoneSequenceCombinations(3);
-			
-System.out.println("In Iteration "+i);
-			outputLabelSizeCombinations(4);
-			outputZoneSizeCombinations(4);
-			outputZonePartitionCombinations(4);
-			outputLabelPartitionCombinations(4);
-			outputlabelZoneSequenceCombinations(4);
-		}
-*/
-		
-	}
 
 	public static void outputZoneSizeCombinations(int numberOfContours) {
 		System.out.println("START outputZoneSizeCombinations generating all unique Euler diagrams with "+numberOfContours+" zones");
