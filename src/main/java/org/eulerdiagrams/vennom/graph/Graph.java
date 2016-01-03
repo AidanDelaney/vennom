@@ -1,11 +1,28 @@
 package org.eulerdiagrams.vennom.graph;
 
-import java.util.*;
-import java.io.*;
-import java.awt.*;
+import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.StringTokenizer;
 
-import org.eulerdiagrams.vennom.apCircles.*;
-import org.eulerdiagrams.vennom.graph.comparators.*;
+import org.eulerdiagrams.vennom.graph.comparators.EdgeWeightComparator;
+import org.eulerdiagrams.vennom.graph.comparators.NodeScoreComparator;
+
+
 
 
 /**
@@ -39,7 +56,7 @@ import org.eulerdiagrams.vennom.graph.comparators.*;
 public class Graph implements Serializable {
 
 /** The default edge type. */
-	public static EdgeType DEFAULT_EDGE_TYPE = new EdgeType("defaultEdgeType",1000);
+	public static EdgeType DEFAULT_EDGE_TYPE = new EdgeType("defaultEdgeType");
 /** The default node type. */
 	public static NodeType DEFAULT_NODE_TYPE = new NodeType("defaultNodeType");
 
@@ -418,53 +435,6 @@ public class Graph implements Serializable {
 		return(false);
 	}
 
-
-	/**
-	 * Tree test by breadth first search.
-	 * @return true if the graph is a tree, false if it is unconnected.
-	 */
-	public boolean isTree() {
-
-		if(nodes.size() == 0) {
-			return true;
-		}
-
-		if(!connected()) {
-			return false;
-		}
-
-		setNodesVisited(false);
-		setEdgesVisited(false);
-
-		Node n = nodes.get(0);
-		n.setVisited(true);
-
-		ArrayList<Node> queue = new ArrayList<Node>();
-
-		queue.add(n);
-
-		while(queue.size() != 0) {
-			Node head = queue.get(0);
-			queue.remove(head);
-			HashSet<Edge> connectingEdges = head.connectingEdges();
-			for(Edge e : connectingEdges) {
-				if(e.getVisited() == false) {
-					e.setVisited(true);
-					Node neighbour = e.getOppositeEnd(head);
-					if(neighbour.getVisited() == true) {
-						return false;
-					}
-					neighbour.setVisited(true);
-					queue.add(neighbour);
-				}
-			}
-
-		}
-
-		return true;
-	}
-
-
 /**
  * Removes the node from the graph and deletes any connecting edges. Accounts
  * for redundant data connecting nodes.
@@ -643,31 +613,6 @@ public class Graph implements Serializable {
 				StringBuffer outNodeType = new StringBuffer("");
 				outNodeType.append(nt.getLabel());
 				outNodeType.append(FILESEPARATOR);
-				if(nt.getParent() != null) {
-					outNodeType.append(nt.getParent().getLabel());
-				}
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getWidth());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getHeight());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getShapeString());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getFillColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getBorderColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getTextColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getStroke().getLineWidth());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedFillColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedBorderColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedTextColor().getRGB());
-				outNodeType.append(FILESEPARATOR);
-				outNodeType.append(nt.getSelectedStroke().getLineWidth());
 
 				b.write(outNodeType.toString());
 				b.newLine();
@@ -683,25 +628,7 @@ public class Graph implements Serializable {
 				StringBuffer outEdgeType = new StringBuffer("");
 				outEdgeType.append(et.getLabel());
 				outEdgeType.append(FILESEPARATOR);
-				if(et.getParent() != null) {
-					outEdgeType.append(et.getParent().getLabel());
-				}
-				outEdgeType.append(FILESEPARATOR);
 				outEdgeType.append(et.getDirected());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getLineColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getStroke().getLineWidth());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getSelectedLineColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getSelectedStroke().getLineWidth());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getTextColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getSelectedTextColor().getRGB());
-				outEdgeType.append(FILESEPARATOR);
-				outEdgeType.append(et.getPriority());
 
 				b.write(outEdgeType.toString());
 				b.newLine();
@@ -879,90 +806,6 @@ public class Graph implements Serializable {
 						nt = new NodeType(nodeLabel);
 					}
 
-// get parent
-					separatorInd = parseLine.indexOf(separatorString);
-					String parentLabel = parseLine.substring(0,separatorInd);
-					parseLine.delete(0,separatorInd+1);
-//check if parent exists
-					if(!parentLabel.equals("")) {
-						NodeType pt = NodeType.withLabel(parentLabel);
-						if (pt == null) {
-// if parent is not already in graph- create a new node type, if the type is loaded
-// later then the default settings should be overridden
-							pt = new NodeType(parentLabel);
-						}
-						nt.setParent(pt);
-					}
-
-					Integer rgb = null;
-					Integer size = null;
-					Float width = null;
-
-// get node type width
-					separatorInd = parseLine.indexOf(separatorString);
-					size = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setWidth(size.intValue());
-					parseLine.delete(0,separatorInd+1);
-
-// get node type height
-					separatorInd = parseLine.indexOf(separatorString);
-					size = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setHeight(size.intValue());
-					parseLine.delete(0,separatorInd+1);
-
-// get node type shape
-					separatorInd = parseLine.indexOf(separatorString);
-					String shapeString = parseLine.substring(0,separatorInd);
-					nt.setShapeString(shapeString);
-					parseLine.delete(0,separatorInd+1);
-
-// get node type fill color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setFillColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type border color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setBorderColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type text color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setTextColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type stroke
-					separatorInd = parseLine.indexOf(separatorString);
-					width = new Float(Float.parseFloat(parseLine.substring(0,separatorInd)));
-					nt.setStroke(new BasicStroke(width.floatValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected fill color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setSelectedFillColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected border color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setSelectedBorderColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected text color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					nt.setSelectedTextColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get node type selected stroke, the last attribute
-					width = new Float(Float.parseFloat(parseLine.toString()));
-					nt.setSelectedStroke(new BasicStroke(width.floatValue()));
-
-
 				}
 
 				if(readingEdgeTypes && !line.equals(FILESTARTNODES)) {
@@ -981,25 +824,6 @@ public class Graph implements Serializable {
 						et = new EdgeType(edgeLabel);
 					}
 
-// get edge type parent
-					separatorInd = parseLine.indexOf(separatorString);
-					String parentLabel = parseLine.substring(0,separatorInd);
-					parseLine.delete(0,separatorInd+1);
-//check if parent exists
-					if(!parentLabel.equals("")) {
-						EdgeType pt = EdgeType.withLabel(parentLabel);
-						if (pt == null) {
-// if parent is not already in graph- create a new edge type, if the type is loaded
-// later then the default settings should be overridden
-							pt = new EdgeType(parentLabel);
-						}
-						et.setParent(pt);
-					}
-
-					Integer rgb = null;
-					Float width = null;
-
-
 // get edge type directed value
 					separatorInd = parseLine.indexOf(separatorString);
 					if(parseLine.substring(0,separatorInd).equals("true")) {
@@ -1008,52 +832,6 @@ public class Graph implements Serializable {
 						et.setDirected(false);
 					}
 					parseLine.delete(0,separatorInd+1);
-
-// get edge type line color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					et.setLineColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get edge type stroke
-					separatorInd = parseLine.indexOf(separatorString);
-					width = new Float(Float.parseFloat(parseLine.substring(0,separatorInd)));
-					et.setStroke(new BasicStroke(width.floatValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get edge type selected line color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					et.setSelectedLineColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// get edge type selected stroke
-					separatorInd = parseLine.indexOf(separatorString);
-					width = new Float(Float.parseFloat(parseLine.substring(0,separatorInd)));
-					et.setSelectedStroke(new BasicStroke(width.floatValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// edge type text color
-					separatorInd = parseLine.indexOf(separatorString);
-					rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-					et.setTextColor(new Color(rgb.intValue()));
-					parseLine.delete(0,separatorInd+1);
-
-// edge type selected text color
-					separatorInd = parseLine.indexOf(separatorString);
-					if(separatorInd == -1) {
-						rgb = new Integer(Integer.parseInt(parseLine.toString()));
-						et.setSelectedTextColor(new Color(rgb.intValue()));
-					} else {
-						rgb = new Integer(Integer.parseInt(parseLine.substring(0,separatorInd)));
-						et.setSelectedTextColor(new Color(rgb.intValue()));
-						parseLine.delete(0,separatorInd+1);
-
-						Integer priority = new Integer(Integer.parseInt(parseLine.toString()));
-						if(priority.intValue() != -1) {
-							et.setPriority(priority.intValue());
-						}
-					}
 
 				}
 
@@ -1515,10 +1293,14 @@ public class Graph implements Serializable {
  * created, so that the number of nodes may be less than that passed.
  * The old graph gets deleted.
  */
-	public void generateRandomGraph(int nodeNumber, int edgeNumber, boolean selfSourcing, boolean parallel) {
+	public void generateRandomGraph( int nodeNumber, 
+			                         int edgeNumber, 
+			                         long seed,
+			                         boolean selfSourcing, 
+			                         boolean parallel) {
 
 		clear();
-		Random r = new Random();
+		Random r = new Random(seed);
 		for(int i = 0; i < edgeNumber; i++) {
 			Integer node1 = new Integer(r.nextInt(nodeNumber));
 			Integer node2 = new Integer(r.nextInt(nodeNumber));
@@ -1533,8 +1315,8 @@ public class Graph implements Serializable {
 		}
 	}
 
-	public void generateRandomGraph(int nodeNumber, int edgeNumber) {
-		generateRandomGraph(nodeNumber,edgeNumber,false,true);
+	public void generateRandomGraph(int nodeNumber, int edgeNumber, long seed) {
+		generateRandomGraph(nodeNumber,edgeNumber, seed, false,true);
 	}
 
 /**
@@ -2188,7 +1970,11 @@ System.out.println("node list "+ret);
  * parallel edges are required. However, it must be noted that to make the graph
  * Eulerian, some parallel edges may be added.
  */
-	public void generateRandomEulerGraph(int nodeNumber, int edgeNumber, boolean selfSourcing, boolean parallel) {
+	public void generateRandomEulerGraph(int nodeNumber, 
+			                             int edgeNumber, 
+			                             long seed, 
+			                             boolean selfSourcing, 
+			                             boolean parallel) {
 
 		clear();
 
@@ -2201,7 +1987,7 @@ System.out.println("node list "+ret);
 			addNode(newNode);
 		}
 
-		Random r = new Random();
+		Random r = new Random(seed);
 		for(int j = 0; j < edgeNumber; j++) {
 			Integer node1 = new Integer(r.nextInt(nodeNumber));
 			Integer node2 = new Integer(r.nextInt(nodeNumber));
@@ -2265,9 +2051,9 @@ System.out.println("node list "+ret);
 		}
 	}
 
-	public void generateRandomEulerGraph(int nodeNumber, int edgeNumber) {
-		generateRandomEulerGraph(nodeNumber, edgeNumber, false, true);
-	}
+    public void generateRandomEulerGraph(int nodeNumber, int edgeNumber, long seed) {
+	    generateRandomEulerGraph(nodeNumber, edgeNumber, seed, false, true);
+    }
 
 /**
  * Adds random weights to the edges of a graph, value is between
@@ -2282,86 +2068,6 @@ System.out.println("node list "+ret);
 	}
 
 
-
-/**
- * If the passed node2 is a match for node1, taking into account
- * the current matched state of neighbouring nodes.
- * then this method returns true, false if it is not a possible match.
- * Accounts for current connections to matched nodes, both must have
- * the same number of self sourcing edges. This method takes
- * no account of node or edge lables or edge direction.
- */
-	protected boolean isAnUndirectedMatch(Node node1, Node node2) {
-
-		if (node1.getMatch() != null) {
-			return(false);
-		}
-		if (node2.getMatch() != null) {
-			return(false);
-		}
-
-// this should not be needed given a reasonably efficient
-// filtering before the backtracking
-		if(node1.connectingNodes().size() != node2.connectingNodes().size()) {
-			return(false);
-		}
-
-		HashSet<Node> matched1 = setNodesNeighboursScoresForIsomorphism(node1);
-		HashSet<Node> matched2 = setNodesNeighboursScoresForIsomorphism(node2);
-
-// check current matches are valid, i.e. same number and connect to non
-// conflicting nodes compare the scores of the two sets
-// this deals with self sourcing edges as well as
-// normal matches
-
-		boolean ret = true;
-		for(Node matchedNode : matched1) {
-			Node oppositeNode = (Node)matchedNode.getMatch();
-
-			if (matchedNode.getScore() != oppositeNode.getScore()) {
-				ret = false;
-			}
-
-		}
-
-		setNodesScores(matched1, 0.0);
-		setNodesScores(matched2, 0.0);
-
-		return(ret);
-	}
-
-
-/**
- * This method uses the score attribute to find the number of connecting
- * edges to each matched node. It returns a set of the nodes which have
- * had scores set (the matched nodes). This collects a repeated bit of
- * code used within the isomorphism algorithm.
- */
-	protected HashSet<Node> setNodesNeighboursScoresForIsomorphism(Node node) {
-
-		HashSet<Node> neighbours = node.connectingNodes();
-		HashSet<Edge> edgeCollection = node.connectingEdges();
-
-// cope with self sourcing edges
-		neighbours.add(node);
-
-		setNodesScores(neighbours,0.0);
-
-		HashSet<Node> matched = new HashSet<Node>();
-		for(Edge theEdge : edgeCollection) {
-			Node theNode = theEdge.getOppositeEnd(node);
-
-			if(theNode.getMatch() != null) {
-// set up matched attributes and return true
-				double score = theNode.getScore();
-				theNode.setScore(score+1);
-// add the node to the collection of matched nodes
-				matched.add(theNode);
-			}
-		}
-
-		return(matched);
-	}
 
 
 /**
@@ -2644,31 +2350,7 @@ private Node start = null;
 		return(true);
 	}
 
-
-/**
- * Finds a node within the passed point, or returns null
- * if the argument point is not over a node. The padding
- * refers to the distance the point can be from the
- * node, and must be greater than 0. If there is more
- * than one node, it finds the
- * last one in the collection, which hopefully should
- * be the one on top of the display.
- */
-	public Node getNodeNearPoint(Point p, int padding) {
-
-		Node returnNode = null;
-
-		for(Node n : getNodes()) {
-			Shape nodeShape = n.shape();
-			Rectangle r = new Rectangle(p.x-padding,p.y-padding,padding*2,padding*2);
-			if(nodeShape.intersects(r)) {
-				returnNode = n;
-			}
-		}
-		return(returnNode);
-	}
-
-
+		
 /**
 * Finds the closest node to the point, or returns null
 * if there are no nodes in the graph.
@@ -2885,64 +2567,6 @@ private Node start = null;
 		addEdge(newEdge);
 		return newEdge;
 	}
-
-
-	/**
-	 * Returns the difference in characters between the two labels, the
-	 * returned String is ordered.
-	 */
-	public static String findLabelDifferences(String label1, String label2) {
-
-		ArrayList<String> labelList1 = AbstractDiagram.findContourList(label1);
-		ArrayList<String> labelList2 = AbstractDiagram.findContourList(label2);
-
-		ArrayList<String> oldList1 = new ArrayList<String>(labelList1);
-		for(String contour1: oldList1) {
-			if(labelList2.contains(contour1)) {
-				labelList1.remove(contour1);
-				labelList2.remove(contour1);
-			}
-		}
-
-		labelList1.addAll(labelList2);
-
-		Collections.sort(labelList1);
-		StringBuffer ret = new StringBuffer();
-		for(String l: labelList1) {
-			ret.append(l);
-		}
-
-		return ret.toString();
-	}
-
-
-	/**
-	 * Returns the intersection in characters between the two labels, the
-	 * returned String is ordered.
-	 */
-	public static String findLabelIntersection(String label1, String label2) {
-
-		ArrayList<String> labelList1 = AbstractDiagram.findContourList(label1);
-		ArrayList<String> labelList2 = AbstractDiagram.findContourList(label2);
-
-		ArrayList<String> retList = new ArrayList<String>();
-
-		for(String contour: labelList1) {
-			if(labelList2.contains(contour)) {
-				retList.add(contour);
-			}
-		}
-
-		Collections.sort(retList);
-		StringBuffer ret = new StringBuffer();
-		for(String l: retList) {
-			ret.append(l);
-		}
-
-		return ret.toString();
-	}
-
-
 
 
 /**

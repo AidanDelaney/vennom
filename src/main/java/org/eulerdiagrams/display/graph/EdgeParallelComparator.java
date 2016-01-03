@@ -1,4 +1,4 @@
-package org.eulerdiagrams.vennom.graph.comparators;
+package org.eulerdiagrams.display.graph;
 
 import java.util.*;
 
@@ -15,7 +15,8 @@ public class EdgeParallelComparator implements Comparator<Edge> {
 		EdgeType et1 = e1.getType();
 		EdgeType et2 = e2.getType();
 // first compare the type priorities
-		int ret = et1.getPriority() - et2.getPriority();
+		int ret = EdgeDisplayType.getDisplay(et1).getPriority() - 
+				    EdgeDisplayType.getDisplay(et2).getPriority();
 // then compare the type labels
 		if(ret == 0) {
 			ret = et1.getLabel().compareTo(et2.getLabel());

@@ -19,7 +19,8 @@ public class EulerTiming {
 			for(int i = nodeIncrement; i <= maxNodes; i += nodeIncrement) {
 				int nodes = i;
 				int edges = nodes*2;
-				eg.generateRandomEulerGraph(nodes,edges);
+				long seed = System.currentTimeMillis();
+				eg.generateRandomEulerGraph(nodes,edges, seed);
 				long start = System.currentTimeMillis();
 				for(int j = 1; j < numberOfAlgorithmCalls; j++) {
 					tour = eg.eulerSMK(false);
@@ -36,7 +37,8 @@ public class EulerTiming {
 			for(int i = nodeIncrement; i <= maxNodes; i += nodeIncrement) {
 				int nodes = i;
 				int edges = nodes*2;
-				eg.generateRandomEulerGraph(nodes,edges);
+				long seed = System.currentTimeMillis();
+				eg.generateRandomEulerGraph(nodes,edges, seed);
 				long start = System.currentTimeMillis();
 				for(int j = 1; j < numberOfAlgorithmCalls; j++) {
 					tour = eg.eulerSMK(true);

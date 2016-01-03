@@ -1,7 +1,11 @@
-package org.eulerdiagrams.vennom.graph;
+package org.eulerdiagrams.display.graph;
 
 import java.util.*;
 import java.io.*;
+
+import org.eulerdiagrams.vennom.graph.Edge;
+import org.eulerdiagrams.vennom.graph.Graph;
+import org.eulerdiagrams.vennom.graph.Node;
 
 
 /**
@@ -38,8 +42,8 @@ public class ParallelEdgeList implements Serializable {
 		while(unvisitedEdges.size() != 0) {
 
 // pick a node connecting to an unvisited edge
-			Iterator uvEi = unvisitedEdges.iterator();
-			Edge firstEdge = (Edge)uvEi.next();
+			Iterator<Edge> uvEi = unvisitedEdges.iterator();
+			Edge firstEdge = uvEi.next();
 			Node firstNode = firstEdge.getFrom();
 
 			Stack<Node> stack = new Stack<Node>();

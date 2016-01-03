@@ -127,7 +127,8 @@ public class APCircleApplet extends Applet {
 		final int MAXCOUNT =100;
 		
 		int count =1;
-		graph.generateRandomGraph(numberOfNodes,numberOfEdges,false,false);
+		long seed = System.currentTimeMillis();
+		graph.generateRandomGraph(numberOfNodes,numberOfEdges,seed,false,false);
 		while(!graph.connected()) {
 			if (count >= MAXCOUNT) {
 				break;

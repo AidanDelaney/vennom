@@ -1,12 +1,11 @@
 package org.eulerdiagrams.vennom.graph;
 
-import java.util.*;
-import java.io.*;
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Point;
+import java.awt.geom.Line2D;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-import org.eulerdiagrams.display.apCircles.APCircleDisplay;
-//import org.eulerdiagrams.display.apCircles.APCirclePanel;
+
 
 /**
  * This is a simple edge, connecting two nodes together in a graph.
@@ -21,7 +20,7 @@ import org.eulerdiagrams.display.apCircles.APCircleDisplay;
  */
 
 public class Edge implements Serializable {
-
+	
 /** Source node. Must be assigned.*/
 	protected Node from;
 /** Target node. Must be assigned.*/
@@ -113,14 +112,14 @@ public class Edge implements Serializable {
 	public double getWeight() {return weight;}
 /** Trival accessor. */
 	public EdgeType getType() {return type;}
-	public boolean isContainmentType() {return type==APCircleDisplay.CONTAINMENT;}
-	public boolean isSeparatorType() {return type==APCircleDisplay.SEPARATOR;}
-	public boolean isIdealType() {return type==APCircleDisplay.IDEAL;}
-	public boolean isAttractorType() {return type==APCircleDisplay.ATTRACTOR;}
-	public boolean isRepulsorType() {return type==APCircleDisplay.REPULSOR;}
-	public void setContainmentType() { type=APCircleDisplay.CONTAINMENT;}
-	public void setSeparatorType() { type=APCircleDisplay.SEPARATOR;}
-	public void setIdealType() { type=APCircleDisplay.IDEAL;}
+	public boolean isContainmentType() {return type==EdgeType.CONTAINMENT;}
+	public boolean isSeparatorType() {return type==EdgeType.SEPARATOR;}
+	public boolean isIdealType() {return type==EdgeType.IDEAL;}
+	public boolean isAttractorType() {return type==EdgeType.ATTRACTOR;}
+	public boolean isRepulsorType() {return type==EdgeType.REPULSOR;}
+	public void setContainmentType() { type=EdgeType.CONTAINMENT;}
+	public void setSeparatorType() { type=EdgeType.SEPARATOR;}
+	public void setIdealType() { type=EdgeType.IDEAL;}
 /** Trival accessor. */
 	public boolean getVisited() {return visited;}
 /** Trival accessor. */

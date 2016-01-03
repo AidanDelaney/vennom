@@ -48,7 +48,8 @@ public class GraphUtilityCreateRandomEulerGraph extends GraphUtility implements 
 	public void apply() {
 
 // this creates a graph with lots of loops
-		getGraph().generateRandomEulerGraph(numberOfNodes,numberOfEdges,false,false);
+		long seed = System.currentTimeMillis();
+		getGraph().generateRandomEulerGraph(numberOfNodes,numberOfEdges,seed,false,false);
 
 // this places the nodes randomly
 		getGraph().randomizeNodePoints(new Point(50,50),500,500);

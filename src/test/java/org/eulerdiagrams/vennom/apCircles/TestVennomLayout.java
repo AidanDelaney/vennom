@@ -14,7 +14,7 @@ import org.junit.Test;
 public class TestVennomLayout {
 
     @Test
-    public void test() {
+    public void test_01() {
         AreaSpecification as = new AreaSpecification("A 100\nB 100\n");
         VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
         Graph graph = vl.layout();
@@ -155,7 +155,34 @@ public class TestVennomLayout {
     	System.out.println("END Testing test code generation.");
     }
     
-
+    @Test
+    // Containment
+    public void test_05() {
+    	String task = "A 100\nAB 10\n";
+        Graph g = generateForceLayout(task);
+        
+    	// if this test fails and we want to refresh the checking code below,
+    	boolean regenerate_geometry_checks = false;
+        if(regenerate_geometry_checks){
+        	generateTestCode(g);
+        }
+        ArrayList<Node> nodes = g.getNodes();
+        assertEquals(nodes.size(), 2);
+        Node n0 = nodes.get(0);
+        assertTrue(n0.getContour().equals("A")); // will break if the graph nodes get reordered
+        Point p0 = n0.getCentre();
+        assertEquals(p0.x, 266);
+        assertEquals(p0.y, 300);
+        double r0 = n0.getPreciseRadius();
+        assertEquals(r0, 5.917270272703197, 0.1);
+        Node n1 = nodes.get(1);
+        assertTrue(n1.getContour().equals("B")); // will break if the graph nodes get reordered
+        Point p1 = n1.getCentre();
+        assertEquals(p1.x, 266);
+        assertEquals(p1.y, 301);
+        double r1 = n1.getPreciseRadius();
+        assertEquals(r1, 1.7841241161527712, 0.1);
+    }  
 	@Test
     // Assert the layout of a symmetric Venn2
     public void testVenn2_001() {
@@ -264,5 +291,28 @@ public class TestVennomLayout {
         assertThat(n0.getPreciseCentre().distance(n1.getPreciseCentre()), is(lessThan(new Double(n0.getPreciseRadius() + n1.getPreciseRadius()))));
         assertThat(n0.getPreciseCentre().distance(n2.getPreciseCentre()), is(lessThan(new Double(n0.getPreciseRadius() + n2.getPreciseRadius()))));
         assertThat(n1.getPreciseCentre().distance(n2.getPreciseCentre()), is(lessThan(new Double(n1.getPreciseRadius() + n2.getPreciseRadius()))));
+    }
+
+    @Test
+    public void testDisjoint_001() {
+        String task = "a 100.0\nb 300.0\nc 200.0";
+        AreaSpecification as = new AreaSpecification(task);
+        VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
+        Graph g = vl.layout();
+
+        assertThat(g.getNodes().size(), is(3));
+
+        Node n0 = g.getNodes().get(0);
+        Node n1 = g.getNodes().get(1);
+        Node n2 = g.getNodes().get(2);
+
+        // quick check, There must be no overlap between two nodes, so their centre distance must be more than the sum
+        // of the radii.
+        assertThat(n0.getPreciseCentre().distance(n1.getPreciseCentre()), 
+        		not(is(lessThan(new Double(n0.getPreciseRadius() + n1.getPreciseRadius())))));
+        assertThat(n0.getPreciseCentre().distance(n2.getPreciseCentre()), 
+        		not(is(lessThan(new Double(n0.getPreciseRadius() + n2.getPreciseRadius())))));
+        assertThat(n1.getPreciseCentre().distance(n2.getPreciseCentre()), 
+        		not(is(lessThan(new Double(n1.getPreciseRadius() + n2.getPreciseRadius())))));
     }
 }

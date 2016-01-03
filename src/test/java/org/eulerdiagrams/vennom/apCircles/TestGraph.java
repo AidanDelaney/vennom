@@ -17,10 +17,15 @@ import org.junit.Test;
 
 public class TestGraph {
 
+	private boolean printme = true;
+	
 	private void println(String m){
-		boolean printme = false;
 		if(printme)
 			System.out.println(m);
+	}
+	private void print(String m){
+		if(printme)
+			System.out.print(m);
 	}
 	
 	@Test
@@ -34,65 +39,81 @@ public class TestGraph {
 		Graph g1 = new Graph();
 		Node nX = new Node("nY");
 		Node nY = new Node("nX");
+		
+		print("1.0.1");
 		if(!g1.addNode(nX)) {
 			fail("Test1.0.1 Fail");
 		}
+		print("2");
 		if(!g1.addNode(nY)) {
 			fail("Test1.0.2 Fail");
 		}
+		print("3");
 		if(g1.addNode(nY)) {
 			fail("Test1.0.3 Fail");
 		}
 		Edge eX = new Edge(nX,nY);
+		print("4");
 		if(!g1.addEdge(eX)) {
 			fail("Test1.0.4 Fail");
 		}
+		print("5");
 		if(g1.addEdge(eX)) {
 			fail("Test1.0.5 Fail");
 		}
 
 // test the consistency checker
+		print("6");
 		if(!g1.consistent()) {
 			fail("Test1.0.6 Fail");
 		}
 
 		ArrayList<Edge> nYTo = nY.getEdgesTo();
 		nYTo.remove(eX);
+		print("7");
 		if(g1.consistent()) {
 			fail("Test1.0.7 Fail");
 		}
 		nYTo.add(eX);
+		print("8");
 		if(!g1.consistent()) {
 			fail("Test1.0.8 Fail");
 		}
 		ArrayList<Edge> g1Edges = g1.getEdges();
 		g1Edges.remove(eX);
+		print("9");
 		if(g1.consistent()) {
 			fail("Test1.0.9 Fail");
 		}
 		g1Edges.add(eX);
+		print("10");
 		if(!g1.consistent()) {
 			fail("Test1.0.10 Fail");
 		}
 
 		Node nOutside = new Node();
 		eX.setFrom(nOutside);
+		print("11");
 		if(g1.consistent()) {
 			fail("Test1.0.11 Fail");
 		}
 		eX.setFrom(nX);
+		print("12");
 		if(!g1.consistent()) {
 			fail("Test1.0.12 Fail");
 		}
 
 		g1 = new Graph("G");
+		print("13");
 		if(!g1.getLabel().equals("G")) {
 			fail("Test1.0.13 Fail");
 		}
 		g1.setLabel("H");
+		print("14");
 		if(!g1.getLabel().equals("H")) {
 			fail("Test1.0.14 Fail");
 		}
+		print("15");
 		if(!g1.consistent()) {
 			fail("Test1.0.15 Fail");
 		}
@@ -110,78 +131,97 @@ public class TestGraph {
 
 		g1.clear();
 		Node n1 = new Node("n1");
+		print("\n1.1.1");
 		if(!g1.addNode(n1)) {
 			fail("Test1.1.1 Fail");
 		}
 		Node n2 = new Node("n2");
+		print("2");
 		if(!g1.addNode(n2)) {
 			fail("Test1.1.2 Fail");
 		}
 		Node n3 = new Node();
+		print("3");
 		if(!g1.addNode(n3)) {
 			fail("Test1.1.3 Fail");
 		}
 		Node n4 = new Node("n4");
+		print("4");
 		if(!g1.addNode(n4)) {
 			fail("Test1.1.4 Fail");
 		}
 		Node n5 = new Node("test");
+		print("5");
 		if(!g1.addNode(n5)) {
 			fail("Test1.1.5 Fail");
 		}
 		Node n6 = new Node("n6");
+		print("6");
 		if(!g1.addNode(n6)) {
 			fail("Test1.1.6 Fail");
 		}
 
 		Edge e1 = new Edge(n6,n6);
+		print("7");
 		if(!g1.addEdge(e1)) {
 			fail("Test1.1.7 Fail");
 		}
 		Edge e2 = new Edge(n2,n3);
+		print("8");
 		if(!g1.addEdge(e2)) {
 			fail("Test1.1.8 Fail");
 		}
 		Edge e3 = new Edge(n1,n4);
+		print("9");
 		if(!g1.addEdge(e3)) {
 			fail("Test1.1.9 Fail");
 		}
 		Edge e4 = new Edge(n4,n2);
+		print("10");
 		if(!g1.addEdge(e4)) {
 			fail("Test1.1.10 Fail");
 		}
 		Edge e5 = new Edge(n3,n5);
+		print("11");
 		if(!g1.addEdge(e5)) {
 			fail("Test1.1.11 Fail");
 		}
 		Edge e6 = new Edge(n3,n5);
+		print("12");
 		if(!g1.addEdge(e6)) {
 			fail("Test1.1.12 Fail");
 		}
 		Edge e7 = new Edge(n3,n5);
+		print("13");
 		if(!g1.addEdge(e7)) {
 			fail("Test1.1.13 Fail");
 		}
 		Edge e8 = new Edge(n1,n1);
+		print("14");
 		if(!g1.addEdge(e8)) {
 			fail("Test1.1.14 Fail");
 		}
 		Edge e9 = new Edge(n3,n3);
+		print("15");
 		if(!g1.addEdge(e9)) {
 			fail("Test1.1.15 Fail");
 		}
 
 
 // oposite end test
+		print("16");
 		if (e1.getOppositeEnd(n6) != n6) {
 			fail("Test1.1.16 Fail");
 		}
+		print("17");
 		if (e2.getOppositeEnd(n2) != n3) {
 			fail("Test1.1.17 Fail");
 		}
+		print("18");
 		if (e2.getOppositeEnd(n3) != n2) {
  			fail("Test1.1.18 Fail");
 		}
+		print("19");		
 		if (e2.getOppositeEnd(n6) != null) {
 			fail("Test1.1.19 Fail");
 		}
@@ -205,38 +245,46 @@ public class TestGraph {
 		Node tempFrom = e1.getFrom();
 
 		e1.reverse();
+		print("20");
 		if(e1.getTo() != tempFrom) {
 			fail("Test1.1.20 Fail");
 		}
 
+		print("21");
 		if(e1.getFrom() != tempTo) {
 			fail("Test1.1.21 Fail");
 		}
 
 		e1.reverse();
 
+		print("22");
 		if(e1.getTo() != tempTo) {
 			fail("Test1.1.22 Fail");
 		}
 
+		print("23");
 		if(e1.getFrom() != tempFrom) {
 			fail("Test1.1.23 Fail");
 		}
 
+		print("24COMMENTEDOUT");
 		if(!g1.consistent()) {
-			//fail("Test1.1.24 Fail");  TODO this fails
+			//fail("Test1.1.24 Fail");  //TODO has been known to fail for some seed value e.g. 12345
 		}
 
 
 // Node connectivity testing
 		HashSet<Node> testN = new HashSet<Node>();
 
+		print("\n1.2.1");
 		if(!n6.connectingNodes().equals(testN)) {
 			fail("Test1.2.1 Fail");
 		}
+		print("2");
 		if(!n6.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.2.2 Fail");
 		}
+		print("4");
 		if(!n6.connectingEdges().equals(testN)) {
 			fail("Test1.2.4 Fail");
 		}
@@ -246,10 +294,12 @@ public class TestGraph {
 		testN.add(n3);
 		testN.add(n2);
 
+		print("5");
 		if(!n3.connectingNodes().equals(testN)) {
 			fail("Test1.2.5 Fail");
 		}
 
+		print("7");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.2.7 Fail");
 		}
@@ -259,17 +309,20 @@ public class TestGraph {
 
 		n2.setVisited(true);
 
+		print("\n1.3.1");
 		if(!n3.connectingNodes().equals(testN)) {
 			fail("Test1.3.1 Fail");
 		}
 		testN.remove(n2);
+		print("3");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
-			//fail("Test1.3.3 Fail"); TODO this fails
+			fail("Test1.3.3 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		g1.setNodesVisited(true);
 		testN = new HashSet<Node>();
 
+		print("4");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.3.4 Fail");
 		}
@@ -277,6 +330,7 @@ public class TestGraph {
 		n2.setVisited(false);
 		testN.add(n2);
 
+		print("5");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.3.5 Fail");
 		}
@@ -285,6 +339,7 @@ public class TestGraph {
 
 		n2.setVisited(true);
 		testN = new HashSet<Node>();
+		print("6");
 		if(!n3.unvisitedConnectingNodes().equals(testN)) {
 			fail("Test1.3.6 Fail");
 		}
@@ -293,6 +348,7 @@ public class TestGraph {
 		testN.add(n5);
 		testN.add(n3);
 		testN.add(n2);
+		print("7");
 		if(!n3.connectingNodes().equals(testN)) {
 			fail("Test1.3.7 Fail");
 		}
@@ -306,15 +362,18 @@ public class TestGraph {
 		testE = new HashSet<Edge>();
 		testE.add(e3);
 		testE.add(e1);
+		print("\n1.5.1");
 		if(!n1.connectingEdges().equals(testE)) {
 			fail("Test1.5.1 Fail");
 		}
+		print("2");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.2 Fail");
 		}
 
 		testE.remove(e1);
 		e1.setVisited(true);
+		print("3");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.3 Fail");
 		}
@@ -323,6 +382,7 @@ public class TestGraph {
 
 		g1.setEdgesVisited(true);
 		testE = new HashSet<Edge>();
+		print("4");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.4 Fail");
 		}
@@ -332,14 +392,16 @@ public class TestGraph {
 		testE = new HashSet<Edge>();
 		testE.add(e3);
 		testE.add(e1);
+		print("5");
 		if(!n1.connectingEdges().equals(testE)) {
 			fail("Test1.5.5 Fail");
 		}
+		print("6");
 		if(!n1.unvisitedConnectingEdges().equals(testE)) {
 			fail("Test1.5.6 Fail");
 		}
 
-		System.out.print("Test 1 END");
+		print("Test 1 END");
 
 
 // test dynamic graph stuff
@@ -371,11 +433,11 @@ public class TestGraph {
 		testEdgeAL = new ArrayList<Edge>();
 		testEdgeAL.add(ed5);
 		if(!g2.getEdges().equals(testEdgeAL)) {
-			//fail("Test2.1 Fail"); TODO
+			//fail("Test2.1 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		g2.addNode(nd3);
 		if(!g2.getEdges().equals(testEdgeAL)) {
-			//fail("Test2.2 Fail"); TODO
+			//fail("Test2.2 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		g2.removeNode(nd2);
 		testEdgeAL = new ArrayList<Edge>();
@@ -419,16 +481,16 @@ public class TestGraph {
 		HashSet dyTest = new HashSet();
 
 		if(dyNode1.getEdgesFrom().equals(dyTest) == false) {
-			//fail("Test2.5.3 Fail"); TODO
+			//fail("Test2.5.3 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(dyNode1.getEdgesTo().equals(dyTest) == false) {
-			//fail("Test2.5.4 Fail"); TODO
+			//fail("Test2.5.4 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(dyNode2.getEdgesFrom().equals(dyTest) == false) {
-			//fail("Test2.5.5 Fail"); TODO
+			//fail("Test2.5.5 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(dyNode2.getEdgesTo().equals(dyTest) == false) {
-			//fail("Test2.5.6 Fail");  TODO
+			//fail("Test2.5.6 Fail");  //TODO has been known to fail for some seed value e.g. 12345
 		}
 		if(!g2.consistent()) {
 			fail("Test2.5.7 Fail");
@@ -703,7 +765,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 2 END");
+		print("Test 2 END");
 
 
 		println(" | Test 3 START: Shortest path");
@@ -713,7 +775,7 @@ public class TestGraph {
 		path.add(n4);
 		path.add(n1);
 		if(!g1.unweightedShortest(n5,n1).equals(path)) {
-			//fail("Test3.1 Fail"); TODO
+			//fail("Test3.1 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 		path = new ArrayList<Node>();
 		path.add(n3);
@@ -724,7 +786,7 @@ public class TestGraph {
 			fail("Test3.3 Fail");
 		}
 
-		System.out.print("Test 3 END");
+		print("Test 3 END");
 
 
 //Adjacency Edge Graph creation stuff
@@ -760,7 +822,7 @@ public class TestGraph {
 		g1.removeNode(nDuplicate);
 
 		if(!g1.consistent()) {
-			//fail("Test4.4.0 Fail"); TODO
+			//fail("Test4.4.0 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 
 //adding an adjacency edge
@@ -773,7 +835,7 @@ public class TestGraph {
 			fail("Test4.5 Fail");
 		}
 		if(!g1.getNodes().equals(testNodeAL)) {
-			//fail("Test4.6 Fail"); TODO
+			fail("Test4.6 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		g1.addAdjacencyEdge("nB","");
@@ -803,7 +865,7 @@ public class TestGraph {
 			fail("Test4.10 Fail");
 		}
 
-		System.out.print("Test 4 END");
+		print("Test 4 END");
 
 		println(" | Test 5 START: Connected");
 
@@ -817,11 +879,11 @@ public class TestGraph {
 		g1.addAdjacencyEdge("nA","nD");
 		g1.addAdjacencyEdge("nA","n4");
 		if(!g1.connected()) {
-			//fail("Test5.3 Fail"); TODO
+			fail("Test5.3 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		if(!g1.consistent()) {
-			//fail("Test5.3.0 Fail"); TODO
+			//fail("Test5.3.0 Fail"); //TODO has been known to fail for some seed value e.g. 12345
 		}
 
 		Graph g4 = new Graph("g4");
@@ -850,7 +912,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 5 END");
+		print("Test 5 END");
 
 
 		println(" | Test 6 START: Equality by label testing");
@@ -958,7 +1020,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 6 END");
+		print("Test 6 END");
 
 
 //Adjacency file testing. This test creates a file called test.adj
@@ -966,7 +1028,8 @@ public class TestGraph {
 
 		println(" | Test 7 START: Adjacency file - needs to read and write test.adj");
 
-		g4.generateRandomGraph(10,15);
+		long seed = 12345;
+		g4.generateRandomGraph(10,15, seed);
 		g4.saveAdjacencyFile("test.adj");
 		Graph g5 = new Graph("g5");
 		g5.loadAdjacencyFile("test.adj");
@@ -986,33 +1049,33 @@ public class TestGraph {
 		g4.clear();
 		g4.saveAdjacencyFile("test.adj");
 		g5.clear();
-		g5.generateRandomGraph(10,15);
+		g5.generateRandomGraph(10,15, seed);
 		g4.loadAdjacencyFile("test.adj");
 		if(g4.equalsByNodeLabel(g5)) {
 			fail("Test7.2 Fail");
 		}
-		g4.generateRandomGraph(20,30);
+		g4.generateRandomGraph(20,30, seed);
 		g4.addNode(n1);
 		g4.saveAdjacencyFile("test.adj");
-		g5.generateRandomGraph(10,15);
+		g5.generateRandomGraph(10,15, seed);
 		g5.loadAdjacencyFile("test.adj");
 		g4.loadAdjacencyFile("test.adj");
 		if(!g5.equalsByNodeLabel(g4)) {
-			//fail("Test7.3 Fail"); TODO
+			fail("Test7.3 Fail"); //TODO has been known to fail for some seed value
 		}
 		g4.clear();
 		g4.saveAdjacencyFile("test.adj");
 		g4.addNode(n1);
 		g4.loadAdjacencyFile("test.adj");
 		if(!g4.equalsByNodeLabel(new Graph())) {
-			//fail("Test7.4 Fail"); TODO
+			fail("Test7.4 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		if(!g4.consistent()) {
 			fail("Test7.4.0 Fail");
 		}
 
-		System.out.print("Test 7 END");
+		print("Test 7 END");
 
 
 //partial node and edge access
@@ -1045,10 +1108,10 @@ public class TestGraph {
 		testa.add(n4);
 
 		if(!g.unvisitedNodes().equals(testa)) {
-			//fail("Test8.5 Fail"); TODO
+			fail("Test8.5 Fail"); //TODO has been known to fail for some seed value
 		}
 		if(!g.visitedNodes().equals(testb)) {
-			//fail("Test8.6 Fail"); TODO
+			fail("Test8.6 Fail"); //TODO has been known to fail for some seed value
 		}
 
 		n1.setVisited(true);
@@ -1061,7 +1124,7 @@ public class TestGraph {
 		testb.add(n2);
 
 		if(!g.unvisitedNodes().equals(testa)) {
-			//fail("Test8.9 Fail"); TODO
+			fail("Test8.9 Fail"); //TODO has been known to fail for some seed value
 		}
 		if(!g.visitedNodes().equals(testb)) {
 			fail("Test8.10 Fail");
@@ -1105,10 +1168,10 @@ public class TestGraph {
 			fail("Test8.17 Fail");
 		}
 		if(!g.visitedEdges().equals(teste2)) {
-			//fail("Test8.18 Fail"); TODO
+			// fail("Test8.18 Fail"); //TODO has been known to fail for some seed value e.g. 12345, 12346
 		}
 
-		System.out.print("Test 8 END");
+		print("Test 8 END");
 
 //euler tour tests
 		println(" | Test 9 START: Euler Tour - needs to read and write test.euler");
@@ -1131,7 +1194,7 @@ public class TestGraph {
 		}
 
 		eg = new Graph();
-		eg.generateRandomEulerGraph(5,7);
+		eg.generateRandomEulerGraph(5,7, seed);
 		tour1 = eg.euler();
 		eg.saveTour("test.euler",tour1);
 		tour2 = eg.loadTour("test.euler");
@@ -1166,14 +1229,14 @@ public class TestGraph {
 		tour1 = eg.euler();
 		tour2 = new ArrayList<Node>();
 		if (!eg.eulerTourInGraph(tour2)) {
-			//fail("Test 9.6.1 Failed with tour "+tour2 +"\nand graph\n"+eg); TODO
+			fail("Test 9.6.1 Failed with tour "+tour2 +"\nand graph\n"+eg); //TODO has been known to fail for some seed value
 		}
-		eg.generateRandomEulerGraph(2,4);
+		eg.generateRandomEulerGraph(2,4, seed);
 		tour1 = eg.euler();
 		eg.saveTour("test.euler",tour1);
 		tour2 = eg.loadTour("test.euler");
 		if (!eg.eulerTourInGraph(tour2)) {
-			//fail("Test 9.7 Failed");// with tour "+tour2 +"\nand graph\n"+eg); TODO
+			fail("Test 9.7 Failed");// with tour "+tour2 +"\nand graph\n"+eg); //TODO has been known to fail for some seed value
 		}
 		tour2 = eg.eulerSMK(false);
 		if (!eg.eulerTourInGraph(tour2)) {
@@ -1199,7 +1262,7 @@ public class TestGraph {
 		}
 
 		eg = new Graph();
-		eg.generateRandomEulerGraph(20,30);
+		eg.generateRandomEulerGraph(20,30, seed);
 		tour2 = eg.euler();
 		if (!eg.eulerTourInGraph(tour2)) {
 			fail("Test 9.10 Failed");// with tour "+tour2 +"\nand graph\n"+eg);
@@ -1249,7 +1312,7 @@ public class TestGraph {
 		}
 
 
-		System.out.print("Test 9 END");
+		print("Test 9 END");
 
 
 // test the brute force tsp
@@ -1346,7 +1409,7 @@ public class TestGraph {
 			fail("Test 10.9 Failed");
 		}
 
-		System.out.print("Test 10 END");
+		print("Test 10 END");
 
 		println(" | Test 11 START: Union Find");
 
@@ -1405,7 +1468,7 @@ public class TestGraph {
 		if(uf.find(7,10)) {
 			fail("Test 11.12 Fail");
 		}
-		System.out.print("Test 11 END");
+		print("Test 11 END");
 
 		println(" | Test 12 START: mst");
 
@@ -1562,148 +1625,66 @@ tests fail at line mstGraph.prim()
 
 		System.out.print("Test 12 END");
 
-// test the types
-		println(" | Test 13 START: Node and Edge Types");
-
-		NodeType nt11= new NodeType("nt11");
-		NodeType nt21= new NodeType("nt21");
-		NodeType nt31= new NodeType("nt31");
-		NodeType nt22= new NodeType("nt22");
-		NodeType nt32= new NodeType("nt32");
-		NodeType nt33= new NodeType("nt33");
-		NodeType nt34= new NodeType("nt34");
-		NodeType nt23= new NodeType("nt23");
-		NodeType nt41= new NodeType("nt41");
-		NodeType nt42= new NodeType("nt42");
-		NodeType nt43= new NodeType("nt43");
-		nt21.setParent(nt11);
-		nt31.setParent(nt21);
-		nt22.setParent(nt11);
-		nt32.setParent(nt21);
-		nt33.setParent(nt22);
-		nt34.setParent(nt21);
-		nt23.setParent(nt11);
-		nt41.setParent(nt32);
-		nt42.setParent(nt32);
-		nt43.setParent(nt32);
-
-		nt22.removeParent();
-		NodeType ntmove = (NodeType)nt33.getParent();
-		nt32.setParent(ntmove);
-
-		if(nt11.setParent(nt31)) {
-				fail("Test 13.3.1 FAIL");
-		}
-		if(!nt11.setParent(nt43)) {
-				fail("Test 13.3.2 FAIL");
-		}
-
-		if(nt43.setParent(nt43)) {
-				fail("Test 13.3.3 FAIL");
-		}
-
-		if(nt43.setParent(nt43)) {
-				fail("Test 13.3.4 FAIL");
-		}
-
-		if(!nt43.ancestor(nt32)) {
-				fail("Test 13.3.5 FAIL");
-		}
-		if(nt41.ancestor(nt41)) {
-				fail("Test 13.3.6 FAIL");
-		}
-		if(!nt33.ancestor(nt22)) {
-				fail("Test 13.3.7 FAIL");
-		}
-		if(nt41.ancestor(nt42)) {
-				fail("Test 13.3.8 FAIL");
-		}
-
-		if(nt41.root() != nt22) {
-				fail("Test 13.3.9 FAIL");
-		}
-		if(nt22.root() != nt22) {
-				fail("Test 13.3.10 FAIL");
-		}
-
-
-		EdgeType et11 = new EdgeType("et11");
-		EdgeType et21 = new EdgeType("et21");
-		EdgeType et22 = new EdgeType("et22");
-		EdgeType et31 = new EdgeType("et31");
-		et21.setParent(et11);
-		et31.setParent(et22);
-		et22.setParent(et11);
-		et21.setDirected(true);
-
-		if(!et31.ancestor(et11)) {
-				fail("Test 13.4.1 FAIL");
-		}
-		if(et11.ancestor(et21)) {
-				fail("Test 13.4.2 FAIL");
-		}
-		if(et21.root() != et11) {
-				fail("Test 13.4.3 FAIL");
-		}
-		if(et11.root() != et11) {
-				fail("Test 13.4.4 FAIL");
-		}
-
-		Node nt1 = new Node("nt1", new Point(100,100));
-		Node nt2 = new Node("nt2",nt32, new Point(110,100));
-		Node nt3 = new Node("nt3",nt11, new Point(200,200));
-
-		Edge et1 = new Edge(nt1,nt2,"e1",3.0,et11);
-		Edge et2 = new Edge(nt2,nt3,"e2");
-		Edge et3 = new Edge(nt1,nt3,"e3",0.0,et31);
-
-		Graph gt = new Graph("gt1");
-
-		gt.addNode(nt1);
-		gt.addNode(nt2);
-		gt.addNode(nt3);
-		gt.addEdge(et1);
-		gt.addEdge(et2);
-		gt.addEdge(et3);
-
-		if(nt1.getType() != Graph.DEFAULT_NODE_TYPE) {
-				fail("Test 13.5.1 FAIL");
-		}
-
-		if(nt2.getType() != nt32) {
-				fail("Test 13.5.2 FAIL");
-		}
-
-		nt2.setType(nt41);
-
-		if(nt2.getType() != nt41) {
-				fail("Test 13.5.3 FAIL");
-		}
-
-
-		if(et2.getType() != Graph.DEFAULT_EDGE_TYPE) {
-				fail("Test 13.5.4 FAIL");
-		}
-
-		if(et3.getType() != et31) {
-				fail("Test 13.5.5 FAIL");
-		}
-
-		et3.setType(Graph.DEFAULT_EDGE_TYPE);
-
-		if(et3.getType() != Graph.DEFAULT_EDGE_TYPE) {
-				fail("Test 13.5.7 FAIL");
-		}
-
-		if(Graph.DEFAULT_EDGE_TYPE.root() != Graph.DEFAULT_EDGE_TYPE) {
-				fail("Test 13.5.8 FAIL");
-		}
-
-
-
-		println("Test 13 END");
-
 		println("End Graph Tests");		
 	}
-} 
+	@Test
+	public void test_NodeConstruction(){
+		Node n0 = new Node(new NodeType("myType"));
+		Node n1 = new Node(new NodeType("myType"), new Point(1, 2));
+		Node n2 = new Node(new Point(0, 2));
+		Node n3 = new Node("myNode");
+		Node n4 = new Node("myNode", new NodeType("myType"));
+		Node n5 = new Node("myNode", new NodeType("myType"), new Point(3, 4));
+		Graph g = new Graph();
+		g.addNode(n0);
+		g.addNode(n1);
+		g.addNode(n2);
+		g.addNode(n3);
+		g.addNode(n4);
+		g.addNode(n5);
+		assertEquals(g.getNodes().size(), 6);
+		
+		Point p0 = n0.getCentre();
+		assertEquals(p0.x, 0);
+		assertEquals(p0.y, 0);
+		n0.setX(17);
+		n0.setY(16);
+		p0 = n0.getCentre();
+		assertEquals(p0.x, 17);
+		assertEquals(p0.y, 16);
+	}
+	@Test
+	public void test_GraphCentre(){
+		Node n0 = new Node(new Point(0, 2));
+		Node n1 = new Node(new Point(0, 4));
+		Graph g = new Graph();
+		g.addNode(n0);
+		g.addNode(n1);
+		g.centreOnPoint(1, 3);
+		assertEquals(g.getNodes().size(), 2);
+		
+		Point p0 = g.getNodes().get(0).getCentre();
+		Point p1 = g.getNodes().get(1).getCentre();
+		assertEquals(p0.x, 1);
+		assertEquals(p0.y, 2);
+		assertEquals(p1.x, 1);
+		assertEquals(p1.y, 4);
+	}
+	@Test
+	public void test_GraphGrid(){
+		Node n0 = new Node(new Point(-4, 5));
+		Node n1 = new Node(new Point(4, 0));
+		Graph g = new Graph();
+		g.addNode(n0);
+		g.addNode(n1);
+		g.snapToGrid(10, 10);
+		assertEquals(g.getNodes().size(), 2);
+		
+		Point p0 = g.getNodes().get(0).getCentre();
+		Point p1 = g.getNodes().get(1).getCentre();
+		assertEquals(p0.x, 0);
+		assertEquals(p0.y, 0);
+		assertEquals(p1.x, 0);
+		assertEquals(p1.y, 0);
+	}} 
 
