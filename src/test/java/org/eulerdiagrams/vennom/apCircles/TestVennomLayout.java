@@ -14,7 +14,7 @@ import org.junit.Test;
 public class TestVennomLayout {
 
     @Test
-    public void test() {
+    public void test_01() {
         AreaSpecification as = new AreaSpecification("A 100\nB 100\n");
         VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
         Graph graph = vl.layout();
