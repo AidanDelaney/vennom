@@ -6,10 +6,14 @@ import static org.junit.Assert.*;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.apache.batik.svggen.SVGGraphics2D;
 import org.eulerdiagrams.vennom.graph.Edge;
 import org.eulerdiagrams.vennom.graph.Graph;
 import org.eulerdiagrams.vennom.graph.Node;
 import org.junit.Test;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 
 public class TestVennomLayout {
 
@@ -314,5 +318,61 @@ public class TestVennomLayout {
         		not(is(lessThan(new Double(n0.getPreciseRadius() + n2.getPreciseRadius())))));
         assertThat(n1.getPreciseCentre().distance(n2.getPreciseCentre()), 
         		not(is(lessThan(new Double(n1.getPreciseRadius() + n2.getPreciseRadius())))));
+    }
+
+    @Test
+    public void testWilkinsonExample() {
+        String task = "S 13\nT 28\nA 101\nD 91\nST 1\nDS 14\nTA 6\nADS 1\n";
+        AreaSpecification as = new AreaSpecification(task);
+        VennomLayout vl = new VennomLayout(VennomLayout.FORCE_LAYOUT, as);
+        Graph g = vl.layout();
+
+        assertThat(g.getNodes().size(), is(4));
+
+        Node s = g.firstNodeWithContour("S");
+        Node t = g.firstNodeWithContour("T");
+        Node a = g.firstNodeWithContour("A");
+        Node d = g.firstNodeWithContour("D");
+
+        assertThat(s, is(notNullValue()));
+        assertThat(t, is(notNullValue()));
+        assertThat(a, is(notNullValue()));
+        assertThat(d, is(notNullValue()));
+
+        System.out.println(toDot(g));
+        toSVG(g, "TestVennomLayout::testWilkinsonExample.svg");
+
+        assertThat(s.getCentre().distance(t.getCentre()), is(lessThanOrEqualTo(new Double(s.getPreciseRadius() + t.getPreciseRadius()))));
+    }
+
+    public String toDot(Graph g) {
+        StringBuilder sb = new StringBuilder("graph g {\n");
+        g.getEdges().forEach(e -> sb.append("  " + e.getFrom().getContour() + " -- " + e.getTo().getContour() + ";\n"));
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public void toSVG(Graph g, String filename) {
+        // Get a DOMImplementation
+        DOMImplementation domImpl =
+                GenericDOMImplementation.getDOMImplementation();
+        String svgNamespaceURI = "http://www.w3.org/2000/svg";
+
+        // Create an instance of org.w3c.dom.Document
+        Document document = domImpl.createDocument(svgNamespaceURI, "svg", null);
+
+        // Create an instance of the SVG Generator
+        SVGGraphics2D svgGenerator = new SVGGraphics2D(document);
+
+        // Intentionally removing double precision from radius as a quick way to draw.
+        g.getNodes().forEach(n -> svgGenerator.drawOval(n.getX(), n.getY(), (int) n.getPreciseRadius(), (int) n.getPreciseRadius()));
+
+        try {
+            svgGenerator.stream(filename);
+        } catch (Exception e) {
+            // Do nothing
+            e.printStackTrace();
+            fail();
+        }
     }
 }
