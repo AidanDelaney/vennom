@@ -114,7 +114,10 @@ public class AreaSpecification {
 	 */
 	public Graph generateGeneralAugmentedIntersectionGraph() {
 		
-
+		if(null == abstractDiagram || null == abstractDiagram.getZoneList()) {
+			return new Graph();
+		}
+		
 		if(abstractDiagram.getZoneList().size() <= 1) {
 			return new Graph();
 		}
